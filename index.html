@@ -24,18 +24,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* NUEVA PALETA CÁLIDA Y FAMILIAR */
         :root {
             --primary: #E76F51;       /* Terracota cálido */
             --primary-hover: #D45D40;
             --secondary: #F4A261;     /* Naranja arena */
             --success: #2A9D8F;       /* Verde azulado suave */
             --danger: #E63946;        /* Rojo suave */
-            --bg: #FDFBF7;            /* Crema muy claro (fondo general) */
-            --card: #FFFFFF;          /* Blanco para tarjetas */
-            --text: #264653;          /* Pizarra profundo (texto principal) */
-            --muted: #8A9A9D;         /* Gris azulado (texto secundario) */
-            --border: #EAE6DF;        /* Gris cálido (bordes) */
+            --bg: #FDFBF7;            /* Crema claro */
+            --card: #FFFFFF;          /* Blanco */
+            --text: #264653;          /* Pizarra */
+            --muted: #8A9A9D;         /* Gris azulado */
+            --border: #EAE6DF;        /* Gris cálido */
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
@@ -50,6 +49,12 @@
             display: none !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important;
         }
 
+        /* CAMPO DE CONTRASEÑA CON OJITO */
+        .password-container { position: relative; width: 100%; }
+        .password-container input { padding-right: 2.8rem; }
+        .btn-toggle-pw { position: absolute; right: 0.75rem; top: 55%; transform: translateY(-50%); background: transparent; color: var(--muted); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.25rem; }
+        .btn-toggle-pw:hover { color: var(--text); }
+
         /* AUTH VIEW */
         #authView { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
         .auth-card { background: var(--card); padding: 2.5rem 2rem; border-radius: 20px; box-shadow: 0 12px 35px rgba(38, 70, 83, 0.08); width: 100%; max-width: 440px; text-align: center; border: 1px solid var(--border); }
@@ -63,6 +68,9 @@
         .mode-selector { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
         .mode-btn { flex: 1; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 0.85rem; font-weight: 600; color: var(--muted); transition: 0.2s; }
         .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .checkbox-container { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text); margin-top: 0.2rem; cursor: pointer; }
+        .checkbox-container input { width: auto; margin: 0; cursor: pointer; }
 
         /* PENDING VIEW */
         #pendingView { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem; text-align: center; }
@@ -107,7 +115,7 @@
         .chart-container { background: var(--card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(38, 70, 83, 0.04); }
         .chart-full { grid-column: 1 / -1; }
 
-        /* LISTA HISTORIAL */
+        /* HISTORIAL */
         .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; background: var(--card); padding: 1.2rem; border-radius: 16px; border: 1px solid var(--border); flex-wrap: wrap; box-shadow: 0 4px 15px rgba(38, 70, 83, 0.04); }
         .filter-bar input, .filter-bar select { margin-top: 0; max-width: 220px; }
         .record-list { display: flex; flex-direction: column; gap: 1rem; }
@@ -174,7 +182,6 @@
         .empty-state { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 1.05rem; }
         .msg { margin-top: 0.85rem; text-align: center; font-size: 0.9rem; min-height: 1.2em; }
 
-        /* PWA Banner */
         #installBanner { display: none; position: fixed; left: 1rem; right: 1rem; bottom: 6rem; z-index: 50; background: #264653; color: white; padding: 1rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); align-items: center; justify-content: space-between; gap: 1rem; max-width: 500px; margin: 0 auto; }
         #installBanner.show { display: flex; }
         #installBanner p { font-size: 0.9rem; line-height: 1.4; }
@@ -183,7 +190,6 @@
         #btnInstallApp { background: var(--secondary); color: white; }
         #btnDismissInstall { background: transparent; color: #a8dadc; }
 
-        /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .app-container { flex-direction: column; max-width: 100%; }
             .nav-bar { flex-direction: row; width: 100%; height: 68px; height: calc(68px + env(safe-area-inset-bottom, 0px)); border-right: none; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; padding: 0; padding-bottom: env(safe-area-inset-bottom, 0px); align-items: center; justify-content: space-around; z-index: 40; box-shadow: 0 -4px 20px rgba(38, 70, 83, 0.05); }
@@ -213,17 +219,51 @@
         <h2><i data-lucide="heart-handshake"></i> Ahorro Familiar</h2>
         <p style="color:var(--muted);font-size:0.95rem;margin-bottom:1rem;" id="authSubtitle">Inicia sesión en tu cuenta</p>
         
+        <!-- Formulario Login -->
         <div id="loginForm" class="auth-form">
-            <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="loginEmail" placeholder="tu@email.com" required></div>
-            <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="loginPassword" placeholder="Mínimo 6 caracteres" required></div>
+            <div class="form-group" style="margin:0">
+                <label>Correo</label>
+                <input type="email" id="loginEmail" autocomplete="username" placeholder="tu@email.com" required>
+            </div>
+            
+            <div class="form-group" style="margin:0">
+                <label>Contraseña</label>
+                <div class="password-container">
+                    <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Tu contraseña" required>
+                    <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('loginPassword', this)">
+                        <i data-lucide="eye" style="width:20px;height:20px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="rememberMe">
+                <span>Recordarme en este dispositivo (Face ID / Huella)</span>
+            </label>
+
             <button class="btn-primary" id="btnLogin" onclick="login()">Ingresar</button>
             <p class="auth-switch">¿No tienes cuenta? <span onclick="toggleAuth()">Regístrate aquí</span></p>
         </div>
 
+        <!-- Formulario Registro -->
         <div id="registerForm" class="auth-form hidden">
-            <div class="form-group" style="margin:0"><label>Tu nombre</label><input type="text" id="regName" placeholder="Ej. Ana" required></div>
-            <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="regEmail" placeholder="tu@email.com" required></div>
-            <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required></div>
+            <div class="form-group" style="margin:0">
+                <label>Tu nombre</label>
+                <input type="text" id="regName" placeholder="Ej. Ana" required>
+            </div>
+            <div class="form-group" style="margin:0">
+                <label>Correo</label>
+                <input type="email" id="regEmail" autocomplete="username" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group" style="margin:0">
+                <label>Contraseña</label>
+                <div class="password-container">
+                    <input type="password" id="regPassword" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required>
+                    <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('regPassword', this)">
+                        <i data-lucide="eye" style="width:20px;height:20px;"></i>
+                    </button>
+                </div>
+            </div>
             
             <div class="form-group" style="margin:0; margin-top: 0.5rem;">
                 <label>Tu Familia / Grupo</label>
@@ -329,7 +369,7 @@
         <section id="settings" class="view-section">
             <div class="card settings-card">
                 
-                <!-- PANEL ADMIN: Solicitudes pendientes -->
+                <!-- SOLICITUDES PENDIENTES (SÓLO ADMINS) -->
                 <div class="settings-group" id="adminPanel" style="display:none; background:#fff7ed; padding:1.5rem; border-radius:16px; border:1px solid #fed7aa;">
                     <h3 style="color:#c2410c; margin-bottom:0.5rem;"><i data-lucide="shield-alert"></i> Solicitudes de Ingreso</h3>
                     <p style="font-size:0.85rem; color:#ea580c; margin-bottom:1rem;">Personas que usaron tu código y esperan aprobación.</p>
@@ -339,14 +379,13 @@
                 <div class="settings-group">
                     <h3><i data-lucide="users"></i> Mi Familia / Grupo</h3>
                     
-                    <!-- Solo Admins ven el código y pueden invitar -->
                     <div id="adminInviteSection" style="display:none;">
                         <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.5rem;">Código de invitación de tu familia:</p>
                         <div class="code-box">
                             <span id="settingsFamilyCode">Cargando...</span>
                             <button type="button" class="btn-icon" title="Copiar código" onclick="copyFamilyCode()"><i data-lucide="copy" style="width:20px;"></i></button>
                         </div>
-                        <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.4rem;">O invita directamente por correo (entran sin requerir aprobación):</p>
+                        <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.4rem;">O invita directamente por correo:</p>
                         <div style="display:flex; gap:0.5rem;">
                             <input type="email" id="inviteEmail" placeholder="correo@ejemplo.com" style="margin-top:0;">
                             <button type="button" class="btn-primary" style="width:auto; padding:0 1.2rem;" onclick="inviteMember()">Invitar</button>
@@ -386,7 +425,7 @@
     <button class="fab" onclick="openAddModal()" title="Nuevo movimiento"><i data-lucide="plus" style="width:28px;height:28px;"></i></button>
 </div>
 
-<!-- Banner instalar -->
+<!-- Banner Instalar -->
 <div id="installBanner">
     <p>Instala <strong>Ahorro Familiar</strong> en tu celular</p>
     <div class="ib-actions">
@@ -395,7 +434,7 @@
     </div>
 </div>
 
-<!-- MODALS -->
+<!-- MODALES -->
 <div id="addModal" class="modal-overlay hidden">
     <div class="modal-content">
         <button class="modal-close" onclick="closeModal('addModal')"><i data-lucide="x" style="width:20px;"></i></button>
@@ -504,6 +543,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = `<i data-lucide="eye-off" style="width:20px;height:20px;"></i>`;
+    } else {
+        input.type = 'password';
+        btn.innerHTML = `<i data-lucide="eye" style="width:20px;height:20px;"></i>`;
+    }
+    lucide.createIcons();
+}
+
 function cleanupListeners() {
     if (unsubMovements) unsubMovements();
     if (unsubUser) unsubUser();
@@ -534,7 +585,7 @@ async function promptInstall() {
 }
 function dismissInstall() { localStorage.setItem('hideInstallBanner', '1'); document.getElementById('installBanner').classList.remove('show'); }
 
-// ===== AUTH & REGISTRATION MODES =====
+// ===== AUTH =====
 let isLogin = true;
 function toggleAuth() {
     isLogin = !isLogin;
@@ -554,14 +605,24 @@ function setRegFamilyMode(mode) {
 async function login() {
     const email = document.getElementById('loginEmail').value.trim();
     const pass = document.getElementById('loginPassword').value;
+    const remember = document.getElementById('rememberMe').checked;
     const btn = document.getElementById('btnLogin');
     const err = document.getElementById('authError');
     err.textContent = '';
+    
     if (!email || !pass) { err.textContent = 'Completa correo y contraseña.'; return; }
     btn.disabled = true; btn.textContent = 'Ingresando...';
-    try { await auth.signInWithEmailAndPassword(email, pass); }
-    catch (e) { err.textContent = 'Error: correo o contraseña incorrectos.'; }
-    finally { btn.disabled = false; btn.textContent = 'Ingresar'; }
+
+    try {
+        // Cierre de sesión al salir si NO está marcado "Recordarme"
+        const persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+        await auth.setPersistence(persistence);
+        await auth.signInWithEmailAndPassword(email, pass);
+    } catch (e) {
+        err.textContent = 'Error: correo o contraseña incorrectos.';
+    } finally {
+        btn.disabled = false; btn.textContent = 'Ingresar';
+    }
 }
 
 async function register() {
@@ -580,29 +641,26 @@ async function register() {
     try {
         let familyId = null, role = 'member', status = 'pending';
 
-        // Verificar si fue invitado por correo (aprobación automática)
         const invitedQuery = await db.collection('families').where('invitedEmails', 'array-contains', email).get();
         if (!invitedQuery.empty) {
             familyId = invitedQuery.docs[0].id;
             role = 'member';
             status = 'approved';
-        } 
-        else if (regFamilyMode === 'create') {
+        } else if (regFamilyMode === 'create') {
             const famName = document.getElementById('regFamilyName').value.trim() || (`Familia de ` + name);
             const famCode = (name.substring(0,3).toUpperCase()) + '-' + Math.floor(1000 + Math.random() * 9000);
             const newFam = await db.collection('families').add({ familyName: famName, code: famCode, invitedEmails: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             familyId = newFam.id;
             role = 'admin';
             status = 'approved';
-        } 
-        else {
+        } else {
             const codeInput = document.getElementById('regFamilyCode').value.trim().toUpperCase();
             if (!codeInput) { err.textContent = 'Escribe el código de invitación.'; btn.disabled = false; btn.textContent = 'Crear Cuenta'; return; }
             const codeQuery = await db.collection('families').where('code', '==', codeInput).get();
             if (codeQuery.empty) { err.textContent = 'Código inválido o no existe.'; btn.disabled = false; btn.textContent = 'Crear Cuenta'; return; }
             familyId = codeQuery.docs[0].id;
             role = 'member';
-            status = 'pending'; // Requiere aprobación
+            status = 'pending';
         }
 
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
@@ -623,8 +681,7 @@ async function listenUserAndFamily(user) {
     if (unsubUser) unsubUser();
     unsubUser = db.collection('users').doc(user.uid).onSnapshot(async (snap) => {
         if (!snap.exists) {
-            // SOLUCIÓN: Si el usuario fue borrado en Firebase Console, cierra la sesión fantasma.
-            alert("Tu cuenta ha sido eliminada o ya no existe. Sesión cerrada.");
+            alert("Tu cuenta ha sido eliminada. Sesión cerrada.");
             logout();
             return;
         }
@@ -646,7 +703,6 @@ async function listenUserAndFamily(user) {
             listenMovements(currentUserDoc.familyId);
             loadFamilyMembers(currentUserDoc.familyId);
             
-            // Lógica de Vistas Admin
             const isAdmin = currentUserDoc.role === 'admin';
             document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
             document.getElementById('adminInviteSection').style.display = isAdmin ? 'block' : 'none';
@@ -683,7 +739,6 @@ function renderMembersList(members, pending) {
     const penBox = document.getElementById('pendingList');
     const isAdmin = currentUserDoc.role === 'admin';
 
-    // RENDERIZAR MIEMBROS APROBADOS
     memBox.innerHTML = members.map(m => `
         <div class="member-item">
             <div class="member-avatar">
@@ -705,7 +760,6 @@ function renderMembersList(members, pending) {
         </div>
     `).join('');
 
-    // RENDERIZAR PENDIENTES (Solo para Admins)
     if (isAdmin) {
         if (!pending.length) {
             penBox.innerHTML = '<p style="font-size:0.85rem; color:var(--muted);">No hay solicitudes pendientes.</p>';
