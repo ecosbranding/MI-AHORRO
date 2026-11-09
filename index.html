@@ -16,6 +16,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     <title>Ahorro Familiar</title>
     
+    <!-- Librerías Externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -52,23 +53,23 @@
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
-            position: absolute !important;
-            left: -9999px !important;
+            width: 0 !important; height: 0 !important;
+            overflow: hidden !important; position: absolute !important; left: -9999px !important;
         }
 
         /* AUTH */
         #authView { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .auth-card { background: var(--card); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
+        .auth-card { background: var(--card); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 440px; text-align: center; }
         .auth-card h2 { margin-bottom: 0.5rem; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .auth-form { display: flex; flex-direction: column; gap: 1rem; text-align: left; margin-top: 1.5rem; }
+        .auth-form { display: flex; flex-direction: column; gap: 1rem; text-align: left; margin-top: 1.25rem; }
         .btn-primary { background: var(--primary); color: white; padding: 0.85rem; border-radius: 8px; font-weight: 600; width: 100%; font-size: 1rem; }
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         .auth-switch { margin-top: 1rem; color: var(--muted); font-size: 0.9rem; text-align: center; }
         .auth-switch span { color: var(--primary); cursor: pointer; font-weight: 600; }
+        .mode-selector { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .mode-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+        .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* LAYOUT */
         .app-container { display: flex; min-height: 100vh; min-height: 100dvh; max-width: 1400px; margin: 0 auto; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.06); }
@@ -82,6 +83,7 @@
 
         .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow-y: auto; background: var(--bg); }
         .header { background: var(--card); padding: 1rem 1.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .family-badge { font-size: 1.15rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
         .user-profile { display: flex; align-items: center; gap: 0.85rem; cursor: pointer; padding: 0.4rem 0.6rem; border-radius: 10px; transition: background 0.2s; }
         .user-profile:hover { background: var(--bg); }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; overflow: hidden; flex-shrink: 0; }
@@ -122,14 +124,25 @@
         .btn-icon:hover { background: var(--border); color: var(--text); }
         .btn-icon.danger:hover { background: #fee2e2; color: var(--danger); }
 
-        .settings-card { max-width: 520px; }
+        .settings-card { max-width: 580px; }
         .settings-group { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
         .settings-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .settings-group h3 { margin-bottom: 0.75rem; font-size: 1.05rem; }
+        .settings-group h3 { margin-bottom: 0.75rem; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; }
         .btn-export { background: white; border: 1px solid var(--border); color: var(--text); padding: 0.8rem; border-radius: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; }
         .btn-export:hover { background: var(--bg); }
         .btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: transparent; width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-danger-outline:hover { background: var(--danger); color: white; }
+
+        /* Members List in Settings */
+        .member-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+        .member-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg); border-radius: 8px; }
+        .member-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; overflow: hidden; }
+        .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .member-info { flex: 1; }
+        .member-info strong { font-size: 0.88rem; display: block; }
+        .member-info span { font-size: 0.75rem; color: var(--muted); }
+
+        .code-box { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px dashed var(--primary); font-family: monospace; font-size: 1.1rem; font-weight: 700; color: var(--primary); justify-content: space-between; margin-bottom: 0.75rem; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; backdrop-filter: blur(2px); }
         .modal-content { background: var(--card); padding: 1.75rem; border-radius: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
@@ -152,22 +165,11 @@
         .empty-state { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
         .msg { margin-top: 0.85rem; text-align: center; font-size: 0.9rem; min-height: 1.2em; }
 
-        /* Banner instalar app */
         #installBanner {
-            display: none;
-            position: fixed;
-            left: 1rem; right: 1rem; bottom: 5.5rem;
-            z-index: 50;
-            background: #0f172a;
-            color: white;
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            max-width: 480px;
-            margin: 0 auto;
+            display: none; position: fixed; left: 1rem; right: 1rem; bottom: 5.5rem; z-index: 50;
+            background: #0f172a; color: white; padding: 0.85rem 1rem; border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25); align-items: center; justify-content: space-between;
+            gap: 0.75rem; max-width: 480px; margin: 0 auto;
         }
         #installBanner.show { display: flex; }
         #installBanner p { font-size: 0.88rem; line-height: 1.3; }
@@ -195,7 +197,6 @@
             #installBanner { bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)); }
         }
 
-        /* Cuando está instalada como app, un poco más de aire inferior no hace falta el banner */
         @media (display-mode: standalone) {
             #installBanner { display: none !important; }
         }
@@ -203,20 +204,44 @@
 </head>
 <body>
 
+<!-- AUTH VIEW -->
 <div id="authView">
     <div class="auth-card">
         <h2><i data-lucide="wallet"></i> Ahorro Familiar</h2>
         <p style="color:var(--muted);font-size:0.9rem;" id="authSubtitle">Inicia sesión en tu cuenta</p>
+        
+        <!-- Login Form -->
         <div id="loginForm" class="auth-form">
             <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="loginEmail" placeholder="tu@email.com" required></div>
             <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="loginPassword" placeholder="Mínimo 6 caracteres" required></div>
             <button class="btn-primary" id="btnLogin" onclick="login()">Ingresar</button>
             <p class="auth-switch">¿No tienes cuenta? <span onclick="toggleAuth()">Regístrate</span></p>
         </div>
+
+        <!-- Register Form -->
         <div id="registerForm" class="auth-form hidden">
             <div class="form-group" style="margin:0"><label>Tu nombre</label><input type="text" id="regName" placeholder="Ej. Víctor" required></div>
             <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="regEmail" placeholder="tu@email.com" required></div>
             <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required></div>
+            
+            <div class="form-group" style="margin:0; margin-top: 0.5rem;">
+                <label>Familia / Grupo</label>
+                <div class="mode-selector">
+                    <button type="button" class="mode-btn active" id="btnModeCreate" onclick="setRegFamilyMode('create')">Crear Nueva</button>
+                    <button type="button" class="mode-btn" id="btnModeJoin" onclick="setRegFamilyMode('join')">Unirme con Código</button>
+                </div>
+            </div>
+
+            <div class="form-group" id="groupRegCreate" style="margin:0">
+                <label>Nombre de tu Familia / Grupo</label>
+                <input type="text" id="regFamilyName" placeholder="Ej. Familia Carvajal">
+            </div>
+
+            <div class="form-group hidden" id="groupRegJoin" style="margin:0">
+                <label>Código de Invitación de Familia</label>
+                <input type="text" id="regFamilyCode" placeholder="Ej. CARV-8912" style="text-transform: uppercase;">
+            </div>
+
             <button class="btn-primary" id="btnRegister" onclick="register()">Crear Cuenta</button>
             <p class="auth-switch">¿Ya tienes cuenta? <span onclick="toggleAuth()">Inicia sesión</span></p>
         </div>
@@ -224,6 +249,7 @@
     </div>
 </div>
 
+<!-- MAIN APP VIEW -->
 <div id="appView" class="app-container hidden">
     <nav class="nav-bar">
         <div class="nav-logo"><i data-lucide="wallet"></i> AhorroFam</div>
@@ -239,7 +265,10 @@
 
     <main class="main-content">
         <header class="header">
-            <h2 style="font-size:1.15rem;">Mi Familia</h2>
+            <div class="family-badge">
+                <i data-lucide="users" style="color:var(--primary); width:22px;"></i>
+                <span id="headerFamilyName">Mi Familia</span>
+            </div>
             <div class="user-profile" onclick="openProfileModal()" title="Editar perfil">
                 <div class="user-info" style="text-align:right;">
                     <h3 id="headerUserName">...</h3>
@@ -249,6 +278,7 @@
             </div>
         </header>
 
+        <!-- DASHBOARD -->
         <section id="dashboard" class="view-section active">
             <div class="summary-cards">
                 <div class="card">
@@ -271,6 +301,7 @@
             </div>
         </section>
 
+        <!-- HISTORIAL -->
         <section id="history" class="view-section">
             <div class="filter-bar">
                 <input type="month" id="filterMonth" onchange="renderHistory()">
@@ -283,23 +314,50 @@
             <div class="record-list" id="recordList"></div>
         </section>
 
+        <!-- AJUSTES Y MIEMBROS -->
         <section id="settings" class="view-section">
             <div class="card settings-card">
                 <div class="settings-group">
-                    <h3>Perfil</h3>
-                    <button class="btn-export" onclick="openProfileModal()"><i data-lucide="user-cog" style="width:18px;"></i> Editar mi perfil y foto</button>
+                    <h3><i data-lucide="users"></i> Mi Familia / Grupo</h3>
+                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.5rem;">
+                        Código de invitación de tu familia:
+                    </p>
+                    <div class="code-box">
+                        <span id="settingsFamilyCode">Cargando...</span>
+                        <button type="button" class="btn-icon" title="Copiar código" onclick="copyFamilyCode()"><i data-lucide="copy" style="width:16px;"></i></button>
+                    </div>
+
+                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.35rem;">Invitar a un familiar o amigo por correo:</p>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="email" id="inviteEmail" placeholder="correo@ejemplo.com" style="margin-top:0;">
+                        <button type="button" class="btn-primary" style="width:auto; padding:0 1rem; white-space:nowrap;" onclick="inviteMember()">Invitar</button>
+                    </div>
+                    <p id="inviteMessage" class="msg"></p>
+
+                    <h4 style="font-size:0.9rem; margin-top:1.25rem; color:var(--text);">Miembros del Grupo:</h4>
+                    <div class="member-list" id="memberList">
+                        <!-- Carga dinámica -->
+                    </div>
                 </div>
+
                 <div class="settings-group">
-                    <h3>Instalar app</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Instálala en tu móvil o PC para usarla a pantalla completa, como una app nativa.</p>
+                    <h3><i data-lucide="user-cog"></i> Mi Perfil</h3>
+                    <button class="btn-export" onclick="openProfileModal()"><i data-lucide="user-cog" style="width:18px;"></i> Editar mi nombre y foto</button>
+                </div>
+
+                <div class="settings-group">
+                    <h3><i data-lucide="download"></i> Instalar app</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Instálala en tu móvil o PC para usarla como app nativa.</p>
                     <button class="btn-export" id="btnInstallSettings" onclick="promptInstall()"><i data-lucide="download" style="width:18px;"></i> Instalar Ahorro Familiar</button>
                 </div>
+
                 <div class="settings-group">
-                    <h3>Exportar datos</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Copia de seguridad de todos los movimientos.</p>
+                    <h3><i data-lucide="file-text"></i> Exportar datos</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Copia de seguridad de los movimientos de tu grupo.</p>
                     <button class="btn-export" onclick="exportCSV()"><i data-lucide="file-spreadsheet" style="width:18px;"></i> Exportar CSV (Excel)</button>
                     <button class="btn-export" onclick="exportJSON()"><i data-lucide="file-json" style="width:18px;"></i> Exportar JSON (Backup)</button>
                 </div>
+
                 <div class="settings-group">
                     <button class="btn-danger-outline" onclick="logout()"><i data-lucide="log-out" style="width:18px;"></i> Cerrar sesión</button>
                 </div>
@@ -312,7 +370,7 @@
 
 <!-- Banner instalar -->
 <div id="installBanner">
-    <p>Instala <strong>Ahorro Familiar</strong> en tu dispositivo</p>
+    <p>Instala <strong>Ahorro Familiar</strong> en tu celular</p>
     <div class="ib-actions">
         <button type="button" id="btnDismissInstall" onclick="dismissInstall()">Ahora no</button>
         <button type="button" id="btnInstallApp" onclick="promptInstall()">Instalar</button>
@@ -328,7 +386,7 @@
         <div class="form-group"><label>Cantidad ($)</label><input type="number" id="addAmount" step="0.01" min="0" placeholder="0.00"></div>
         <div class="form-group"><label>Categoría</label><select id="addCategory"></select></div>
         <div class="form-group"><label>Fecha</label><input type="date" id="addDate"></div>
-        <div class="form-group"><label>Nota (opcional)</label><input type="text" id="addNote" placeholder="Ej. Super del mes"></div>
+        <div class="form-group"><label>Nota (opcional)</label><input type="text" id="addNote" placeholder="Ej. Supermercado"></div>
         <div class="form-group">
             <label>Foto del recibo (opcional)</label>
             <input type="file" id="addReceipt" accept="image/*" onchange="previewImage(this, 'add')">
@@ -365,7 +423,7 @@
         <div class="form-group">
             <label>Cambiar foto</label>
             <input type="file" id="profileImage" accept="image/*" onchange="previewProfileImage(this)">
-            <p style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Se comprime sola. Mejor JPG o PNG.</p>
+            <p style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Se comprime automáticamente.</p>
         </div>
         <div class="form-group"><label>Nombre a mostrar</label><input type="text" id="profileName" placeholder="Tu nombre" maxlength="40"></div>
         <button class="btn-primary" id="btnSaveProfile" onclick="saveProfile()">Guardar cambios</button>
@@ -395,11 +453,15 @@ const db = firebase.firestore();
 
 let movements = [];
 let currentUserDoc = null;
+let currentFamilyDoc = null;
+let familyMembers = [];
 let charts = {};
 let currentBase64 = { add: null, edit: null, profile: null };
 let unsubMovements = null;
 let unsubUser = null;
+let unsubFamily = null;
 let deferredInstallPrompt = null;
+let regFamilyMode = 'create';
 
 const CATEGORIES = {
     Ingreso: ['Sueldo', 'Negocio', 'Inversión', 'Regalo', 'Otro Ingreso'],
@@ -419,15 +481,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             document.getElementById('authView').classList.add('hidden');
             document.getElementById('appView').classList.remove('hidden');
-            await ensureUserDoc(user);
-            listenUserDoc(user.uid);
-            listenMovements();
+            await listenUserAndFamily(user);
         } else {
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('appView').classList.add('hidden');
             if (unsubMovements) unsubMovements();
             if (unsubUser) unsubUser();
+            if (unsubFamily) unsubFamily();
             currentUserDoc = null;
+            currentFamilyDoc = null;
             movements = [];
         }
     });
@@ -462,12 +524,11 @@ async function promptInstall() {
         document.getElementById('installBanner').classList.remove('show');
         return;
     }
-    // iOS / navegadores sin beforeinstallprompt
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (isIOS) {
-        alert('En iPhone/iPad:\n1. Toca el botón Compartir\n2. Elige "Añadir a pantalla de inicio"\n3. Confirma "Añadir"');
+        alert('En iPhone/iPad:\n1. Toca el botón Compartir en Safari\n2. Selecciona "Añadir a pantalla de inicio"');
     } else {
-        alert('Para instalar:\n• Chrome/Edge: menú (⋮) → "Instalar aplicación" o "Instalar Ahorro Familiar"\n• Si no sale, abre el sitio un par de veces y recarga.');
+        alert('Para instalar:\n• Menú del navegador (⋮) → "Instalar aplicación"');
     }
 }
 
@@ -476,14 +537,22 @@ function dismissInstall() {
     document.getElementById('installBanner').classList.remove('show');
 }
 
-// ===== AUTH =====
+// ===== AUTH & REGISTRATION MODES =====
 let isLogin = true;
 function toggleAuth() {
     isLogin = !isLogin;
     document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
     document.getElementById('registerForm').classList.toggle('hidden', isLogin);
-    document.getElementById('authSubtitle').textContent = isLogin ? 'Inicia sesión en tu cuenta' : 'Crea una cuenta (máx. 2 usuarios)';
+    document.getElementById('authSubtitle').textContent = isLogin ? 'Inicia sesión en tu cuenta' : 'Regístrate y gestiona tu grupo';
     document.getElementById('authError').textContent = '';
+}
+
+function setRegFamilyMode(mode) {
+    regFamilyMode = mode;
+    document.getElementById('btnModeCreate').classList.toggle('active', mode === 'create');
+    document.getElementById('btnModeJoin').classList.toggle('active', mode === 'join');
+    document.getElementById('groupRegCreate').classList.toggle('hidden', mode !== 'create');
+    document.getElementById('groupRegJoin').classList.toggle('hidden', mode !== 'join');
 }
 
 async function login() {
@@ -499,6 +568,10 @@ async function login() {
     finally { btn.disabled = false; btn.textContent = 'Ingresar'; }
 }
 
+function generateCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
 async function register() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -506,52 +579,191 @@ async function register() {
     const btn = document.getElementById('btnRegister');
     const err = document.getElementById('authError');
     err.textContent = '';
-    if (!name || !email || !pass) { err.textContent = 'Completa todos los campos.'; return; }
+
+    if (!name || !email || !pass) { err.textContent = 'Completa todos tus datos.'; return; }
     if (pass.length < 6) { err.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
-    btn.disabled = true; btn.textContent = 'Creando...';
+
+    btn.disabled = true; btn.textContent = 'Verificando...';
+
     try {
-        const usersSnap = await db.collection('users').get();
-        if (usersSnap.size >= 2) {
-            err.textContent = 'Ya hay 2 usuarios registrados. No se permiten más.';
-            btn.disabled = false; btn.textContent = 'Crear Cuenta';
-            return;
+        let familyId = null;
+
+        // Comprobar si fue invitado por correo
+        const invitedQuery = await db.collection('families').where('invitedEmails', 'array-contains', email.toLowerCase()).get();
+        
+        if (!invitedQuery.empty) {
+            familyId = invitedQuery.docs[0].id;
+        } else if (regFamilyMode === 'create') {
+            const famName = document.getElementById('regFamilyName').value.trim() || (`Familia de ` + name);
+            const famCode = (name.substring(0,3).toUpperCase()) + '-' + Math.floor(1000 + Math.random() * 9000);
+            
+            const newFam = await db.collection('families').add({
+                familyName: famName,
+                code: famCode,
+                invitedEmails: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            familyId = newFam.id;
+        } else {
+            const codeInput = document.getElementById('regFamilyCode').value.trim().toUpperCase();
+            if (!codeInput) { err.textContent = 'Escribe el código de invitación.'; btn.disabled = false; btn.textContent = 'Crear Cuenta'; return; }
+            
+            const codeQuery = await db.collection('families').where('code', '==', codeInput).get();
+            if (codeQuery.empty) {
+                err.textContent = 'Código de familia inválido o no existe.';
+                btn.disabled = false; btn.textContent = 'Crear Cuenta';
+                return;
+            }
+            familyId = codeQuery.docs[0].id;
         }
+
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
         await cred.user.updateProfile({ displayName: name });
+        
         await db.collection('users').doc(cred.user.uid).set({
             displayName: name,
-            email: email,
+            email: email.toLowerCase(),
+            familyId: familyId,
             photoBase64: null,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
     } catch (e) {
         if (e.code === 'auth/email-already-in-use') err.textContent = 'Ese correo ya está registrado.';
         else err.textContent = 'Error: ' + (e.message || 'No se pudo registrar');
-    } finally { btn.disabled = false; btn.textContent = 'Crear Cuenta'; }
+    } finally {
+        btn.disabled = false; btn.textContent = 'Crear Cuenta';
+    }
 }
 
 function logout() { if (confirm('¿Cerrar sesión?')) auth.signOut(); }
 
-// ===== PROFILE =====
-async function ensureUserDoc(user) {
-    const ref = db.collection('users').doc(user.uid);
-    const snap = await ref.get();
-    if (!snap.exists) {
-        await ref.set({
-            displayName: user.displayName || 'Usuario',
-            email: user.email,
-            photoBase64: null,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+// ===== DATA LISTENERS (MULTI-TENANT) =====
+async function listenUserAndFamily(user) {
+    if (unsubUser) unsubUser();
+    unsubUser = db.collection('users').doc(user.uid).onSnapshot(async (snap) => {
+        if (!snap.exists) return;
+        currentUserDoc = { id: snap.id, ...snap.data() };
+        renderHeaderProfile();
+
+        if (currentUserDoc.familyId) {
+            listenFamilyDoc(currentUserDoc.familyId);
+            listenMovements(currentUserDoc.familyId);
+            loadFamilyMembers(currentUserDoc.familyId);
+        }
+    });
+}
+
+function listenFamilyDoc(familyId) {
+    if (unsubFamily) unsubFamily();
+    unsubFamily = db.collection('families').doc(familyId).onSnapshot((snap) => {
+        if (!snap.exists) return;
+        currentFamilyDoc = { id: snap.id, ...snap.data() };
+        document.getElementById('headerFamilyName').textContent = currentFamilyDoc.familyName || 'Mi Familia';
+        document.getElementById('settingsFamilyCode').textContent = currentFamilyDoc.code || 'S/N';
+    });
+}
+
+async function loadFamilyMembers(familyId) {
+    db.collection('users').where('familyId', '==', familyId).onSnapshot((snap) => {
+        familyMembers = [];
+        snap.forEach(doc => familyMembers.push({ id: doc.id, ...doc.data() }));
+        renderMembersList();
+    });
+}
+
+function renderMembersList() {
+    const box = document.getElementById('memberList');
+    if (!familyMembers.length) { box.innerHTML = '<p style="font-size:0.8rem; color:var(--muted);">Cargando...</p>'; return; }
+    
+    box.innerHTML = familyMembers.map(m => `
+        <div class="member-item">
+            <div class="member-avatar">
+                ${m.photoBase64 ? `<img src="${m.photoBase64}">` : `<span>${(m.displayName||'U').charAt(0).toUpperCase()}</span>`}
+            </div>
+            <div class="member-info">
+                <strong>${escapeHtml(m.displayName)} ${m.id === auth.currentUser.uid ? '(Tú)' : ''}</strong>
+                <span>${escapeHtml(m.email)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function inviteMember() {
+    const emailInput = document.getElementById('inviteEmail');
+    const email = emailInput.value.trim().toLowerCase();
+    const msg = document.getElementById('inviteMessage');
+    msg.textContent = '';
+
+    if (!email || !email.includes('@')) {
+        msg.style.color = 'var(--danger)';
+        msg.textContent = 'Escribe un correo válido.';
+        return;
+    }
+
+    if (!currentFamilyDoc) return;
+
+    try {
+        await db.collection('families').doc(currentFamilyDoc.id).update({
+            invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
         });
+        msg.style.color = 'var(--success)';
+        msg.textContent = `¡Invitación guardada para ${email}! Cuando esa persona se registre con ese correo, entrará automáticamente a tu familia.`;
+        emailInput.value = '';
+    } catch (e) {
+        msg.style.color = 'var(--danger)';
+        msg.textContent = 'Error al invitar: ' + e.message;
     }
 }
 
-function listenUserDoc(uid) {
-    if (unsubUser) unsubUser();
-    unsubUser = db.collection('users').doc(uid).onSnapshot((snap) => {
-        currentUserDoc = snap.exists ? { id: snap.id, ...snap.data() } : null;
-        renderHeaderProfile();
-    });
+function copyFamilyCode() {
+    if (!currentFamilyDoc || !currentFamilyDoc.code) return;
+    navigator.clipboard.writeText(currentFamilyDoc.code);
+    alert('¡Código copiado!: ' + currentFamilyDoc.code + '\nCompártelo con tu familiar para que se una.');
+}
+
+// ===== MOVEMENTS PER FAMILY =====
+function listenMovements(familyId) {
+    if (unsubMovements) unsubMovements();
+    unsubMovements = db.collection('movements')
+        .where('familyId', '==', familyId)
+        .orderBy('date', 'desc')
+        .onSnapshot((snap) => {
+            movements = [];
+            snap.forEach(doc => movements.push({ id: doc.id, ...doc.data() }));
+            updateDashboard();
+            renderHistory();
+        }, (err) => console.error('Movements listener:', err));
+}
+
+async function saveMovement() {
+    const type = document.getElementById('addType').value;
+    const amount = parseFloat(document.getElementById('addAmount').value);
+    const category = document.getElementById('addCategory').value;
+    const date = document.getElementById('addDate').value;
+    const note = document.getElementById('addNote').value.trim();
+    const user = auth.currentUser;
+    const btn = document.getElementById('btnSaveMov');
+
+    if (!amount || amount <= 0 || !date) { alert('Cantidad y fecha son obligatorios.'); return; }
+    if (!currentUserDoc || !currentUserDoc.familyId) { alert('Error: No perteneces a ninguna familia.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Guardando...';
+    try {
+        await db.collection('movements').add({
+            familyId: currentUserDoc.familyId,
+            type, amount, category, date, note: note || '',
+            receipt: currentBase64.add || null,
+            userId: user.uid, userEmail: user.email,
+            userName: currentUserDoc.displayName || user.displayName || 'Usuario',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal('addModal');
+        document.getElementById('addAmount').value = '';
+        document.getElementById('addNote').value = '';
+        removeImage('add');
+    } catch (e) { alert('Error al guardar: ' + e.message); }
+    finally { btn.disabled = false; btn.textContent = 'Guardar'; }
 }
 
 function renderHeaderProfile() {
@@ -584,8 +796,8 @@ async function previewProfileImage(input) {
     try {
         const b64 = await compressImage(input.files[0], 160, 0.45);
         currentBase64.profile = b64;
-        document.getElementById('profileAvatarBox').innerHTML = `<img src="${b64}" alt="">`;
-    } catch (e) { alert('No se pudo procesar la imagen. Prueba JPG o PNG.'); }
+        document.getElementById('profileAvatarBox').innerHTML = `<img src="${b64}">`;
+    } catch (e) { alert('No se pudo procesar la imagen.'); }
 }
 
 async function saveProfile() {
@@ -598,7 +810,7 @@ async function saveProfile() {
     btn.disabled = true; btn.textContent = 'Guardando...'; msg.textContent = '';
     try {
         await user.updateProfile({ displayName: newName });
-        const data = { displayName: newName, email: user.email };
+        const data = { displayName: newName };
         if (currentBase64.profile) data.photoBase64 = currentBase64.profile;
         await db.collection('users').doc(user.uid).set(data, { merge: true });
         msg.style.color = 'var(--success)';
@@ -608,46 +820,6 @@ async function saveProfile() {
         msg.style.color = 'var(--danger)';
         msg.textContent = 'Error al guardar: ' + (e.message || 'intenta de nuevo');
     } finally { btn.disabled = false; btn.textContent = 'Guardar cambios'; }
-}
-
-// ===== MOVEMENTS =====
-function listenMovements() {
-    if (unsubMovements) unsubMovements();
-    unsubMovements = db.collection('movements').orderBy('date', 'desc').onSnapshot((snap) => {
-        movements = [];
-        snap.forEach(doc => movements.push({ id: doc.id, ...doc.data() }));
-        updateDashboard();
-        renderHistory();
-    }, (err) => {
-        console.error(err);
-        alert('Error cargando datos. Revisa las reglas de Firestore.');
-    });
-}
-
-async function saveMovement() {
-    const type = document.getElementById('addType').value;
-    const amount = parseFloat(document.getElementById('addAmount').value);
-    const category = document.getElementById('addCategory').value;
-    const date = document.getElementById('addDate').value;
-    const note = document.getElementById('addNote').value.trim();
-    const user = auth.currentUser;
-    const btn = document.getElementById('btnSaveMov');
-    if (!amount || amount <= 0 || !date) { alert('Cantidad y fecha son obligatorios.'); return; }
-    btn.disabled = true; btn.textContent = 'Guardando...';
-    try {
-        await db.collection('movements').add({
-            type, amount, category, date, note: note || '',
-            receipt: currentBase64.add || null,
-            userId: user.uid, userEmail: user.email,
-            userName: (currentUserDoc && currentUserDoc.displayName) || user.displayName || 'Usuario',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        closeModal('addModal');
-        document.getElementById('addAmount').value = '';
-        document.getElementById('addNote').value = '';
-        removeImage('add');
-    } catch (e) { alert('Error al guardar: ' + e.message); }
-    finally { btn.disabled = false; btn.textContent = 'Guardar'; }
 }
 
 function openAddModal() {
@@ -698,12 +870,11 @@ async function updateMovement() {
 }
 
 async function deleteRecord(id) {
-    if (!confirm('¿Eliminar este movimiento de forma permanente?')) return;
+    if (!confirm('¿Eliminar este movimiento permanentemente?')) return;
     try { await db.collection('movements').doc(id).delete(); }
     catch (e) { alert('Error al eliminar: ' + e.message); }
 }
 
-// ===== UI =====
 function switchTab(tabId, btn) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -738,10 +909,10 @@ function compressImage(file, maxWidth = 480, quality = 0.4) {
                 ctx.drawImage(img, 0, 0, w, h);
                 resolve(canvas.toDataURL('image/jpeg', quality));
             };
-            img.onerror = () => reject(new Error('No se pudo leer'));
+            img.onerror = () => reject(new Error('Error imagen'));
             img.src = e.target.result;
         };
-        reader.onerror = () => reject(new Error('Error archivo'));
+        reader.onerror = () => reject(new Error('Error lectura'));
         reader.readAsDataURL(file);
     });
 }
