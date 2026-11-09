@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#E76F51">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AhorroFam">
     <meta name="application-name" content="Ahorro Familiar">
-    <meta name="description" content="Control de ingresos, gastos y ahorros familiares en tiempo real">
+    <meta name="description" content="Control de ingresos, gastos y ahorros familiares">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -24,208 +24,209 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <style>
+        /* NUEVA PALETA CÁLIDA Y FAMILIAR */
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f3f4f6;
-            --card: #ffffff;
-            --text: #1f2937;
-            --muted: #6b7280;
-            --border: #e5e7eb;
+            --primary: #E76F51;       /* Terracota cálido */
+            --primary-hover: #D45D40;
+            --secondary: #F4A261;     /* Naranja arena */
+            --success: #2A9D8F;       /* Verde azulado suave */
+            --danger: #E63946;        /* Rojo suave */
+            --bg: #FDFBF7;            /* Crema muy claro (fondo general) */
+            --card: #FFFFFF;          /* Blanco para tarjetas */
+            --text: #264653;          /* Pizarra profundo (texto principal) */
+            --muted: #8A9A9D;         /* Gris azulado (texto secundario) */
+            --border: #EAE6DF;        /* Gris cálido (bordes) */
         }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
         button { cursor: pointer; border: none; outline: none; transition: 0.2s; font-family: inherit; }
-        input, select, textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; margin-top: 0.25rem; font-size: 1rem; }
+        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 12px; margin-top: 0.25rem; font-size: 1rem; background: var(--card); color: var(--text); }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
         .hidden { display: none !important; }
 
-        /* Ocultar badge / branding de Netlify */
-        iframe[src*="netlify"],
-        a[href*="netlify.com"][target="_blank"],
-        a[href*="netlify.com"]:not([href*="miahorroapp"]),
-        [class*="netlify-badge"],
-        #netlify-badge,
-        body > a[href*="netlify"],
-        div[style*="z-index"] > a[href*="netlify.com"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-            width: 0 !important; height: 0 !important;
-            overflow: hidden !important; position: absolute !important; left: -9999px !important;
+        /* Ocultar badge de Netlify */
+        iframe[src*="netlify"], a[href*="netlify.com"][target="_blank"], [class*="netlify-badge"], #netlify-badge {
+            display: none !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important;
         }
 
-        /* AUTH */
+        /* AUTH VIEW */
         #authView { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .auth-card { background: var(--card); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 440px; text-align: center; }
-        .auth-card h2 { margin-bottom: 0.5rem; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .auth-form { display: flex; flex-direction: column; gap: 1rem; text-align: left; margin-top: 1.25rem; }
-        .btn-primary { background: var(--primary); color: white; padding: 0.85rem; border-radius: 8px; font-weight: 600; width: 100%; font-size: 1rem; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .auth-card { background: var(--card); padding: 2.5rem 2rem; border-radius: 20px; box-shadow: 0 12px 35px rgba(38, 70, 83, 0.08); width: 100%; max-width: 440px; text-align: center; border: 1px solid var(--border); }
+        .auth-card h2 { margin-bottom: 0.5rem; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.6rem; }
+        .auth-form { display: flex; flex-direction: column; gap: 1.1rem; text-align: left; margin-top: 1.5rem; }
+        .btn-primary { background: var(--primary); color: white; padding: 0.9rem; border-radius: 12px; font-weight: 600; width: 100%; font-size: 1rem; box-shadow: 0 4px 12px rgba(231, 111, 81, 0.25); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .auth-switch { margin-top: 1rem; color: var(--muted); font-size: 0.9rem; text-align: center; }
-        .auth-switch span { color: var(--primary); cursor: pointer; font-weight: 600; }
+        .auth-switch span { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
         .mode-selector { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-        .mode-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+        .mode-btn { flex: 1; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 0.85rem; font-weight: 600; color: var(--muted); transition: 0.2s; }
         .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* LAYOUT */
-        .app-container { display: flex; min-height: 100vh; min-height: 100dvh; max-width: 1400px; margin: 0 auto; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.06); }
-        .nav-bar { background: var(--card); border-right: 1px solid var(--border); width: 240px; display: flex; flex-direction: column; padding: 1.25rem 0; z-index: 20; }
-        .nav-logo { font-size: 1.35rem; font-weight: 700; color: var(--primary); padding: 0 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
-        .nav-items { display: flex; flex-direction: column; gap: 0.35rem; padding: 0 0.75rem; flex: 1; }
-        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; border-radius: 10px; color: var(--muted); background: transparent; width: 100%; text-align: left; font-size: 0.95rem; font-weight: 500; }
-        .nav-item:hover { background: #f1f5f9; color: var(--text); }
-        .nav-item.active { background: var(--primary); color: white; }
-        .nav-bottom { padding: 1rem 0.75rem; border-top: 1px solid var(--border); }
+        /* PENDING VIEW */
+        #pendingView { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem; text-align: center; }
+        .pending-card { background: var(--card); padding: 3rem 2rem; border-radius: 20px; box-shadow: 0 12px 35px rgba(38, 70, 83, 0.08); max-width: 400px; border: 1px solid var(--border); }
+        .pending-card i { color: var(--secondary); width: 64px; height: 64px; margin-bottom: 1rem; }
+        .pending-card h2 { color: var(--text); margin-bottom: 0.5rem; }
+        .pending-card p { color: var(--muted); margin-bottom: 2rem; line-height: 1.5; }
+
+        /* LAYOUT PRINCIPAL */
+        .app-container { display: flex; min-height: 100vh; min-height: 100dvh; max-width: 1400px; margin: 0 auto; background: var(--bg); }
+        .nav-bar { background: var(--card); border-right: 1px solid var(--border); width: 250px; display: flex; flex-direction: column; padding: 1.5rem 0; z-index: 20; }
+        .nav-logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); padding: 0 1.5rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-items { display: flex; flex-direction: column; gap: 0.4rem; padding: 0 1rem; flex: 1; }
+        .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.85rem 1.2rem; border-radius: 12px; color: var(--muted); background: transparent; width: 100%; text-align: left; font-size: 0.95rem; font-weight: 600; }
+        .nav-item:hover { background: var(--bg); color: var(--text); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(231, 111, 81, 0.2); }
+        .nav-bottom { padding: 1rem; border-top: 1px solid var(--border); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow-y: auto; background: var(--bg); }
-        .header { background: var(--card); padding: 1rem 1.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-        .family-badge { font-size: 1.15rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
-        .user-profile { display: flex; align-items: center; gap: 0.85rem; cursor: pointer; padding: 0.4rem 0.6rem; border-radius: 10px; transition: background 0.2s; }
+        .header { background: var(--card); padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .family-badge { font-size: 1.2rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.6rem; }
+        .user-profile { display: flex; align-items: center; gap: 0.85rem; cursor: pointer; padding: 0.4rem 0.6rem; border-radius: 12px; transition: 0.2s; }
         .user-profile:hover { background: var(--bg); }
-        .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; overflow: hidden; flex-shrink: 0; }
+        .user-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; overflow: hidden; flex-shrink: 0; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-info h3 { font-size: 0.95rem; margin-bottom: 0.1rem; }
+        .user-info h3 { font-size: 0.95rem; margin-bottom: 0.1rem; color: var(--text); }
         .user-info p { font-size: 0.75rem; color: var(--muted); }
 
-        .view-section { padding: 1.75rem; display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .view-section { padding: 2rem; display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.75rem; }
-        .card { background: var(--card); padding: 1.35rem; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid var(--border); }
-        .card-header { display: flex; align-items: center; justify-content: space-between; color: var(--muted); margin-bottom: 0.75rem; font-size: 0.9rem; }
-        .card-value { font-size: 1.75rem; font-weight: 700; }
+        /* TARJETAS RESUMEN */
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: var(--card); padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(38, 70, 83, 0.04); border: 1px solid var(--border); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; font-weight: 600; }
+        .card-value { font-size: 2rem; font-weight: 800; }
         .text-success { color: var(--success); }
         .text-danger { color: var(--danger); }
 
-        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-        .chart-container { background: var(--card); padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border); }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .chart-container { background: var(--card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(38, 70, 83, 0.04); }
         .chart-full { grid-column: 1 / -1; }
 
-        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.25rem; background: var(--card); padding: 1rem; border-radius: 12px; border: 1px solid var(--border); flex-wrap: wrap; }
+        /* LISTA HISTORIAL */
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; background: var(--card); padding: 1.2rem; border-radius: 16px; border: 1px solid var(--border); flex-wrap: wrap; box-shadow: 0 4px 15px rgba(38, 70, 83, 0.04); }
         .filter-bar input, .filter-bar select { margin-top: 0; max-width: 220px; }
-        .record-list { display: flex; flex-direction: column; gap: 0.75rem; }
-        .record-item { background: var(--card); padding: 1rem 1.15rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 1rem; }
-        .record-info { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
-        .record-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+        .record-list { display: flex; flex-direction: column; gap: 1rem; }
+        .record-item { background: var(--card); padding: 1.2rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); gap: 1rem; box-shadow: 0 2px 8px rgba(38, 70, 83, 0.03); transition: 0.2s; }
+        .record-item:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(38, 70, 83, 0.08); }
+        .record-info { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+        .record-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
         .icon-income { background: var(--success); }
         .icon-expense { background: var(--danger); }
         .record-details { min-width: 0; }
-        .record-details h4 { font-size: 0.95rem; margin-bottom: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .record-details p { font-size: 0.8rem; color: var(--muted); }
+        .record-details h4 { font-size: 1.05rem; margin-bottom: 0.2rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .record-details p { font-size: 0.85rem; color: var(--muted); }
         .record-amount { text-align: right; flex-shrink: 0; }
-        .record-amount .amt { display: block; font-weight: 700; font-size: 1.05rem; }
-        .record-actions { display: flex; gap: 0.4rem; margin-top: 0.4rem; justify-content: flex-end; }
-        .btn-icon { background: var(--bg); color: var(--muted); padding: 0.4rem; border-radius: 6px; display: inline-flex; }
+        .record-amount .amt { display: block; font-weight: 800; font-size: 1.2rem; }
+        .record-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
+        .btn-icon { background: var(--bg); color: var(--muted); padding: 0.5rem; border-radius: 8px; display: inline-flex; transition: 0.2s; }
         .btn-icon:hover { background: var(--border); color: var(--text); }
-        .btn-icon.danger:hover { background: #fee2e2; color: var(--danger); }
+        .btn-icon.danger:hover { background: #ffe4e6; color: var(--danger); }
+        .btn-icon.success:hover { background: #dcfce7; color: var(--success); }
 
-        .settings-card { max-width: 580px; }
-        .settings-group { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        /* AJUSTES Y MIEMBROS */
+        .settings-card { max-width: 650px; }
+        .settings-group { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
         .settings-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .settings-group h3 { margin-bottom: 0.75rem; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; }
-        .btn-export { background: white; border: 1px solid var(--border); color: var(--text); padding: 0.8rem; border-radius: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; }
-        .btn-export:hover { background: var(--bg); }
-        .btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: transparent; width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .settings-group h3 { margin-bottom: 1rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.6rem; color: var(--text); }
+        
+        .btn-export { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 0.9rem; border-radius: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.2s; }
+        .btn-export:hover { background: var(--bg); border-color: var(--muted); }
+        .btn-danger-outline { border: 2px solid var(--danger); color: var(--danger); background: transparent; width: 100%; padding: 0.9rem; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; }
         .btn-danger-outline:hover { background: var(--danger); color: white; }
 
-        /* Members List in Settings */
-        .member-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
-        .member-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg); border-radius: 8px; }
-        .member-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; overflow: hidden; }
+        .member-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+        .member-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); }
+        .member-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden; }
         .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .member-info { flex: 1; }
-        .member-info strong { font-size: 0.88rem; display: block; }
-        .member-info span { font-size: 0.75rem; color: var(--muted); }
+        .member-info strong { font-size: 0.95rem; display: block; color: var(--text); }
+        .member-info span { font-size: 0.8rem; color: var(--muted); }
+        .badge { padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge.admin { background: #fef08a; color: #854d0e; }
+        .badge.member { background: #e2e8f0; color: #475569; }
 
-        .code-box { display: flex; align-items: center; gap: 0.5rem; background: var(--bg); padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px dashed var(--primary); font-family: monospace; font-size: 1.1rem; font-weight: 700; color: var(--primary); justify-content: space-between; margin-bottom: 0.75rem; }
+        .code-box { display: flex; align-items: center; gap: 0.5rem; background: #fff7ed; padding: 0.8rem 1rem; border-radius: 12px; border: 2px dashed var(--secondary); font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--primary); justify-content: space-between; margin-bottom: 1rem; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; backdrop-filter: blur(2px); }
-        .modal-content { background: var(--card); padding: 1.75rem; border-radius: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
-        .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--bg); color: var(--muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        /* MODALES */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(38, 70, 83, 0.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--card); padding: 2rem; border-radius: 20px; width: 100%; max-width: 500px; max-height: 92vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 1.2rem; right: 1.2rem; background: var(--bg); color: var(--muted); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .modal-close:hover { background: var(--border); color: var(--text); }
-        .modal-title { margin-bottom: 1.35rem; font-size: 1.25rem; padding-right: 2rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-weight: 600; color: var(--muted); font-size: 0.85rem; margin-bottom: 0.25rem; }
-        .image-preview { width: 100%; height: 180px; border: 2px dashed var(--border); border-radius: 10px; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; background: #fafafa; }
+        .modal-title { margin-bottom: 1.5rem; font-size: 1.4rem; font-weight: 700; color: var(--text); padding-right: 2rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; color: var(--text); font-size: 0.9rem; margin-bottom: 0.4rem; }
+        .image-preview { width: 100%; height: 200px; border: 2px dashed var(--border); border-radius: 12px; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; background: var(--bg); }
         .image-preview img { width: 100%; height: 100%; object-fit: contain; }
-        .btn-remove-img { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(220,38,38,0.92); color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .btn-remove-img { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(230, 57, 70, 0.9); color: white; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
 
-        .fab { position: fixed; bottom: 2rem; right: 2rem; background: var(--primary); color: white; width: 58px; height: 58px; border-radius: 50%; box-shadow: 0 6px 16px rgba(37,99,235,0.35); display: flex; align-items: center; justify-content: center; z-index: 30; }
-        .fab:hover { transform: scale(1.06); background: var(--primary-hover); }
+        .fab { position: fixed; bottom: 2rem; right: 2rem; background: var(--primary); color: white; width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 8px 25px rgba(231, 111, 81, 0.4); display: flex; align-items: center; justify-content: center; z-index: 30; transition: 0.2s; }
+        .fab:hover { transform: scale(1.05) translateY(-2px); background: var(--primary-hover); }
 
-        .profile-edit-avatar { width: 110px; height: 110px; border-radius: 50%; background: var(--bg); margin: 0 auto 1.25rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid var(--primary); }
+        .profile-edit-avatar { width: 120px; height: 120px; border-radius: 50%; background: var(--secondary); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .profile-edit-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-edit-avatar span { font-size: 2.75rem; font-weight: 700; color: var(--muted); }
+        .profile-edit-avatar span { font-size: 3rem; font-weight: 700; color: white; }
 
-        .empty-state { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+        .empty-state { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 1.05rem; }
         .msg { margin-top: 0.85rem; text-align: center; font-size: 0.9rem; min-height: 1.2em; }
 
-        #installBanner {
-            display: none; position: fixed; left: 1rem; right: 1rem; bottom: 5.5rem; z-index: 50;
-            background: #0f172a; color: white; padding: 0.85rem 1rem; border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25); align-items: center; justify-content: space-between;
-            gap: 0.75rem; max-width: 480px; margin: 0 auto;
-        }
+        /* PWA Banner */
+        #installBanner { display: none; position: fixed; left: 1rem; right: 1rem; bottom: 6rem; z-index: 50; background: #264653; color: white; padding: 1rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); align-items: center; justify-content: space-between; gap: 1rem; max-width: 500px; margin: 0 auto; }
         #installBanner.show { display: flex; }
-        #installBanner p { font-size: 0.88rem; line-height: 1.3; }
-        #installBanner .ib-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
-        #installBanner button { padding: 0.45rem 0.75rem; border-radius: 8px; font-weight: 600; font-size: 0.82rem; }
-        #btnInstallApp { background: var(--primary); color: white; }
-        #btnDismissInstall { background: transparent; color: #94a3b8; }
+        #installBanner p { font-size: 0.9rem; line-height: 1.4; }
+        #installBanner .ib-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        #installBanner button { padding: 0.5rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
+        #btnInstallApp { background: var(--secondary); color: white; }
+        #btnDismissInstall { background: transparent; color: #a8dadc; }
 
+        /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .app-container { flex-direction: column; max-width: 100%; }
-            .nav-bar { flex-direction: row; width: 100%; height: 64px; height: calc(64px + env(safe-area-inset-bottom, 0px)); border-right: none; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; padding: 0; padding-bottom: env(safe-area-inset-bottom, 0px); align-items: center; justify-content: space-around; z-index: 40; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); }
+            .nav-bar { flex-direction: row; width: 100%; height: 68px; height: calc(68px + env(safe-area-inset-bottom, 0px)); border-right: none; border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; padding: 0; padding-bottom: env(safe-area-inset-bottom, 0px); align-items: center; justify-content: space-around; z-index: 40; box-shadow: 0 -4px 20px rgba(38, 70, 83, 0.05); }
             .nav-logo, .nav-bottom { display: none; }
-            .nav-items { flex-direction: row; width: 100%; justify-content: space-around; padding: 0; gap: 0; height: 64px; }
-            .nav-item { flex-direction: column; gap: 0.15rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; border-radius: 8px; justify-content: center; }
-            .nav-item.active { background: transparent; color: var(--primary); }
+            .nav-items { flex-direction: row; width: 100%; justify-content: space-around; padding: 0; gap: 0; height: 68px; }
+            .nav-item { flex-direction: column; gap: 0.2rem; padding: 0.5rem; font-size: 0.75rem; border-radius: 12px; justify-content: center; }
+            .nav-item.active { background: transparent; color: var(--primary); box-shadow: none; }
             .nav-item:hover { background: transparent; }
-            .main-content { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); height: auto; min-height: 100vh; min-height: 100dvh; }
-            .header { padding: 0.85rem 1rem; }
-            .view-section { padding: 1rem; }
+            .main-content { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); height: auto; min-height: 100vh; min-height: 100dvh; }
+            .header { padding: 1rem; }
+            .view-section { padding: 1.2rem; }
             .charts-grid { grid-template-columns: 1fr; }
             .filter-bar { flex-direction: column; }
             .filter-bar input, .filter-bar select { max-width: 100%; }
-            .fab { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); right: 1.1rem; }
+            .fab { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); right: 1.2rem; width: 56px; height: 56px; }
             .record-item { flex-wrap: wrap; }
-            #installBanner { bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)); }
+            #installBanner { bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
         }
-
-        @media (display-mode: standalone) {
-            #installBanner { display: none !important; }
-        }
+        @media (display-mode: standalone) { #installBanner { display: none !important; } }
     </style>
 </head>
 <body>
 
-<!-- AUTH VIEW -->
+<!-- VISTA AUTH -->
 <div id="authView">
     <div class="auth-card">
-        <h2><i data-lucide="wallet"></i> Ahorro Familiar</h2>
-        <p style="color:var(--muted);font-size:0.9rem;" id="authSubtitle">Inicia sesión en tu cuenta</p>
+        <h2><i data-lucide="heart-handshake"></i> Ahorro Familiar</h2>
+        <p style="color:var(--muted);font-size:0.95rem;margin-bottom:1rem;" id="authSubtitle">Inicia sesión en tu cuenta</p>
         
-        <!-- Login Form -->
         <div id="loginForm" class="auth-form">
             <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="loginEmail" placeholder="tu@email.com" required></div>
             <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="loginPassword" placeholder="Mínimo 6 caracteres" required></div>
             <button class="btn-primary" id="btnLogin" onclick="login()">Ingresar</button>
-            <p class="auth-switch">¿No tienes cuenta? <span onclick="toggleAuth()">Regístrate</span></p>
+            <p class="auth-switch">¿No tienes cuenta? <span onclick="toggleAuth()">Regístrate aquí</span></p>
         </div>
 
-        <!-- Register Form -->
         <div id="registerForm" class="auth-form hidden">
-            <div class="form-group" style="margin:0"><label>Tu nombre</label><input type="text" id="regName" placeholder="Ej. Víctor" required></div>
+            <div class="form-group" style="margin:0"><label>Tu nombre</label><input type="text" id="regName" placeholder="Ej. Ana" required></div>
             <div class="form-group" style="margin:0"><label>Correo</label><input type="email" id="regEmail" placeholder="tu@email.com" required></div>
             <div class="form-group" style="margin:0"><label>Contraseña</label><input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required></div>
             
             <div class="form-group" style="margin:0; margin-top: 0.5rem;">
-                <label>Familia / Grupo</label>
+                <label>Tu Familia / Grupo</label>
                 <div class="mode-selector">
                     <button type="button" class="mode-btn active" id="btnModeCreate" onclick="setRegFamilyMode('create')">Crear Nueva</button>
                     <button type="button" class="mode-btn" id="btnModeJoin" onclick="setRegFamilyMode('join')">Unirme con Código</button>
@@ -233,13 +234,13 @@
             </div>
 
             <div class="form-group" id="groupRegCreate" style="margin:0">
-                <label>Nombre de tu Familia / Grupo</label>
-                <input type="text" id="regFamilyName" placeholder="Ej. Familia Carvajal">
+                <label>Nombre de tu Familia</label>
+                <input type="text" id="regFamilyName" placeholder="Ej. Familia Martínez">
             </div>
 
             <div class="form-group hidden" id="groupRegJoin" style="margin:0">
-                <label>Código de Invitación de Familia</label>
-                <input type="text" id="regFamilyCode" placeholder="Ej. CARV-8912" style="text-transform: uppercase;">
+                <label>Código de Invitación</label>
+                <input type="text" id="regFamilyCode" placeholder="Ej. ANA-8912" style="text-transform: uppercase;">
             </div>
 
             <button class="btn-primary" id="btnRegister" onclick="register()">Crear Cuenta</button>
@@ -249,10 +250,20 @@
     </div>
 </div>
 
-<!-- MAIN APP VIEW -->
+<!-- VISTA ESPERANDO APROBACIÓN -->
+<div id="pendingView" class="hidden">
+    <div class="pending-card">
+        <i data-lucide="clock"></i>
+        <h2>Esperando aprobación</h2>
+        <p>Tu solicitud para unirte a la familia ha sido enviada con éxito. Un administrador del grupo debe aprobarte para que puedas ingresar.</p>
+        <button class="btn-danger-outline" onclick="logout()">Cerrar sesión</button>
+    </div>
+</div>
+
+<!-- APP PRINCIPAL -->
 <div id="appView" class="app-container hidden">
     <nav class="nav-bar">
-        <div class="nav-logo"><i data-lucide="wallet"></i> AhorroFam</div>
+        <div class="nav-logo"><i data-lucide="heart-handshake"></i> AhorroFam</div>
         <div class="nav-items">
             <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard', this)"><i data-lucide="layout-dashboard"></i> <span>Resumen</span></button>
             <button class="nav-item" data-tab="history" onclick="switchTab('history', this)"><i data-lucide="list-ordered"></i> <span>Historial</span></button>
@@ -266,7 +277,7 @@
     <main class="main-content">
         <header class="header">
             <div class="family-badge">
-                <i data-lucide="users" style="color:var(--primary); width:22px;"></i>
+                <i data-lucide="home" style="color:var(--primary); width:24px; height:24px;"></i>
                 <span id="headerFamilyName">Mi Familia</span>
             </div>
             <div class="user-profile" onclick="openProfileModal()" title="Editar perfil">
@@ -282,15 +293,15 @@
         <section id="dashboard" class="view-section active">
             <div class="summary-cards">
                 <div class="card">
-                    <div class="card-header"><span>Ingresos (Mes)</span><i data-lucide="trending-up" style="width:18px;height:18px;"></i></div>
+                    <div class="card-header"><span>Ingresos (Mes)</span><i data-lucide="trending-up" style="width:20px;height:20px;color:var(--success);"></i></div>
                     <div class="card-value text-success" id="sumIncome">$0.00</div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><span>Gastos (Mes)</span><i data-lucide="trending-down" style="width:18px;height:18px;"></i></div>
+                    <div class="card-header"><span>Gastos (Mes)</span><i data-lucide="trending-down" style="width:20px;height:20px;color:var(--danger);"></i></div>
                     <div class="card-value text-danger" id="sumExpense">$0.00</div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><span>Balance Total</span><i data-lucide="scale" style="width:18px;height:18px;"></i></div>
+                    <div class="card-header"><span>Balance Total</span><i data-lucide="scale" style="width:20px;height:20px;color:var(--primary);"></i></div>
                     <div class="card-value" id="sumBalance">$0.00</div>
                 </div>
             </div>
@@ -317,43 +328,50 @@
         <!-- AJUSTES Y MIEMBROS -->
         <section id="settings" class="view-section">
             <div class="card settings-card">
+                
+                <!-- PANEL ADMIN: Solicitudes pendientes -->
+                <div class="settings-group" id="adminPanel" style="display:none; background:#fff7ed; padding:1.5rem; border-radius:16px; border:1px solid #fed7aa;">
+                    <h3 style="color:#c2410c; margin-bottom:0.5rem;"><i data-lucide="shield-alert"></i> Solicitudes de Ingreso</h3>
+                    <p style="font-size:0.85rem; color:#ea580c; margin-bottom:1rem;">Personas que usaron tu código y esperan aprobación.</p>
+                    <div id="pendingList" class="member-list" style="margin-top:0;"></div>
+                </div>
+
                 <div class="settings-group">
                     <h3><i data-lucide="users"></i> Mi Familia / Grupo</h3>
-                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.5rem;">
-                        Código de invitación de tu familia:
-                    </p>
-                    <div class="code-box">
-                        <span id="settingsFamilyCode">Cargando...</span>
-                        <button type="button" class="btn-icon" title="Copiar código" onclick="copyFamilyCode()"><i data-lucide="copy" style="width:16px;"></i></button>
+                    
+                    <!-- Solo Admins ven el código y pueden invitar -->
+                    <div id="adminInviteSection" style="display:none;">
+                        <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.5rem;">Código de invitación de tu familia:</p>
+                        <div class="code-box">
+                            <span id="settingsFamilyCode">Cargando...</span>
+                            <button type="button" class="btn-icon" title="Copiar código" onclick="copyFamilyCode()"><i data-lucide="copy" style="width:20px;"></i></button>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.4rem;">O invita directamente por correo (entran sin requerir aprobación):</p>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="email" id="inviteEmail" placeholder="correo@ejemplo.com" style="margin-top:0;">
+                            <button type="button" class="btn-primary" style="width:auto; padding:0 1.2rem;" onclick="inviteMember()">Invitar</button>
+                        </div>
+                        <p id="inviteMessage" class="msg"></p>
                     </div>
 
-                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom: 0.35rem;">Invitar a un familiar o amigo por correo:</p>
-                    <div style="display:flex; gap:0.5rem;">
-                        <input type="email" id="inviteEmail" placeholder="correo@ejemplo.com" style="margin-top:0;">
-                        <button type="button" class="btn-primary" style="width:auto; padding:0 1rem; white-space:nowrap;" onclick="inviteMember()">Invitar</button>
-                    </div>
-                    <p id="inviteMessage" class="msg"></p>
-
-                    <h4 style="font-size:0.9rem; margin-top:1.25rem; color:var(--text);">Miembros del Grupo:</h4>
-                    <div class="member-list" id="memberList">
-                        <!-- Carga dinámica -->
-                    </div>
+                    <h4 style="font-size:1rem; margin-top:1.5rem; color:var(--text);">Miembros actuales:</h4>
+                    <div class="member-list" id="memberList"></div>
                 </div>
 
                 <div class="settings-group">
                     <h3><i data-lucide="user-cog"></i> Mi Perfil</h3>
-                    <button class="btn-export" onclick="openProfileModal()"><i data-lucide="user-cog" style="width:18px;"></i> Editar mi nombre y foto</button>
+                    <button class="btn-export" onclick="openProfileModal()"><i data-lucide="edit-3" style="width:18px;"></i> Editar mi nombre y foto</button>
                 </div>
 
                 <div class="settings-group">
-                    <h3><i data-lucide="download"></i> Instalar app</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Instálala en tu móvil o PC para usarla como app nativa.</p>
+                    <h3><i data-lucide="smartphone"></i> Instalar app</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Instálala en tu móvil para usarla sin el navegador.</p>
                     <button class="btn-export" id="btnInstallSettings" onclick="promptInstall()"><i data-lucide="download" style="width:18px;"></i> Instalar Ahorro Familiar</button>
                 </div>
 
                 <div class="settings-group">
-                    <h3><i data-lucide="file-text"></i> Exportar datos</h3>
-                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.85rem;">Copia de seguridad de los movimientos de tu grupo.</p>
+                    <h3><i data-lucide="file-down"></i> Exportar datos</h3>
+                    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Copia de seguridad de los movimientos de tu grupo.</p>
                     <button class="btn-export" onclick="exportCSV()"><i data-lucide="file-spreadsheet" style="width:18px;"></i> Exportar CSV (Excel)</button>
                     <button class="btn-export" onclick="exportJSON()"><i data-lucide="file-json" style="width:18px;"></i> Exportar JSON (Backup)</button>
                 </div>
@@ -365,7 +383,7 @@
         </section>
     </main>
 
-    <button class="fab" onclick="openAddModal()" title="Nuevo movimiento"><i data-lucide="plus" style="width:26px;height:26px;"></i></button>
+    <button class="fab" onclick="openAddModal()" title="Nuevo movimiento"><i data-lucide="plus" style="width:28px;height:28px;"></i></button>
 </div>
 
 <!-- Banner instalar -->
@@ -380,7 +398,7 @@
 <!-- MODALS -->
 <div id="addModal" class="modal-overlay hidden">
     <div class="modal-content">
-        <button class="modal-close" onclick="closeModal('addModal')"><i data-lucide="x" style="width:18px;"></i></button>
+        <button class="modal-close" onclick="closeModal('addModal')"><i data-lucide="x" style="width:20px;"></i></button>
         <h2 class="modal-title">Nuevo movimiento</h2>
         <div class="form-group"><label>Tipo</label><select id="addType" onchange="updateCategories('add')"><option value="Gasto">Gasto</option><option value="Ingreso">Ingreso</option></select></div>
         <div class="form-group"><label>Cantidad ($)</label><input type="number" id="addAmount" step="0.01" min="0" placeholder="0.00"></div>
@@ -390,7 +408,7 @@
         <div class="form-group">
             <label>Foto del recibo (opcional)</label>
             <input type="file" id="addReceipt" accept="image/*" onchange="previewImage(this, 'add')">
-            <div id="addPreviewBox" class="image-preview hidden"><img id="addPreview" alt="Vista previa"><button type="button" class="btn-remove-img" onclick="removeImage('add')"><i data-lucide="trash-2" style="width:14px;"></i></button></div>
+            <div id="addPreviewBox" class="image-preview hidden"><img id="addPreview" alt="Vista previa"><button type="button" class="btn-remove-img" onclick="removeImage('add')"><i data-lucide="trash-2" style="width:16px;"></i></button></div>
         </div>
         <button class="btn-primary" id="btnSaveMov" onclick="saveMovement()">Guardar</button>
     </div>
@@ -398,7 +416,7 @@
 
 <div id="editModal" class="modal-overlay hidden">
     <div class="modal-content">
-        <button class="modal-close" onclick="closeModal('editModal')"><i data-lucide="x" style="width:18px;"></i></button>
+        <button class="modal-close" onclick="closeModal('editModal')"><i data-lucide="x" style="width:20px;"></i></button>
         <h2 class="modal-title">Editar movimiento</h2>
         <input type="hidden" id="editId">
         <div class="form-group"><label>Tipo</label><select id="editType" onchange="updateCategories('edit')"><option value="Gasto">Gasto</option><option value="Ingreso">Ingreso</option></select></div>
@@ -409,7 +427,7 @@
         <div class="form-group">
             <label>Foto del recibo</label>
             <input type="file" id="editReceipt" accept="image/*" onchange="previewImage(this, 'edit')">
-            <div id="editPreviewBox" class="image-preview hidden"><img id="editPreview" alt="Vista previa"><button type="button" class="btn-remove-img" onclick="removeImage('edit')"><i data-lucide="trash-2" style="width:14px;"></i></button></div>
+            <div id="editPreviewBox" class="image-preview hidden"><img id="editPreview" alt="Vista previa"><button type="button" class="btn-remove-img" onclick="removeImage('edit')"><i data-lucide="trash-2" style="width:16px;"></i></button></div>
         </div>
         <button class="btn-primary" id="btnUpdateMov" onclick="updateMovement()">Actualizar</button>
     </div>
@@ -417,13 +435,12 @@
 
 <div id="profileModal" class="modal-overlay hidden">
     <div class="modal-content">
-        <button class="modal-close" onclick="closeModal('profileModal')"><i data-lucide="x" style="width:18px;"></i></button>
+        <button class="modal-close" onclick="closeModal('profileModal')"><i data-lucide="x" style="width:20px;"></i></button>
         <h2 class="modal-title">Editar perfil</h2>
         <div class="profile-edit-avatar" id="profileAvatarBox"><span id="profileAvatarInitial">U</span></div>
         <div class="form-group">
             <label>Cambiar foto</label>
             <input type="file" id="profileImage" accept="image/*" onchange="previewProfileImage(this)">
-            <p style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Se comprime automáticamente.</p>
         </div>
         <div class="form-group"><label>Nombre a mostrar</label><input type="text" id="profileName" placeholder="Tu nombre" maxlength="40"></div>
         <button class="btn-primary" id="btnSaveProfile" onclick="saveProfile()">Guardar cambios</button>
@@ -432,9 +449,9 @@
 </div>
 
 <div id="receiptModal" class="modal-overlay hidden" onclick="closeModal('receiptModal')">
-    <div class="modal-content" style="background:transparent;box-shadow:none;max-width:min(90vw,560px);padding:0;" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeModal('receiptModal')" style="background:white;top:-8px;right:-8px;"><i data-lucide="x" style="width:18px;"></i></button>
-        <img id="receiptFullImage" alt="Recibo" style="width:100%;border-radius:12px;display:block;">
+    <div class="modal-content" style="background:transparent;box-shadow:none;max-width:min(90vw,600px);padding:0;" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('receiptModal')" style="background:white;top:-10px;right:-10px;box-shadow:0 2px 10px rgba(0,0,0,0.2);"><i data-lucide="x" style="width:20px;"></i></button>
+        <img id="receiptFullImage" alt="Recibo" style="width:100%;border-radius:16px;display:block;">
     </div>
 </div>
 
@@ -444,8 +461,7 @@ const firebaseConfig = {
     authDomain: "mi-ahorro-40269.firebaseapp.com",
     projectId: "mi-ahorro-40269",
     messagingSenderId: "797154545127",
-    appId: "1:797154545127:web:11e7b6efc42f9b6bc98142",
-    measurementId: "G-GJCRCVT8TZ"
+    appId: "1:797154545127:web:11e7b6efc42f9b6bc98142"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -454,12 +470,12 @@ const db = firebase.firestore();
 let movements = [];
 let currentUserDoc = null;
 let currentFamilyDoc = null;
-let familyMembers = [];
 let charts = {};
 let currentBase64 = { add: null, edit: null, profile: null };
 let unsubMovements = null;
 let unsubUser = null;
 let unsubFamily = null;
+let unsubMembers = null;
 let deferredInstallPrompt = null;
 let regFamilyMode = 'create';
 
@@ -480,62 +496,43 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             document.getElementById('authView').classList.add('hidden');
-            document.getElementById('appView').classList.remove('hidden');
             await listenUserAndFamily(user);
         } else {
-            document.getElementById('authView').classList.remove('hidden');
-            document.getElementById('appView').classList.add('hidden');
-            if (unsubMovements) unsubMovements();
-            if (unsubUser) unsubUser();
-            if (unsubFamily) unsubFamily();
-            currentUserDoc = null;
-            currentFamilyDoc = null;
-            movements = [];
+            showView('authView');
+            cleanupListeners();
         }
     });
 });
 
+function cleanupListeners() {
+    if (unsubMovements) unsubMovements();
+    if (unsubUser) unsubUser();
+    if (unsubFamily) unsubFamily();
+    if (unsubMembers) unsubMembers();
+    currentUserDoc = null; currentFamilyDoc = null; movements = [];
+}
+
+function showView(viewId) {
+    document.getElementById('authView').classList.add('hidden');
+    document.getElementById('appView').classList.add('hidden');
+    document.getElementById('pendingView').classList.add('hidden');
+    document.getElementById(viewId).classList.remove('hidden');
+}
+
 // ===== PWA INSTALL =====
 function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch((e) => console.log('SW error', e));
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW error', e));
 }
-
 function setupInstallPrompt() {
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredInstallPrompt = e;
-        if (!localStorage.getItem('hideInstallBanner')) {
-            document.getElementById('installBanner').classList.add('show');
-        }
-    });
-    window.addEventListener('appinstalled', () => {
-        deferredInstallPrompt = null;
-        document.getElementById('installBanner').classList.remove('show');
-    });
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; if (!localStorage.getItem('hideInstallBanner')) document.getElementById('installBanner').classList.add('show'); });
+    window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; document.getElementById('installBanner').classList.remove('show'); });
 }
-
 async function promptInstall() {
-    if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-        document.getElementById('installBanner').classList.remove('show');
-        return;
-    }
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    if (isIOS) {
-        alert('En iPhone/iPad:\n1. Toca el botón Compartir en Safari\n2. Selecciona "Añadir a pantalla de inicio"');
-    } else {
-        alert('Para instalar:\n• Menú del navegador (⋮) → "Instalar aplicación"');
-    }
+    if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; document.getElementById('installBanner').classList.remove('show'); return; }
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) alert('En iPhone/iPad:\n1. Toca el botón Compartir en Safari\n2. Selecciona "Añadir a pantalla de inicio"');
+    else alert('Para instalar:\n• Menú del navegador (⋮) → "Instalar aplicación"');
 }
-
-function dismissInstall() {
-    localStorage.setItem('hideInstallBanner', '1');
-    document.getElementById('installBanner').classList.remove('show');
-}
+function dismissInstall() { localStorage.setItem('hideInstallBanner', '1'); document.getElementById('installBanner').classList.remove('show'); }
 
 // ===== AUTH & REGISTRATION MODES =====
 let isLogin = true;
@@ -546,7 +543,6 @@ function toggleAuth() {
     document.getElementById('authSubtitle').textContent = isLogin ? 'Inicia sesión en tu cuenta' : 'Regístrate y gestiona tu grupo';
     document.getElementById('authError').textContent = '';
 }
-
 function setRegFamilyMode(mode) {
     regFamilyMode = mode;
     document.getElementById('btnModeCreate').classList.toggle('active', mode === 'create');
@@ -568,13 +564,9 @@ async function login() {
     finally { btn.disabled = false; btn.textContent = 'Ingresar'; }
 }
 
-function generateCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
 async function register() {
     const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const pass = document.getElementById('regPassword').value;
     const btn = document.getElementById('btnRegister');
     const err = document.getElementById('authError');
@@ -586,70 +578,78 @@ async function register() {
     btn.disabled = true; btn.textContent = 'Verificando...';
 
     try {
-        let familyId = null;
+        let familyId = null, role = 'member', status = 'pending';
 
-        // Comprobar si fue invitado por correo
-        const invitedQuery = await db.collection('families').where('invitedEmails', 'array-contains', email.toLowerCase()).get();
-        
+        // Verificar si fue invitado por correo (aprobación automática)
+        const invitedQuery = await db.collection('families').where('invitedEmails', 'array-contains', email).get();
         if (!invitedQuery.empty) {
             familyId = invitedQuery.docs[0].id;
-        } else if (regFamilyMode === 'create') {
+            role = 'member';
+            status = 'approved';
+        } 
+        else if (regFamilyMode === 'create') {
             const famName = document.getElementById('regFamilyName').value.trim() || (`Familia de ` + name);
             const famCode = (name.substring(0,3).toUpperCase()) + '-' + Math.floor(1000 + Math.random() * 9000);
-            
-            const newFam = await db.collection('families').add({
-                familyName: famName,
-                code: famCode,
-                invitedEmails: [],
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            const newFam = await db.collection('families').add({ familyName: famName, code: famCode, invitedEmails: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             familyId = newFam.id;
-        } else {
+            role = 'admin';
+            status = 'approved';
+        } 
+        else {
             const codeInput = document.getElementById('regFamilyCode').value.trim().toUpperCase();
             if (!codeInput) { err.textContent = 'Escribe el código de invitación.'; btn.disabled = false; btn.textContent = 'Crear Cuenta'; return; }
-            
             const codeQuery = await db.collection('families').where('code', '==', codeInput).get();
-            if (codeQuery.empty) {
-                err.textContent = 'Código de familia inválido o no existe.';
-                btn.disabled = false; btn.textContent = 'Crear Cuenta';
-                return;
-            }
+            if (codeQuery.empty) { err.textContent = 'Código inválido o no existe.'; btn.disabled = false; btn.textContent = 'Crear Cuenta'; return; }
             familyId = codeQuery.docs[0].id;
+            role = 'member';
+            status = 'pending'; // Requiere aprobación
         }
 
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
         await cred.user.updateProfile({ displayName: name });
-        
         await db.collection('users').doc(cred.user.uid).set({
-            displayName: name,
-            email: email.toLowerCase(),
-            familyId: familyId,
-            photoBase64: null,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            displayName: name, email: email, familyId: familyId, role: role, status: status, photoBase64: null, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
     } catch (e) {
         if (e.code === 'auth/email-already-in-use') err.textContent = 'Ese correo ya está registrado.';
         else err.textContent = 'Error: ' + (e.message || 'No se pudo registrar');
-    } finally {
-        btn.disabled = false; btn.textContent = 'Crear Cuenta';
-    }
+    } finally { btn.disabled = false; btn.textContent = 'Crear Cuenta'; }
 }
 
-function logout() { if (confirm('¿Cerrar sesión?')) auth.signOut(); }
+function logout() { auth.signOut(); }
 
-// ===== DATA LISTENERS (MULTI-TENANT) =====
+// ===== DATA LISTENERS =====
 async function listenUserAndFamily(user) {
     if (unsubUser) unsubUser();
     unsubUser = db.collection('users').doc(user.uid).onSnapshot(async (snap) => {
-        if (!snap.exists) return;
+        if (!snap.exists) {
+            // SOLUCIÓN: Si el usuario fue borrado en Firebase Console, cierra la sesión fantasma.
+            alert("Tu cuenta ha sido eliminada o ya no existe. Sesión cerrada.");
+            logout();
+            return;
+        }
+        
         currentUserDoc = { id: snap.id, ...snap.data() };
         renderHeaderProfile();
 
-        if (currentUserDoc.familyId) {
+        if (!currentUserDoc.familyId || !currentUserDoc.status) {
+            alert("Has sido expulsado o rechazado del grupo.");
+            logout();
+            return;
+        }
+
+        if (currentUserDoc.status === 'pending') {
+            showView('pendingView');
+        } else if (currentUserDoc.status === 'approved') {
+            showView('appView');
             listenFamilyDoc(currentUserDoc.familyId);
             listenMovements(currentUserDoc.familyId);
             loadFamilyMembers(currentUserDoc.familyId);
+            
+            // Lógica de Vistas Admin
+            const isAdmin = currentUserDoc.role === 'admin';
+            document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('adminInviteSection').style.display = isAdmin ? 'block' : 'none';
         }
     });
 }
@@ -665,18 +665,26 @@ function listenFamilyDoc(familyId) {
 }
 
 async function loadFamilyMembers(familyId) {
-    db.collection('users').where('familyId', '==', familyId).onSnapshot((snap) => {
-        familyMembers = [];
-        snap.forEach(doc => familyMembers.push({ id: doc.id, ...doc.data() }));
-        renderMembersList();
+    if (unsubMembers) unsubMembers();
+    unsubMembers = db.collection('users').where('familyId', '==', familyId).onSnapshot((snap) => {
+        let members = [];
+        let pending = [];
+        snap.forEach(doc => {
+            const data = { id: doc.id, ...doc.data() };
+            if (data.status === 'pending') pending.push(data);
+            else if (data.status === 'approved') members.push(data);
+        });
+        renderMembersList(members, pending);
     });
 }
 
-function renderMembersList() {
-    const box = document.getElementById('memberList');
-    if (!familyMembers.length) { box.innerHTML = '<p style="font-size:0.8rem; color:var(--muted);">Cargando...</p>'; return; }
-    
-    box.innerHTML = familyMembers.map(m => `
+function renderMembersList(members, pending) {
+    const memBox = document.getElementById('memberList');
+    const penBox = document.getElementById('pendingList');
+    const isAdmin = currentUserDoc.role === 'admin';
+
+    // RENDERIZAR MIEMBROS APROBADOS
+    memBox.innerHTML = members.map(m => `
         <div class="member-item">
             <div class="member-avatar">
                 ${m.photoBase64 ? `<img src="${m.photoBase64}">` : `<span>${(m.displayName||'U').charAt(0).toUpperCase()}</span>`}
@@ -684,56 +692,76 @@ function renderMembersList() {
             <div class="member-info">
                 <strong>${escapeHtml(m.displayName)} ${m.id === auth.currentUser.uid ? '(Tú)' : ''}</strong>
                 <span>${escapeHtml(m.email)}</span>
+                <div style="margin-top:0.2rem;">
+                    <span class="badge ${m.role === 'admin' ? 'admin' : 'member'}">${m.role === 'admin' ? 'Administrador' : 'Miembro'}</span>
+                </div>
             </div>
+            ${(isAdmin && m.id !== auth.currentUser.uid) ? `
+                <div style="display:flex; flex-direction:column; gap:0.3rem;">
+                    ${m.role !== 'admin' ? `<button class="btn-icon" style="font-size:0.75rem; padding:0.3rem 0.5rem;" onclick="makeAdmin('${m.id}')">Hacer Admin</button>` : ''}
+                    <button class="btn-icon danger" style="font-size:0.75rem; padding:0.3rem 0.5rem; color:var(--danger);" onclick="removeMember('${m.id}')">Expulsar</button>
+                </div>
+            ` : ''}
         </div>
     `).join('');
+
+    // RENDERIZAR PENDIENTES (Solo para Admins)
+    if (isAdmin) {
+        if (!pending.length) {
+            penBox.innerHTML = '<p style="font-size:0.85rem; color:var(--muted);">No hay solicitudes pendientes.</p>';
+        } else {
+            penBox.innerHTML = pending.map(p => `
+                <div class="member-item" style="border-color:#fdba74;">
+                    <div class="member-avatar" style="background:#fb923c;"><span>${(p.displayName||'U').charAt(0).toUpperCase()}</span></div>
+                    <div class="member-info">
+                        <strong>${escapeHtml(p.displayName)}</strong>
+                        <span>${escapeHtml(p.email)}</span>
+                    </div>
+                    <div style="display:flex; gap:0.4rem;">
+                        <button class="btn-icon success" style="color:var(--success);" onclick="approveMember('${p.id}')" title="Aprobar"><i data-lucide="check" style="width:20px;"></i></button>
+                        <button class="btn-icon danger" style="color:var(--danger);" onclick="removeMember('${p.id}')" title="Rechazar"><i data-lucide="x" style="width:20px;"></i></button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+    }
 }
 
+// ===== FUNCIONES ADMIN =====
+async function approveMember(uid) { await db.collection('users').doc(uid).update({ status: 'approved' }); }
+async function makeAdmin(uid) { if(confirm('¿Hacer administrador a este usuario?')) await db.collection('users').doc(uid).update({ role: 'admin' }); }
+async function removeMember(uid) {
+    if(confirm('¿Seguro que deseas rechazar/expulsar a esta persona?')) {
+        await db.collection('users').doc(uid).update({ familyId: null, status: null, role: null });
+    }
+}
 async function inviteMember() {
     const emailInput = document.getElementById('inviteEmail');
     const email = emailInput.value.trim().toLowerCase();
     const msg = document.getElementById('inviteMessage');
     msg.textContent = '';
-
-    if (!email || !email.includes('@')) {
-        msg.style.color = 'var(--danger)';
-        msg.textContent = 'Escribe un correo válido.';
-        return;
-    }
-
+    if (!email || !email.includes('@')) { msg.style.color = 'var(--danger)'; msg.textContent = 'Correo inválido.'; return; }
     if (!currentFamilyDoc) return;
-
     try {
-        await db.collection('families').doc(currentFamilyDoc.id).update({
-            invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
-        });
-        msg.style.color = 'var(--success)';
-        msg.textContent = `¡Invitación guardada para ${email}! Cuando esa persona se registre con ese correo, entrará automáticamente a tu familia.`;
+        await db.collection('families').doc(currentFamilyDoc.id).update({ invitedEmails: firebase.firestore.FieldValue.arrayUnion(email) });
+        msg.style.color = 'var(--success)'; msg.textContent = `¡Invitado! Si se registra con ese correo, entrará directamente.`;
         emailInput.value = '';
-    } catch (e) {
-        msg.style.color = 'var(--danger)';
-        msg.textContent = 'Error al invitar: ' + e.message;
-    }
+    } catch (e) { msg.style.color = 'var(--danger)'; msg.textContent = 'Error: ' + e.message; }
 }
-
 function copyFamilyCode() {
     if (!currentFamilyDoc || !currentFamilyDoc.code) return;
     navigator.clipboard.writeText(currentFamilyDoc.code);
-    alert('¡Código copiado!: ' + currentFamilyDoc.code + '\nCompártelo con tu familiar para que se una.');
+    alert('¡Código copiado!: ' + currentFamilyDoc.code + '\nCompártelo para que se unan (requerirá tu aprobación).');
 }
 
 // ===== MOVEMENTS PER FAMILY =====
 function listenMovements(familyId) {
     if (unsubMovements) unsubMovements();
-    unsubMovements = db.collection('movements')
-        .where('familyId', '==', familyId)
-        .orderBy('date', 'desc')
-        .onSnapshot((snap) => {
-            movements = [];
-            snap.forEach(doc => movements.push({ id: doc.id, ...doc.data() }));
-            updateDashboard();
-            renderHistory();
-        }, (err) => console.error('Movements listener:', err));
+    unsubMovements = db.collection('movements').where('familyId', '==', familyId).orderBy('date', 'desc').onSnapshot((snap) => {
+        movements = []; snap.forEach(doc => movements.push({ id: doc.id, ...doc.data() }));
+        updateDashboard(); renderHistory();
+    }, (err) => console.error(err));
 }
 
 async function saveMovement() {
@@ -746,40 +774,30 @@ async function saveMovement() {
     const btn = document.getElementById('btnSaveMov');
 
     if (!amount || amount <= 0 || !date) { alert('Cantidad y fecha son obligatorios.'); return; }
-    if (!currentUserDoc || !currentUserDoc.familyId) { alert('Error: No perteneces a ninguna familia.'); return; }
-
     btn.disabled = true; btn.textContent = 'Guardando...';
     try {
         await db.collection('movements').add({
-            familyId: currentUserDoc.familyId,
-            type, amount, category, date, note: note || '',
-            receipt: currentBase64.add || null,
-            userId: user.uid, userEmail: user.email,
+            familyId: currentUserDoc.familyId, type, amount, category, date, note: note || '',
+            receipt: currentBase64.add || null, userId: user.uid, userEmail: user.email,
             userName: currentUserDoc.displayName || user.displayName || 'Usuario',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        closeModal('addModal');
-        document.getElementById('addAmount').value = '';
-        document.getElementById('addNote').value = '';
-        removeImage('add');
-    } catch (e) { alert('Error al guardar: ' + e.message); }
-    finally { btn.disabled = false; btn.textContent = 'Guardar'; }
+        closeModal('addModal'); document.getElementById('addAmount').value = ''; document.getElementById('addNote').value = ''; removeImage('add');
+    } catch (e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = 'Guardar'; }
 }
 
 function renderHeaderProfile() {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const name = (currentUserDoc && currentUserDoc.displayName) || user.displayName || 'Usuario';
     document.getElementById('headerUserName').textContent = name;
     document.getElementById('headerUserEmail').textContent = user.email || '';
     const av = document.getElementById('headerUserAvatar');
     const photo = currentUserDoc && currentUserDoc.photoBase64;
-    av.innerHTML = photo ? `<img src="${photo}" alt="">` : `<span>${name.charAt(0).toUpperCase()}</span>`;
+    av.innerHTML = photo ? `<img src="${photo}">` : `<span>${name.charAt(0).toUpperCase()}</span>`;
 }
 
 function openProfileModal() {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const name = (currentUserDoc && currentUserDoc.displayName) || user.displayName || '';
     document.getElementById('profileName').value = name;
     document.getElementById('profileImage').value = '';
@@ -787,7 +805,7 @@ function openProfileModal() {
     currentBase64.profile = null;
     const box = document.getElementById('profileAvatarBox');
     const photo = currentUserDoc && currentUserDoc.photoBase64;
-    box.innerHTML = photo ? `<img src="${photo}" alt="">` : `<span>${(name || 'U').charAt(0).toUpperCase()}</span>`;
+    box.innerHTML = photo ? `<img src="${photo}">` : `<span>${(name || 'U').charAt(0).toUpperCase()}</span>`;
     openModal('profileModal');
 }
 
@@ -801,95 +819,52 @@ async function previewProfileImage(input) {
 }
 
 async function saveProfile() {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const newName = document.getElementById('profileName').value.trim();
     const btn = document.getElementById('btnSaveProfile');
     const msg = document.getElementById('profileMessage');
-    if (!newName) { msg.style.color = 'var(--danger)'; msg.textContent = 'El nombre no puede estar vacío.'; return; }
+    if (!newName) { msg.style.color = 'var(--danger)'; msg.textContent = 'Nombre vacío.'; return; }
     btn.disabled = true; btn.textContent = 'Guardando...'; msg.textContent = '';
     try {
         await user.updateProfile({ displayName: newName });
         const data = { displayName: newName };
         if (currentBase64.profile) data.photoBase64 = currentBase64.profile;
         await db.collection('users').doc(user.uid).set(data, { merge: true });
-        msg.style.color = 'var(--success)';
-        msg.textContent = 'Perfil actualizado correctamente.';
+        msg.style.color = 'var(--success)'; msg.textContent = 'Actualizado correctamente.';
         setTimeout(() => closeModal('profileModal'), 1200);
-    } catch (e) {
-        msg.style.color = 'var(--danger)';
-        msg.textContent = 'Error al guardar: ' + (e.message || 'intenta de nuevo');
-    } finally { btn.disabled = false; btn.textContent = 'Guardar cambios'; }
+    } catch (e) { msg.style.color = 'var(--danger)'; msg.textContent = 'Error: ' + e.message; }
+    finally { btn.disabled = false; btn.textContent = 'Guardar cambios'; }
 }
 
-function openAddModal() {
-    document.getElementById('addDate').valueAsDate = new Date();
-    currentBase64.add = null;
-    document.getElementById('addReceipt').value = '';
-    document.getElementById('addPreviewBox').classList.add('hidden');
-    updateCategories('add');
-    openModal('addModal');
-}
-
+function openAddModal() { document.getElementById('addDate').valueAsDate = new Date(); currentBase64.add = null; document.getElementById('addReceipt').value = ''; document.getElementById('addPreviewBox').classList.add('hidden'); updateCategories('add'); openModal('addModal'); }
 function openEditModal(id) {
-    const m = movements.find(x => x.id === id);
-    if (!m) return;
-    document.getElementById('editId').value = m.id;
-    document.getElementById('editType').value = m.type;
-    updateCategories('edit');
-    document.getElementById('editCategory').value = m.category;
-    document.getElementById('editAmount').value = m.amount;
-    document.getElementById('editDate').value = m.date;
-    document.getElementById('editNote').value = m.note || '';
-    document.getElementById('editReceipt').value = '';
-    currentBase64.edit = undefined;
-    if (m.receipt) {
-        document.getElementById('editPreview').src = m.receipt;
-        document.getElementById('editPreviewBox').classList.remove('hidden');
-    } else document.getElementById('editPreviewBox').classList.add('hidden');
+    const m = movements.find(x => x.id === id); if (!m) return;
+    document.getElementById('editId').value = m.id; document.getElementById('editType').value = m.type; updateCategories('edit'); document.getElementById('editCategory').value = m.category; document.getElementById('editAmount').value = m.amount; document.getElementById('editDate').value = m.date; document.getElementById('editNote').value = m.note || ''; document.getElementById('editReceipt').value = ''; currentBase64.edit = undefined;
+    if (m.receipt) { document.getElementById('editPreview').src = m.receipt; document.getElementById('editPreviewBox').classList.remove('hidden'); } else document.getElementById('editPreviewBox').classList.add('hidden');
     openModal('editModal');
 }
-
 async function updateMovement() {
-    const id = document.getElementById('editId').value;
-    const type = document.getElementById('editType').value;
-    const amount = parseFloat(document.getElementById('editAmount').value);
-    const category = document.getElementById('editCategory').value;
-    const date = document.getElementById('editDate').value;
-    const note = document.getElementById('editNote').value.trim();
-    const btn = document.getElementById('btnUpdateMov');
-    if (!amount || amount <= 0 || !date) { alert('Cantidad y fecha son obligatorios.'); return; }
+    const id = document.getElementById('editId').value; const type = document.getElementById('editType').value; const amount = parseFloat(document.getElementById('editAmount').value); const category = document.getElementById('editCategory').value; const date = document.getElementById('editDate').value; const note = document.getElementById('editNote').value.trim(); const btn = document.getElementById('btnUpdateMov');
+    if (!amount || amount <= 0 || !date) { alert('Revisa cantidad y fecha.'); return; }
     btn.disabled = true; btn.textContent = 'Actualizando...';
     try {
         const data = { type, amount, category, date, note: note || '' };
         if (currentBase64.edit !== undefined) data.receipt = currentBase64.edit || null;
-        await db.collection('movements').doc(id).update(data);
-        closeModal('editModal');
-    } catch (e) { alert('Error al actualizar: ' + e.message); }
-    finally { btn.disabled = false; btn.textContent = 'Actualizar'; }
+        await db.collection('movements').doc(id).update(data); closeModal('editModal');
+    } catch (e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = 'Actualizar'; }
 }
-
-async function deleteRecord(id) {
-    if (!confirm('¿Eliminar este movimiento permanentemente?')) return;
-    try { await db.collection('movements').doc(id).delete(); }
-    catch (e) { alert('Error al eliminar: ' + e.message); }
-}
+async function deleteRecord(id) { if (confirm('¿Eliminar permanentemente?')) await db.collection('movements').doc(id).delete(); }
 
 function switchTab(tabId, btn) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    if (btn) btn.classList.add('active');
-    else { const b = document.querySelector(`.nav-item[data-tab="${tabId}"]`); if (b) b.classList.add('active'); }
-    if (tabId === 'dashboard') updateDashboard();
-    lucide.createIcons();
+    if (btn) btn.classList.add('active'); else { const b = document.querySelector(`.nav-item[data-tab="${tabId}"]`); if (b) b.classList.add('active'); }
+    if (tabId === 'dashboard') updateDashboard(); lucide.createIcons();
 }
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); lucide.createIcons(); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-function updateCategories(prefix) {
-    const type = document.getElementById(prefix + 'Type').value;
-    document.getElementById(prefix + 'Category').innerHTML = CATEGORIES[type].map(c => `<option value="${c}">${c}</option>`).join('');
-}
+function updateCategories(prefix) { const type = document.getElementById(prefix + 'Type').value; document.getElementById(prefix + 'Category').innerHTML = CATEGORIES[type].map(c => `<option value="${c}">${c}</option>`).join(''); }
 function formatMoney(n) { return '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function viewReceipt(b64) { document.getElementById('receiptFullImage').src = b64; openModal('receiptModal'); }
 
@@ -900,166 +875,76 @@ function compressImage(file, maxWidth = 480, quality = 0.4) {
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let w = img.width, h = img.height;
+                const canvas = document.createElement('canvas'); let w = img.width, h = img.height;
                 if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
-                canvas.width = w; canvas.height = h;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL('image/jpeg', quality));
-            };
-            img.onerror = () => reject(new Error('Error imagen'));
-            img.src = e.target.result;
-        };
-        reader.onerror = () => reject(new Error('Error lectura'));
-        reader.readAsDataURL(file);
+                canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h); resolve(canvas.toDataURL('image/jpeg', quality));
+            }; img.onerror = () => reject(new Error('Error imagen')); img.src = e.target.result;
+        }; reader.onerror = () => reject(new Error('Error lectura')); reader.readAsDataURL(file);
     });
 }
-
 async function previewImage(input, prefix) {
     if (!input.files || !input.files[0]) return;
-    try {
-        const b64 = await compressImage(input.files[0], 480, 0.38);
-        currentBase64[prefix] = b64;
-        document.getElementById(prefix + 'Preview').src = b64;
-        document.getElementById(prefix + 'PreviewBox').classList.remove('hidden');
-        lucide.createIcons();
-    } catch (e) { alert('No se pudo procesar la imagen.'); }
+    try { const b64 = await compressImage(input.files[0], 480, 0.38); currentBase64[prefix] = b64; document.getElementById(prefix + 'Preview').src = b64; document.getElementById(prefix + 'PreviewBox').classList.remove('hidden'); lucide.createIcons(); } catch (e) { alert('Error al procesar.'); }
 }
-
-function removeImage(prefix) {
-    currentBase64[prefix] = null;
-    const fileInput = document.getElementById(prefix + 'Receipt');
-    if (fileInput) fileInput.value = '';
-    document.getElementById(prefix + 'PreviewBox').classList.add('hidden');
-}
+function removeImage(prefix) { currentBase64[prefix] = null; const f = document.getElementById(prefix + 'Receipt'); if (f) f.value = ''; document.getElementById(prefix + 'PreviewBox').classList.add('hidden'); }
 
 function renderHistory() {
-    const list = document.getElementById('recordList');
-    const month = document.getElementById('filterMonth').value;
-    const typeF = document.getElementById('filterType').value;
-    const filtered = movements.filter(m => {
-        const okMonth = !month || (m.date && m.date.startsWith(month));
-        const okType = typeF === 'all' || m.type === typeF;
-        return okMonth && okType;
-    });
+    const list = document.getElementById('recordList'); const month = document.getElementById('filterMonth').value; const typeF = document.getElementById('filterType').value;
+    const filtered = movements.filter(m => { const okMonth = !month || (m.date && m.date.startsWith(month)); const okType = typeF === 'all' || m.type === typeF; return okMonth && okType; });
     if (!filtered.length) { list.innerHTML = '<div class="empty-state">No hay movimientos en este periodo.</div>'; return; }
     list.innerHTML = filtered.map(m => `
         <div class="record-item">
             <div class="record-info">
-                <div class="record-icon ${m.type === 'Ingreso' ? 'icon-income' : 'icon-expense'}">
-                    <i data-lucide="${m.type === 'Ingreso' ? 'arrow-up' : 'arrow-down'}" style="width:18px;height:18px;"></i>
-                </div>
-                <div class="record-details">
-                    <h4>${escapeHtml(m.category)}</h4>
-                    <p>${m.date || ''} · ${escapeHtml(m.userName || '')}</p>
-                    ${m.note ? `<p style="font-style:italic;margin-top:2px;">${escapeHtml(m.note)}</p>` : ''}
-                </div>
+                <div class="record-icon ${m.type === 'Ingreso' ? 'icon-income' : 'icon-expense'}"><i data-lucide="${m.type === 'Ingreso' ? 'arrow-up' : 'arrow-down'}" style="width:20px;height:20px;"></i></div>
+                <div class="record-details"><h4>${escapeHtml(m.category)}</h4><p>${m.date || ''} · ${escapeHtml(m.userName || '')}</p>${m.note ? `<p style="font-style:italic;margin-top:2px;">${escapeHtml(m.note)}</p>` : ''}</div>
             </div>
             <div class="record-amount">
                 <span class="amt ${m.type === 'Ingreso' ? 'text-success' : 'text-danger'}">${m.type === 'Ingreso' ? '+' : '-'}${formatMoney(m.amount)}</span>
                 <div class="record-actions">
-                    ${m.receipt ? `<button class="btn-icon" title="Ver recibo" onclick="viewReceipt(movements.find(x=>x.id==='${m.id}').receipt)"><i data-lucide="image" style="width:16px;"></i></button>` : ''}
-                    <button class="btn-icon" title="Editar" onclick="openEditModal('${m.id}')"><i data-lucide="pencil" style="width:16px;"></i></button>
-                    <button class="btn-icon danger" title="Eliminar" onclick="deleteRecord('${m.id}')"><i data-lucide="trash-2" style="width:16px;"></i></button>
+                    ${m.receipt ? `<button class="btn-icon" title="Ver recibo" onclick="viewReceipt(movements.find(x=>x.id==='${m.id}').receipt)"><i data-lucide="image" style="width:18px;"></i></button>` : ''}
+                    <button class="btn-icon" title="Editar" onclick="openEditModal('${m.id}')"><i data-lucide="pencil" style="width:18px;"></i></button>
+                    <button class="btn-icon danger" title="Eliminar" onclick="deleteRecord('${m.id}')"><i data-lucide="trash-2" style="width:18px;"></i></button>
                 </div>
             </div>
         </div>
-    `).join('');
-    lucide.createIcons();
+    `).join(''); lucide.createIcons();
 }
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function updateDashboard() {
-    const now = new Date();
-    const curMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    const now = new Date(); const curMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
     let income = 0, expense = 0, balance = 0;
-    movements.forEach(m => {
-        const amt = Number(m.amount) || 0;
-        if (m.type === 'Ingreso') balance += amt; else balance -= amt;
-        if (m.date && m.date.startsWith(curMonth)) {
-            if (m.type === 'Ingreso') income += amt; else expense += amt;
-        }
-    });
-    document.getElementById('sumIncome').textContent = formatMoney(income);
-    document.getElementById('sumExpense').textContent = formatMoney(expense);
-    const balEl = document.getElementById('sumBalance');
-    balEl.textContent = formatMoney(balance);
-    balEl.className = 'card-value ' + (balance >= 0 ? 'text-success' : 'text-danger');
+    movements.forEach(m => { const amt = Number(m.amount) || 0; if (m.type === 'Ingreso') balance += amt; else balance -= amt; if (m.date && m.date.startsWith(curMonth)) { if (m.type === 'Ingreso') income += amt; else expense += amt; } });
+    document.getElementById('sumIncome').textContent = formatMoney(income); document.getElementById('sumExpense').textContent = formatMoney(expense);
+    const balEl = document.getElementById('sumBalance'); balEl.textContent = formatMoney(balance); balEl.className = 'card-value ' + (balance >= 0 ? 'text-success' : 'text-danger');
     updateCharts();
 }
-
 function updateCharts() {
-    const barCtx = document.getElementById('barChart');
-    const lineCtx = document.getElementById('lineChart');
-    const donCtx = document.getElementById('doughnutChart');
+    const barCtx = document.getElementById('barChart'); const lineCtx = document.getElementById('lineChart'); const donCtx = document.getElementById('doughnutChart');
     if (!barCtx || !lineCtx || !donCtx) return;
-    const months = [];
-    const d = new Date();
-    for (let i = 5; i >= 0; i--) {
-        const t = new Date(d.getFullYear(), d.getMonth() - i, 1);
-        months.push({ label: t.toLocaleString('es', { month: 'short' }), key: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`, inn: 0, out: 0 });
-    }
-    const catMap = {};
-    const curMonth = months[months.length - 1].key;
-    movements.forEach(m => {
-        const amt = Number(m.amount) || 0;
-        const key = (m.date || '').substring(0, 7);
-        const slot = months.find(x => x.key === key);
-        if (slot) { if (m.type === 'Ingreso') slot.inn += amt; else slot.out += amt; }
-        if (m.type === 'Gasto' && key === curMonth) catMap[m.category] = (catMap[m.category] || 0) + amt;
-    });
-    const labels = months.map(m => m.label);
-    const savings = months.map(m => m.inn - m.out);
-    if (charts.bar) charts.bar.destroy();
-    if (charts.line) charts.line.destroy();
-    if (charts.don) charts.don.destroy();
-    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
-    Chart.defaults.color = '#6b7280';
-    charts.bar = new Chart(barCtx.getContext('2d'), {
-        type: 'bar',
-        data: { labels, datasets: [
-            { label: 'Ingresos', data: months.map(m => m.inn), backgroundColor: '#16a34a', borderRadius: 4 },
-            { label: 'Gastos', data: months.map(m => m.out), backgroundColor: '#dc2626', borderRadius: 4 }
-        ]},
-        options: { responsive: true, plugins: { title: { display: true, text: 'Ingresos vs Gastos (6 meses)', font: { size: 14 } } }, scales: { y: { beginAtZero: true } } }
-    });
-    charts.line = new Chart(lineCtx.getContext('2d'), {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Ahorro neto', data: savings, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.12)', fill: true, tension: 0.35 }] },
-        options: { responsive: true, plugins: { title: { display: true, text: 'Evolución del ahorro', font: { size: 14 } } } }
-    });
-    const catLabels = Object.keys(catMap);
-    const catData = Object.values(catMap);
-    charts.don = new Chart(donCtx.getContext('2d'), {
-        type: 'doughnut',
-        data: { labels: catLabels.length ? catLabels : ['Sin gastos'], datasets: [{ data: catData.length ? catData : [1], backgroundColor: ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#64748b','#14b8a6','#f97316'] }] },
-        options: { responsive: true, plugins: { title: { display: true, text: 'Gastos por categoría (mes)', font: { size: 14 } }, legend: { position: 'bottom' } } }
-    });
+    const months = []; const d = new Date(); for (let i = 5; i >= 0; i--) { const t = new Date(d.getFullYear(), d.getMonth() - i, 1); months.push({ label: t.toLocaleString('es', { month: 'short' }), key: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`, inn: 0, out: 0 }); }
+    const catMap = {}; const curMonth = months[months.length - 1].key;
+    movements.forEach(m => { const amt = Number(m.amount) || 0; const key = (m.date || '').substring(0, 7); const slot = months.find(x => x.key === key); if (slot) { if (m.type === 'Ingreso') slot.inn += amt; else slot.out += amt; } if (m.type === 'Gasto' && key === curMonth) catMap[m.category] = (catMap[m.category] || 0) + amt; });
+    const labels = months.map(m => m.label); const savings = months.map(m => m.inn - m.out);
+    if (charts.bar) charts.bar.destroy(); if (charts.line) charts.line.destroy(); if (charts.don) charts.don.destroy();
+    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif"; Chart.defaults.color = '#8A9A9D';
+    charts.bar = new Chart(barCtx.getContext('2d'), { type: 'bar', data: { labels, datasets: [ { label: 'Ingresos', data: months.map(m => m.inn), backgroundColor: '#2A9D8F', borderRadius: 6 }, { label: 'Gastos', data: months.map(m => m.out), backgroundColor: '#E63946', borderRadius: 6 } ]}, options: { responsive: true, plugins: { title: { display: true, text: 'Ingresos vs Gastos (6 meses)', font: { size: 14 } } } } });
+    charts.line = new Chart(lineCtx.getContext('2d'), { type: 'line', data: { labels, datasets: [{ label: 'Ahorro neto', data: savings, borderColor: '#E76F51', backgroundColor: 'rgba(231,111,81,0.15)', fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { title: { display: true, text: 'Evolución del ahorro', font: { size: 14 } } } } });
+    const catLabels = Object.keys(catMap); const catData = Object.values(catMap);
+    charts.don = new Chart(donCtx.getContext('2d'), { type: 'doughnut', data: { labels: catLabels.length ? catLabels : ['Sin gastos'], datasets: [{ data: catData.length ? catData : [1], backgroundColor: ['#E76F51','#F4A261','#E9C46A','#2A9D8F','#264653','#E63946','#A8DADC','#457B9D','#1D3557'] }] }, options: { responsive: true, plugins: { title: { display: true, text: 'Gastos por categoría (mes)', font: { size: 14 } }, legend: { position: 'bottom' } } } });
 }
-
 function exportCSV() {
-    if (!movements.length) { alert('No hay datos para exportar.'); return; }
+    if (!movements.length) { alert('No hay datos.'); return; }
     const headers = ['Fecha','Tipo','Categoria','Monto','Nota','Usuario'];
     const rows = movements.map(m => [m.date||'', m.type||'', m.category||'', m.amount||0, `"${String(m.note||'').replace(/"/g,'""')}"`, m.userName||'']);
     downloadFile('\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n'), 'movimientos_ahorrofam.csv', 'text/csv;charset=utf-8');
 }
 function exportJSON() {
-    if (!movements.length) { alert('No hay datos para exportar.'); return; }
-    const clean = movements.map(({ receipt, ...rest }) => rest);
-    downloadFile(JSON.stringify(clean, null, 2), 'backup_ahorrofam.json', 'application/json');
+    if (!movements.length) { alert('No hay datos.'); return; }
+    downloadFile(JSON.stringify(movements.map(({ receipt, ...rest }) => rest), null, 2), 'backup_ahorrofam.json', 'application/json');
 }
 function downloadFile(content, filename, type) {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
+    const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
 }
 </script>
 </body>
