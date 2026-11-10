@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -67,10 +67,10 @@
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased h-full flex flex-col min-h-screen select-none">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased flex flex-col min-h-screen select-none">
 
   <!-- Toast Container -->
-  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-sm font-medium opacity-0 pointer-events-none transition-opacity duration-300 max-w-[90vw] text-center border border-slate-700 dark:border-slate-200">
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2.5 rounded-2xl shadow-xl text-sm font-medium opacity-0 pointer-events-none transition-opacity duration-300 max-w-[90vw] text-center border border-slate-700 dark:border-slate-200">
     Notificación
   </div>
 
@@ -80,7 +80,7 @@
       
       <!-- Brand Logo Header -->
       <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-[#E76F51]/30 mb-4">
+        <div class="w-16 h-16 bg-gradient-to-br from-[#E76F51] to-[#D05A3F] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-[#E76F51]/30 mb-4">
           <i data-lucide="heart-handshake" class="w-10 h-10 text-white"></i>
         </div>
         <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Ahorro Familiar</h1>
@@ -155,7 +155,7 @@
         </div>
 
         <!-- Botón submit -->
-        <button type="submit" id="authSubmitBtn" class="w-full mt-2 py-3.5 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-sm rounded-xl shadow-lg shadow-[#E76F51]/30 transition-transform active:scale-95 flex items-center justify-center gap-2">
+        <button type="submit" id="authSubmitBtn" class="w-full mt-2 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-lg shadow-[#E76F51]/30 transition-transform active:scale-95 flex items-center justify-center gap-2">
           <span>Iniciar Sesión</span>
         </button>
       </form>
@@ -170,9 +170,9 @@
   <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen pb-20">
     
     <!-- Header Superior -->
-    <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+    <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-[#E76F51] flex items-center justify-center text-white shadow-md">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E76F51] to-[#D05A3F] flex items-center justify-center text-white shadow-md">
           <i data-lucide="heart-handshake" class="w-5 h-5"></i>
         </div>
         <div>
@@ -208,7 +208,7 @@
     </div>
 
     <!-- Navegación Inferior Móvil / Superior Escritorio -->
-    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex justify-around items-center">
+    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex justify-around items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:shadow-none">
       <button onclick="showSection('secResumen')" id="navResumen" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-[#E76F51] font-semibold text-[10px] transition-colors">
         <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
         <span class="mt-0.5">Inicio</span>
@@ -265,9 +265,9 @@
         
         <!-- Tarjetero de Balances -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
-              <span class="text-xs font-medium">Ingresos Totales</span>
+              <span class="text-xs font-semibold">Ingresos Totales</span>
               <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center">
                 <i data-lucide="trending-up" class="w-4 h-4"></i>
               </div>
@@ -275,9 +275,9 @@
             <p id="totalIncomesDisplay" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">$0.00</p>
           </div>
 
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
-              <span class="text-xs font-medium">Gastos Totales</span>
+              <span class="text-xs font-semibold">Gastos Totales</span>
               <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-500 flex items-center justify-center">
                 <i data-lucide="trending-down" class="w-4 h-4"></i>
               </div>
@@ -285,31 +285,31 @@
             <p id="totalExpensesDisplay" class="text-xl font-bold text-rose-600 dark:text-rose-400">$0.00</p>
           </div>
 
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
-            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
-              <span class="text-xs font-medium">Balance Neto</span>
-              <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center">
+          <div class="bg-gradient-to-br from-[#E76F51] to-[#D05A3F] p-4 rounded-2xl border-0 shadow-lg shadow-[#E76F51]/20">
+            <div class="flex items-center justify-between text-white/80 mb-2">
+              <span class="text-xs font-semibold">Balance Neto</span>
+              <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center">
                 <i data-lucide="heart-handshake" class="w-4 h-4"></i>
               </div>
             </div>
-            <p id="netBalanceDisplay" class="text-xl font-bold text-slate-900 dark:text-white">$0.00</p>
+            <p id="netBalanceDisplay" class="text-xl font-bold text-white">$0.00</p>
           </div>
         </div>
 
         <!-- Botones de Acción Rápida -->
         <div class="grid grid-cols-2 gap-3">
-          <button onclick="openMovementModal('income')" class="p-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
+          <button onclick="openMovementModal('income')" class="p-3.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:opacity-90 text-white font-bold rounded-2xl shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>Nuevo Ingreso</span>
           </button>
-          <button onclick="openMovementModal('expense')" class="p-3.5 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-2xl shadow-md flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
+          <button onclick="openMovementModal('expense')" class="p-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold rounded-2xl shadow-md shadow-[#E76F51]/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>Nuevo Gasto</span>
           </button>
         </div>
 
         <!-- Gráfico de Gastos por Miembro -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-[#E76F51]"></i>
             <span>Distribución de Gastos por Miembro</span>
@@ -320,7 +320,7 @@
         </div>
 
         <!-- Últimos Movimientos -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <i data-lucide="clock" class="w-4 h-4 text-[#E76F51]"></i>
@@ -346,7 +346,7 @@
         </div>
 
         <!-- Filtros y Búsqueda -->
-        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
               <i data-lucide="search" class="w-4 h-4"></i>
@@ -355,12 +355,12 @@
           </div>
           
           <div class="grid grid-cols-2 gap-2">
-            <select id="filterType" onchange="filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
+            <select id="filterType" onchange="filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white appearance-none">
               <option value="all">Todos los tipos</option>
               <option value="income">Ingresos</option>
               <option value="expense">Gastos</option>
             </select>
-            <select id="filterCategory" onchange="filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
+            <select id="filterCategory" onchange="filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white appearance-none">
               <option value="all">Todas las categorías</option>
               <!-- Dinámico -->
             </select>
@@ -429,7 +429,7 @@
 
       <!-- SECCIÓN 6: MI ESPACIO / GRUPO -->
       <section id="secEspacio" class="hidden space-y-6">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-4">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-4">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 pb-4">
             <div>
               <h3 id="spaceTitle" class="text-lg font-bold text-slate-900 dark:text-white">Mi Espacio</h3>
@@ -461,7 +461,7 @@
         </div>
 
         <!-- Solicitudes Pendientes (Admin Only) -->
-        <div id="pendingSection" class="hidden bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+        <div id="pendingSection" class="hidden bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
             <span>Solicitudes Pendientes</span>
@@ -472,7 +472,7 @@
         </div>
 
         <!-- Integrantes del Grupo -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <i data-lucide="users" class="w-4 h-4 text-[#E76F51]"></i>
             <span>Integrantes Activos</span>
@@ -485,7 +485,7 @@
 
       <!-- SECCIÓN 7: MI PERFIL -->
       <section id="secPerfil" class="hidden space-y-4">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-5">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-5">
           <div class="flex items-center gap-4">
             <div class="relative">
               <div id="profileAvatar" class="w-16 h-16 rounded-full bg-[#E76F51] text-white text-xl font-bold flex items-center justify-center overflow-hidden shadow-md">
@@ -516,8 +516,8 @@
 
           <!-- Opciones Adicionales -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-            <!-- Botón Instalar App PWA -->
-            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="hidden w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
+            <!-- Botón Instalar App PWA (Siempre visible por defecto) -->
+            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
             </button>
@@ -542,67 +542,75 @@
 
   <!-- MODAL: AGREGAR / EDITAR MOVIMIENTO -->
   <div id="movementModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between">
         <h3 id="movementModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Nuevo Movimiento</h3>
-        <button onclick="closeMovementModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeMovementModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form id="movementForm" onsubmit="handleSaveMovement(event)" class="space-y-3.5">
+      <form id="movementForm" onsubmit="handleSaveMovement(event)" class="space-y-4">
         <input type="hidden" id="movId">
         <input type="hidden" id="movType" value="expense">
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
-          <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white" placeholder="0.00">
+          <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="0.00">
         </div>
 
+        <!-- Selector de Categoría Personalizado -->
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <select id="movCategory" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
-            <!-- Opciones cargadas por JS -->
-          </select>
+          <button type="button" onclick="openCategoryPicker('movCategory')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/80">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+                <i id="movCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+              </div>
+              <span id="movCategoryText" class="font-semibold">Seleccionar...</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </button>
+          <input type="hidden" id="movCategory" required>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
-          <input type="date" id="movDate" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
+          <input type="date" id="movDate" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota / Descripción (Opcional)</label>
-          <input type="text" id="movNote" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Compra de supermercado">
+          <input type="text" id="movNote" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors" placeholder="Ej. Compra de supermercado">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Comprobante / Recibo (Opcional)</label>
-          <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20">
+          <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20 transition-colors">
           <input type="hidden" id="movReceiptBase64">
-          <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+          <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
             <img id="receiptPreviewImg" src="" class="w-full h-full object-cover">
-            <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5">
+            <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5 hover:bg-slate-900 transition-colors">
               <i data-lucide="x" class="w-3 h-3"></i>
             </button>
           </div>
         </div>
 
         <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeMovementModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-xs rounded-xl shadow">Guardar</button>
+          <button type="button" onclick="closeMovementModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: VER COMPROBANTE -->
-  <div id="receiptViewModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-4 space-y-3">
-      <button onclick="closeReceiptViewModal()" class="absolute top-3 right-3 p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full">
-        <i data-lucide="x" class="w-5 h-5"></i>
+  <div id="receiptViewModal" class="hidden fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-[2rem] p-4 space-y-3 shadow-2xl">
+      <button onclick="closeReceiptViewModal()" class="absolute top-3 right-3 p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
-      <h4 class="text-sm font-bold text-slate-900 dark:text-white">Comprobante de Pago</h4>
+      <h4 class="text-sm font-bold text-slate-900 dark:text-white pl-2">Comprobante de Pago</h4>
       <div class="max-h-[75vh] overflow-auto rounded-2xl border border-slate-200 dark:border-slate-700">
         <img id="receiptViewImg" src="" class="w-full object-contain">
       </div>
@@ -611,28 +619,28 @@
 
   <!-- MODAL: AGREGAR META DE AHORRO -->
   <div id="goalModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-slate-900 dark:text-white">Nueva Meta de Ahorro</h3>
-        <button onclick="closeGoalModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeGoalModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form onsubmit="handleSaveGoal(event)" class="space-y-3.5">
+      <form onsubmit="handleSaveGoal(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Título de la Meta</label>
-          <input type="text" id="goalTitle" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Fondo de Emergencia">
+          <input type="text" id="goalTitle" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Fondo de Emergencia">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto Objetivo ($)</label>
-          <input type="number" step="0.01" id="goalTarget" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="1000.00">
+          <input type="number" step="0.01" id="goalTarget" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="1000.00">
         </div>
 
         <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeGoalModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-xs rounded-xl shadow">Crear Meta</button>
+          <button type="button" onclick="closeGoalModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Crear Meta</button>
         </div>
       </form>
     </div>
@@ -640,24 +648,24 @@
 
   <!-- MODAL: ABONAR A META -->
   <div id="goalDepositModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-slate-900 dark:text-white">Abonar a Meta</h3>
-        <button onclick="closeGoalDepositModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeGoalDepositModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form onsubmit="handleDepositGoal(event)" class="space-y-3.5">
+      <form onsubmit="handleDepositGoal(event)" class="space-y-4">
         <input type="hidden" id="depositGoalId">
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto a Abonar ($)</label>
-          <input type="number" step="0.01" id="depositAmount" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="50.00">
+          <input type="number" step="0.01" id="depositAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="50.00">
         </div>
 
         <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeGoalDepositModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow">Abonar</button>
+          <button type="button" onclick="closeGoalDepositModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Abonar</button>
         </div>
       </form>
     </div>
@@ -665,30 +673,38 @@
 
   <!-- MODAL: DEFINIR PRESUPUESTO -->
   <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-bold text-slate-900 dark:text-white">Definir Presupuesto Mensual</h3>
-        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <h3 class="text-base font-bold text-slate-900 dark:text-white">Definir Presupuesto</h3>
+        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form onsubmit="handleSaveBudget(event)" class="space-y-3.5">
+      <form onsubmit="handleSaveBudget(event)" class="space-y-4">
+        <!-- Selector de Categoría Personalizado -->
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <select id="budgetCategory" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
-            <!-- Dinámico -->
-          </select>
+          <button type="button" onclick="openCategoryPicker('budgetCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+                <i id="budgetCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+              </div>
+              <span id="budgetCategoryText" class="font-semibold">Seleccionar...</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </button>
+          <input type="hidden" id="budgetCategory" required>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Límite Máximo Mensual ($)</label>
-          <input type="number" step="0.01" id="budgetAmount" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="300.00">
+          <input type="number" step="0.01" id="budgetAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="300.00">
         </div>
 
         <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeBudgetModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-xs rounded-xl shadow">Guardar Limite</button>
+          <button type="button" onclick="closeBudgetModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
         </div>
       </form>
     </div>
@@ -696,37 +712,60 @@
 
   <!-- MODAL: AGREGAR GASTO RECURRENTE -->
   <div id="recurringModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-slate-900 dark:text-white">Nuevo Gasto Recurrente</h3>
-        <button onclick="closeRecurringModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeRecurringModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form onsubmit="handleSaveRecurring(event)" class="space-y-3.5">
+      <form onsubmit="handleSaveRecurring(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre / Servicio</label>
-          <input type="text" id="recName" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Netflix, Arriendo, Luz">
+          <input type="text" id="recName" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Netflix, Arriendo, Luz">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
-          <input type="number" step="0.01" id="recAmount" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="15.00">
+          <input type="number" step="0.01" id="recAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="15.00">
         </div>
 
+        <!-- Selector de Categoría Personalizado -->
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <select id="recCategory" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
-            <!-- Dinámico -->
-          </select>
+          <button type="button" onclick="openCategoryPicker('recCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+                <i id="recCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+              </div>
+              <span id="recCategoryText" class="font-semibold">Seleccionar...</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </button>
+          <input type="hidden" id="recCategory" required>
         </div>
 
         <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeRecurringModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-xs rounded-xl shadow">Guardar</button>
+          <button type="button" onclick="closeRecurringModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SELECTOR DE CATEGORÍA INTERACTIVO -->
+  <div id="categoryPickerModal" class="hidden fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+    <div id="categoryPickerContent" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transition-transform transform translate-y-full duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white">Seleccionar Categoría</h3>
+        <button onclick="closeCategoryPicker()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="categoryPickerList" class="flex flex-col gap-1 max-h-[60vh] overflow-y-auto pb-4">
+        <!-- JS Injected -->
+      </div>
     </div>
   </div>
 
@@ -745,9 +784,25 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Categorías del sistema
+    // Categorías del sistema e Iconos (Diseño Premium)
     const EXPENSE_CATEGORIES = ["Alimentación", "Vivienda", "Transporte", "Servicios", "Entretenimiento", "Salud", "Educación", "Otros Gastos"];
     const INCOME_CATEGORIES = ["Sueldo / Salario", "Ventas", "Inversiones", "Regalo", "Otros Ingresos"];
+    
+    const CATEGORY_ICONS = {
+      "Alimentación": "shopping-cart",
+      "Vivienda": "home",
+      "Transporte": "car",
+      "Servicios": "zap",
+      "Entretenimiento": "tv",
+      "Salud": "heart-pulse",
+      "Educación": "book-open",
+      "Otros Gastos": "more-horizontal",
+      "Sueldo / Salario": "banknote",
+      "Ventas": "shopping-bag",
+      "Inversiones": "trending-up",
+      "Regalo": "gift",
+      "Otros Ingresos": "plus-circle"
+    };
 
     // ESTADO DE LA APLICACIÓN
     let currentUserData = null;
@@ -760,6 +815,7 @@
     let authMode = 'login'; // 'login' | 'register'
     let registerType = 'create'; // 'create' | 'join'
     let memberChartInstance = null;
+    let currentCategoryTarget = ''; // Para el selector de categorías
 
     // Subscripciones Firestore
     let unsubscribeFamily = null;
@@ -774,13 +830,11 @@
       e.preventDefault();
       deferredPrompt = e;
       
-      // Mostrar los botones e icono de instalación
+      // Mostrar botones en header y el banner mini
       const btnHeader = document.getElementById('btnInstallPWAHeader');
-      const btnProfile = document.getElementById('btnInstallPWAProfile');
       const installBanner = document.getElementById('pwaInstallBanner');
 
       if (btnHeader) btnHeader.classList.remove('hidden');
-      if (btnProfile) btnProfile.classList.remove('hidden');
       if (installBanner) installBanner.classList.remove('hidden');
     });
 
@@ -797,20 +851,25 @@
     });
 
     function triggerPWAInstall() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted PWA install');
-        }
-        deferredPrompt = null;
-      });
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA install');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // Fallback si el evento no existe (ej. iOS o ya instalado)
+        showToast("Para instalar, selecciona 'Agregar a la pantalla principal' en el menú de opciones de tu navegador.");
+      }
     }
 
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initTheme();
+      populateFilterCategory();
 
       // Service Worker para PWA
       if ('serviceWorker' in navigator) {
@@ -1032,6 +1091,10 @@
 
     function handleLogout() {
       auth.signOut().then(() => {
+        // Limpieza total en memoria
+        currentUserData = null;
+        currentFamilyData = null;
+        movementsData = [];
         showAuthScreen();
         showToast("Sesión cerrada");
       });
@@ -1039,16 +1102,28 @@
 
     async function handleDeleteAccount() {
       if (!confirm("¿Estás seguro de que deseas eliminar tu cuenta permanentemente?")) return;
-      if (!confirm("CONFIRMACIÓN FINAL: Esta acción no se puede deshacer. Se borrarán tus datos de usuario.")) return;
+      if (!confirm("CONFIRMACIÓN FINAL: Esta acción no se puede deshacer. Se borrarán todos tus datos de usuario.")) return;
 
       try {
         const uid = auth.currentUser.uid;
+        // 1. Borrar documento primero
         await db.collection('users').doc(uid).delete();
+        // 2. Borrar en Auth
         await auth.currentUser.delete();
+        
+        // Limpieza de memoria
+        currentUserData = null;
+        currentFamilyData = null;
+        movementsData = [];
+
         showToast("Cuenta eliminada con éxito");
         showAuthScreen();
       } catch (err) {
-        showToast("Error al eliminar cuenta: " + err.message);
+        if (err.code === 'auth/requires-recent-login') {
+          showToast("Por seguridad, debes cerrar sesión, volver a ingresar e intentar eliminar tu cuenta nuevamente.");
+        } else {
+          showToast("Error al eliminar cuenta: " + err.message);
+        }
       }
     }
 
@@ -1088,7 +1163,6 @@
         listenToMembers(currentUserData.familyId);
       }
 
-      populateCategorySelects();
       showSection('secResumen');
     }
 
@@ -1200,41 +1274,69 @@
         });
     }
 
-    // CATEGORÍAS SELECT POPULATE
-    function populateCategorySelects() {
-      const movCategory = document.getElementById('movCategory');
+    // CATEGORÍA FILTER
+    function populateFilterCategory() {
       const filterCategory = document.getElementById('filterCategory');
-      const budgetCategory = document.getElementById('budgetCategory');
-      const recCategory = document.getElementById('recCategory');
-
-      movCategory.innerHTML = '';
-      const optGroupExp = document.createElement('optgroup');
-      optGroupExp.label = "GASTOS";
-      EXPENSE_CATEGORIES.forEach(c => {
-        optGroupExp.innerHTML += `<option value="${c}">${c}</option>`;
-      });
-      const optGroupInc = document.createElement('optgroup');
-      optGroupInc.label = "INGRESOS";
-      INCOME_CATEGORIES.forEach(c => {
-        optGroupInc.innerHTML += `<option value="${c}">${c}</option>`;
-      });
-      movCategory.appendChild(optGroupExp);
-      movCategory.appendChild(optGroupInc);
-
       filterCategory.innerHTML = '<option value="all">Todas las categorías</option>';
       [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].forEach(c => {
         filterCategory.innerHTML += `<option value="${c}">${c}</option>`;
       });
+    }
 
-      budgetCategory.innerHTML = '';
-      EXPENSE_CATEGORIES.forEach(c => {
-        budgetCategory.innerHTML += `<option value="${c}">${c}</option>`;
-      });
+    // SELECTOR DE CATEGORÍA INTERACTIVO (BOTTOM SHEET)
+    function openCategoryPicker(targetId, forceType = null) {
+      currentCategoryTarget = targetId;
+      const modal = document.getElementById('categoryPickerModal');
+      const content = document.getElementById('categoryPickerContent');
+      const list = document.getElementById('categoryPickerList');
+      
+      let typeToLoad = 'expense';
+      if (forceType) {
+        typeToLoad = forceType;
+      } else if (targetId === 'movCategory') {
+        typeToLoad = document.getElementById('movType').value;
+      }
+      
+      const categories = typeToLoad === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      
+      list.innerHTML = categories.map(cat => {
+        const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
+        return `
+          <button onclick="selectCategory('${cat}', '${iconName}')" class="flex items-center gap-3 p-3.5 w-full rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+            <div class="w-10 h-10 rounded-xl bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0 shadow-sm">
+              <i data-lucide="${iconName}" class="w-5 h-5"></i>
+            </div>
+            <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">${cat}</span>
+          </button>
+        `;
+      }).join('');
+      
+      lucide.createIcons();
+      modal.classList.remove('hidden');
+      
+      // Animación de subida
+      setTimeout(() => {
+        content.classList.remove('translate-y-full');
+      }, 10);
+    }
 
-      recCategory.innerHTML = '';
-      EXPENSE_CATEGORIES.forEach(c => {
-        recCategory.innerHTML += `<option value="${c}">${c}</option>`;
-      });
+    function closeCategoryPicker() {
+      const modal = document.getElementById('categoryPickerModal');
+      const content = document.getElementById('categoryPickerContent');
+      
+      content.classList.add('translate-y-full');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300); // duración de la animación
+    }
+
+    function selectCategory(categoryName, iconName) {
+      document.getElementById(currentCategoryTarget).value = categoryName;
+      document.getElementById(currentCategoryTarget + 'Text').innerText = categoryName;
+      document.getElementById(currentCategoryTarget + 'Icon').setAttribute('data-lucide', iconName);
+      
+      lucide.createIcons();
+      closeCategoryPicker();
     }
 
     // RENDER RESUMEN & GRÁFICO
@@ -1254,7 +1356,6 @@
       const net = totalInc - totalExp;
       const netEl = document.getElementById('netBalanceDisplay');
       netEl.innerText = formatCurrency(net);
-      netEl.className = `text-xl font-bold ${net >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600 dark:text-rose-400'}`;
 
       // Lista reciente (últimos 4)
       const recentList = document.getElementById('recentMovementsList');
@@ -1319,11 +1420,12 @@
     // MOVIMIENTOS LIST & FILTROS
     function createMovementHTML(m) {
       const isInc = m.type === 'income';
+      const iconName = CATEGORY_ICONS[m.category] || (isInc ? 'trending-up' : 'trending-down');
       return `
-        <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+        <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isInc ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600' : 'bg-rose-100 dark:bg-rose-950/60 text-rose-500'}">
-              <i data-lucide="${isInc ? 'trending-up' : 'trending-down'}" class="w-5 h-5"></i>
+              <i data-lucide="${iconName}" class="w-4 h-4"></i>
             </div>
             <div>
               <h4 class="font-bold text-xs text-slate-900 dark:text-white leading-tight">${m.category}</h4>
@@ -1379,6 +1481,12 @@
       document.getElementById('movReceiptBase64').value = '';
       clearReceiptPreview();
       
+      // Reset custom category button
+      document.getElementById('movCategory').value = '';
+      document.getElementById('movCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      lucide.createIcons();
+      
       document.getElementById('movementModal').classList.remove('hidden');
     }
 
@@ -1397,6 +1505,10 @@
 
       if (!amount || amount <= 0) {
         showToast("Ingresa un monto válido");
+        return;
+      }
+      if (!category) {
+        showToast("Selecciona una categoría");
         return;
       }
 
@@ -1496,7 +1608,7 @@
         const pct = Math.min(100, Math.round((current / target) * 100));
 
         return `
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
             <div class="flex items-center justify-between">
               <h4 class="font-bold text-xs text-slate-900 dark:text-white">${g.title}</h4>
               <button onclick="handleDeleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -1579,7 +1691,7 @@
           transaction.update(docRef, { currentAmount: newCurrent });
         });
 
-        // Opcional: registrar como movimiento de ahorro
+        // Registrar como movimiento
         await db.collection('movements').add({
           familyId: currentUserData.familyId,
           type: 'expense',
@@ -1636,11 +1748,16 @@
         let barColor = 'bg-emerald-500';
         if (pct > 80 && pct <= 100) barColor = 'bg-amber-500';
         else if (pct > 100) barColor = 'bg-rose-500';
+        
+        const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
 
         return `
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-2">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
             <div class="flex items-center justify-between">
-              <h4 class="font-bold text-xs text-slate-900 dark:text-white">${cat}</h4>
+              <div class="flex items-center gap-2">
+                <i data-lucide="${iconName}" class="w-4 h-4 text-[#E76F51]"></i>
+                <h4 class="font-bold text-xs text-slate-900 dark:text-white">${cat}</h4>
+              </div>
               <button onclick="handleDeleteBudget('${cat}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
             <div class="flex justify-between text-[11px] font-semibold">
@@ -1658,6 +1775,10 @@
 
     function openBudgetModal() {
       document.getElementById('budgetAmount').value = '';
+      document.getElementById('budgetCategory').value = '';
+      document.getElementById('budgetCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('budgetCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      lucide.createIcons();
       document.getElementById('budgetModal').classList.remove('hidden');
     }
 
@@ -1671,6 +1792,7 @@
       const amount = parseFloat(document.getElementById('budgetAmount').value);
 
       if (!amount || amount <= 0) return;
+      if (!cat) { showToast('Selecciona una categoría'); return; }
 
       try {
         const updatedBudgets = { ...budgetsData, [cat]: amount };
@@ -1702,11 +1824,18 @@
         return;
       }
 
-      container.innerHTML = recurringData.map(r => `
-        <div class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
-          <div>
-            <h4 class="font-bold text-xs text-slate-900 dark:text-white">${r.name}</h4>
-            <p class="text-[11px] text-slate-400 mt-0.5">${r.category} • ${formatCurrency(r.amount)}</p>
+      container.innerHTML = recurringData.map(r => {
+        const iconName = CATEGORY_ICONS[r.category] || 'layout-grid';
+        return `
+        <div class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
+              <i data-lucide="${iconName}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs text-slate-900 dark:text-white">${r.name}</h4>
+              <p class="text-[11px] text-slate-400 mt-0.5">${r.category} • ${formatCurrency(r.amount)}</p>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="handlePayRecurring('${r.id}')" class="px-3 py-1.5 bg-[#E76F51]/10 text-[#E76F51] hover:bg-[#E76F51] hover:text-white text-xs font-bold rounded-xl transition-colors">
@@ -1715,13 +1844,18 @@
             <button onclick="handleDeleteRecurring('${r.id}')" class="p-1.5 text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </div>
         </div>
-      `).join('');
+        `;
+      }).join('');
       lucide.createIcons();
     }
 
     function openRecurringModal() {
       document.getElementById('recName').value = '';
       document.getElementById('recAmount').value = '';
+      document.getElementById('recCategory').value = '';
+      document.getElementById('recCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      lucide.createIcons();
       document.getElementById('recurringModal').classList.remove('hidden');
     }
 
@@ -1736,6 +1870,7 @@
       const cat = document.getElementById('recCategory').value;
 
       if (!name || !amount) return;
+      if (!cat) { showToast('Selecciona una categoría'); return; }
 
       try {
         await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
@@ -1927,7 +2062,7 @@
       setTimeout(() => {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0');
-      }, 3000);
+      }, 3500);
     }
   </script>
 </body>
