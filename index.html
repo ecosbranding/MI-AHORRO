@@ -10,16 +10,17 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/png" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
+  
   <!-- Configuración Específica para iPhone -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mi Ahorro">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="167x167" href="icon-192.png">
-<!-- Esto elimina el color blanco feo al cargar en iOS -->
-<meta name="theme-color" content="#0F172A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mi Ahorro">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png">
+  <!-- Esto elimina el color blanco feo al cargar en iOS -->
+  <meta name="theme-color" content="#0F172A">
   
   <title>Ahorro Familiar - Gestión Financiera Colaborativa</title>
 
@@ -215,6 +216,18 @@
               <span class="block text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Usar código existente</span>
             </button>
           </div>
+        </div>
+
+        <!-- Nombre de Familia (Solo al crear) -->
+        <div id="fieldFamilyName" class="hidden space-y-1">
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Nombre o Apellido de la Familia</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="authFamilyName" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Carvajal Vera o Pérez">
+          </div>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Se guardará como: <span class="text-[#E76F51] font-bold">Familia [Tu Apellido]</span></p>
         </div>
 
         <!-- Código de Grupo (Solo si se selecciona Unirse) -->
@@ -539,7 +552,7 @@
               <h3 id="spaceTitle" class="text-lg font-bold text-slate-900 dark:text-white">Mi Espacio</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400">Administra los integrantes de tu grupo</p>
             </div>
-            <button id="btnRenameFamily" onclick="handleRenameFamily()" class="p-2 text-slate-400 hover:text-[#E76F51] transition-colors" title="Renombrar grupo">
+            <button id="btnRenameFamily" onclick="openEditFamilyModal()" class="p-2 text-slate-400 hover:text-[#E76F51] transition-colors" title="Renombrar grupo">
               <i data-lucide="pencil" class="w-4 h-4"></i>
             </button>
           </div>
@@ -657,29 +670,6 @@
         <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
-        <!-- Modal Editar Nombre de Familia -->
-<div id="editFamilyModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-                <i data-lucide="edit-3" class="w-5 h-5 text-terracotta"></i> Editar Familia
-            </h3>
-            <button onclick="closeEditFamilyModal()" class="text-slate-400 hover:text-slate-200">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-        <form onsubmit="handleUpdateFamilyName(event)" class="space-y-4">
-            <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1 ml-1">Nuevo Nombre de la Familia</label>
-                <input type="text" id="inputNewFamilyName" required class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-terracotta outline-none text-sm font-semibold">
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button type="button" onclick="closeEditFamilyModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-xl text-sm">Cancelar</button>
-                <button type="submit" class="flex-1 py-3 bg-terracotta text-white font-bold rounded-xl text-sm shadow-lg shadow-terracotta/20">Guardar</button>
-            </div>
-        </form>
-    </div>
-</div>
       </div>
 
       <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
@@ -714,6 +704,30 @@
         Entendido
       </button>
     </div>
+  </div>
+
+  <!-- MODAL EDITAR NOMBRE DE FAMILIA -->
+  <div id="editFamilyModal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="edit-3" class="w-5 h-5 text-[#E76F51]"></i> Editar Familia
+              </h3>
+              <button onclick="closeEditFamilyModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full transition-colors">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+          </div>
+          <form onsubmit="handleUpdateFamilyName(event)" class="space-y-4">
+              <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nuevo Nombre de la Familia</label>
+                  <input type="text" id="inputNewFamilyName" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="Ej. Familia Pérez">
+              </div>
+              <div class="flex gap-2 pt-2">
+                  <button type="button" onclick="closeEditFamilyModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
+                  <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
+              </div>
+          </form>
+      </div>
   </div>
 
   <!-- MODAL: AGREGAR / EDITAR MOVIMIENTO -->
@@ -991,7 +1005,7 @@
     let authMode = 'login'; // 'login' | 'register'
     let registerType = 'create'; // 'create' | 'join'
     let memberChartInstance = null;
-    let currentCategoryTarget = ''; // Para el selector de categorías
+    let currentCategoryTarget = ''; 
 
     // Subscripciones Firestore
     let unsubscribeFamily = null;
@@ -1021,7 +1035,7 @@
         if (btnProfile) btnProfile.style.display = 'none';
       } else {
         if (banner) banner.style.display = 'flex';
-        if (btnHeader) btnHeader.style.display = 'flex';
+        if (btnHeader) btnHeader.style.display = 'block';
         if (btnProfile) btnProfile.style.display = 'flex';
       }
     }
@@ -1077,7 +1091,7 @@
       populateFilterCategory();
       updatePWAUIVisibility();
 
-      // Service Worker para PWA (Inline Blob Fallback si sw.js directo no existe)
+      // Service Worker para PWA
       if ('serviceWorker' in navigator) {
         const swCode = `
           self.addEventListener('install', (e) => self.skipWaiting());
@@ -1133,7 +1147,7 @@
       return dateStr;
     }
 
-    // MODO OSCURO (Forzar oscuro si el usuario lo guardó o preferencia del sistema)
+    // MODO OSCURO
     function initTheme() {
       const theme = localStorage.getItem('ahorro_theme') || 'dark';
       if (theme === 'dark') {
@@ -1168,6 +1182,7 @@
       const fieldDisplayName = document.getElementById('fieldDisplayName');
       const fieldRegisterOptions = document.getElementById('fieldRegisterOptions');
       const fieldGroupCode = document.getElementById('fieldGroupCode');
+      const fieldFamilyName = document.getElementById('fieldFamilyName');
       const authSubmitBtn = document.getElementById('authSubmitBtn');
       const authError = document.getElementById('authError');
 
@@ -1179,6 +1194,7 @@
         fieldDisplayName.classList.add('hidden');
         fieldRegisterOptions.classList.add('hidden');
         fieldGroupCode.classList.add('hidden');
+        fieldFamilyName.classList.add('hidden');
         authSubmitBtn.querySelector('span').innerText = "Iniciar Sesión";
       } else {
         btnRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-xl transition-all-custom bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm";
@@ -1186,6 +1202,7 @@
         fieldDisplayName.classList.remove('hidden');
         fieldRegisterOptions.classList.remove('hidden');
         if (registerType === 'join') fieldGroupCode.classList.remove('hidden');
+        if (registerType === 'create') fieldFamilyName.classList.remove('hidden');
         authSubmitBtn.querySelector('span').innerText = "Registrarse";
       }
     }
@@ -1195,15 +1212,18 @@
       const btnCreate = document.getElementById('btnTypeCreate');
       const btnJoin = document.getElementById('btnTypeJoin');
       const fieldGroupCode = document.getElementById('fieldGroupCode');
+      const fieldFamilyName = document.getElementById('fieldFamilyName');
 
       if (type === 'create') {
         btnCreate.className = "p-3 border-2 border-[#E76F51] bg-[#E76F51]/10 rounded-xl text-left transition-all";
         btnJoin.className = "p-3 border border-slate-200 dark:border-slate-700 rounded-xl text-left transition-all";
         fieldGroupCode.classList.add('hidden');
+        fieldFamilyName.classList.remove('hidden');
       } else {
         btnJoin.className = "p-3 border-2 border-[#E76F51] bg-[#E76F51]/10 rounded-xl text-left transition-all";
         btnCreate.className = "p-3 border border-slate-200 dark:border-slate-700 rounded-xl text-left transition-all";
         fieldGroupCode.classList.remove('hidden');
+        fieldFamilyName.classList.add('hidden');
       }
     }
 
@@ -1251,10 +1271,22 @@
           let status = "approved";
 
           if (registerType === 'create') {
-            // Crear Nueva Familia
+            // Crear Nueva Familia (Añadiendo el nombre personalizado)
+            const rawFamilyName = document.getElementById('authFamilyName').value.trim();
+            if (!rawFamilyName) {
+              authError.innerText = "Ingresa el nombre o apellido de tu familia.";
+              authError.classList.remove('hidden');
+              isRegistering = false;
+              return;
+            }
+            
+            // Limpia por si escriben "Familia Perez" para evitar "Familia Familia Perez"
+            const cleanName = rawFamilyName.replace(/^familia\s+/i, '');
+            const formattedFamilyName = `Familia ${cleanName}`;
+
             const code = "FAM-" + Math.random().toString(36).substring(2, 6).toUpperCase();
             const famRef = await db.collection('families').add({
-              familyName: `Familia de ${displayName.split(' ')[0]}`,
+              familyName: formattedFamilyName,
               code: code,
               budgets: {},
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1282,6 +1314,14 @@
           }
 
           const cred = await auth.createUserWithEmailAndPassword(email, password);
+          
+          // Si acaba de crearla, añadir su UID al array de admins de la familia
+          if (registerType === 'create') {
+            await db.collection('families').doc(familyId).update({
+              admins: [cred.user.uid]
+            });
+          }
+
           const userData = {
             displayName: displayName,
             email: email,
@@ -2163,7 +2203,7 @@
       }
     }
 
-        // GESTIÓN DE ESPACIO / GRUPO
+    // GESTIÓN DE ESPACIO / GRUPO
     function renderEspacio(members, pending) {
       const membersContainer = document.getElementById('membersList');
       const pendingSection = document.getElementById('pendingSection');
@@ -2174,7 +2214,6 @@
       if (btnRename) {
         if (currentUserData.role === 'admin') {
           btnRename.classList.remove('hidden');
-          btnRename.onclick = openEditFamilyModal;
         } else {
           btnRename.classList.add('hidden');
         }
@@ -2230,7 +2269,7 @@
       lucide.createIcons();
     }
 
-        // FUNCIÓN PARA OTORGAR O QUITAR ADMINISTRADOR
+    // Otorga o quita el rol de Administrador
     async function handleToggleAdminRole(targetUid, currentRole) {
       const newRole = currentRole === 'admin' ? 'member' : 'admin';
       const actionText = newRole === 'admin' ? 'dar el rol de Administrador a' : 'quitar el rol de Administrador a';
@@ -2254,28 +2293,51 @@
             });
           }
         }
+        showToast(`Rol actualizado a ${newRole}`);
       } catch (error) {
-        console.error('Error al cambiar rol:', error);
-        alert('Error al actualizar el rol del miembro.');
+        showToast('Error al actualizar el rol del miembro.');
       }
+    }
+
+    // Modal Renombrar Familia
+    function openEditFamilyModal() {
+        const modal = document.getElementById('editFamilyModal');
+        const input = document.getElementById('inputNewFamilyName');
+        if (modal && input) {
+            input.value = currentFamilyData?.familyName || '';
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeEditFamilyModal() {
+        const modal = document.getElementById('editFamilyModal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleUpdateFamilyName(e) {
+        e.preventDefault();
+        const newName = document.getElementById('inputNewFamilyName').value.trim();
+        if (!newName) return;
+
+        try {
+            await db.collection('families').doc(currentFamilyData.id).update({
+                familyName: newName
+            });
+            currentFamilyData.familyName = newName;
+            document.getElementById('headerFamilyName').innerText = newName;
+            document.getElementById('spaceTitle').innerText = newName;
+            closeEditFamilyModal();
+            showToast("Nombre del grupo actualizado");
+        } catch (error) {
+            showToast("Error al actualizar el nombre.");
+        }
     }
 
     function shareViaWhatsApp() {
       const appUrl = window.location.href.split('?')[0];
       const code = currentFamilyData.code;
-      const text = `¡Hola! Te invito a unirte a mi grupo en *Ahorro Familiar* 📊.\n\n👉 Ingresa aquí: ${appUrl}\n🔑 Usa mi código de invitación: *${code}*`;
+      const text = `¡Hola! Te invito a unirte a mi grupo familiar "${currentFamilyData.familyName || ''}" en *Ahorro Familiar* 📊.\n\n👉 Ingresa aquí: ${appUrl}\n🔑 Usa mi código de invitación: *${code}*`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-    }
-
-    async function handleRenameFamily() {
-      const currentName = currentFamilyData?.familyName || "";
-      const newName = prompt("Ingresa el nuevo nombre para el grupo:", currentName);
-      if (newName !== null && newName.trim() !== "" && newName !== currentName) {
-        try {
-          await db.collection("families").doc(currentUserData.familyId).update({ familyName: newName.trim() });
-          showToast("Nombre actualizado");
-        } catch (error) { showToast("Error al actualizar"); }
-      }
     }
 
     function copyFamilyCode() {
@@ -2355,84 +2417,6 @@
         toast.classList.add('opacity-0');
       }, 3500);
     }
-
-    // Abrir y cerrar modal de nombre de familia
-function openEditFamilyModal() {
-    const modal = document.getElementById('editFamilyModal');
-    const input = document.getElementById('inputNewFamilyName');
-    if (modal && input) {
-        input.value = currentFamilyData.familyName || '';
-        modal.classList.remove('hidden');
-    }
-}
-
-function closeEditFamilyModal() {
-    const modal = document.getElementById('editFamilyModal');
-    if (modal) modal.classList.add('hidden');
-}
-
-// Guardar nuevo nombre de familia en Firestore
-async function handleUpdateFamilyName(e) {
-    e.preventDefault();
-    const newName = document.getElementById('inputNewFamilyName').value.trim();
-    if (!newName) return;
-
-    try {
-        await db.collection('families').doc(currentFamilyData.id).update({
-            familyName: newName
-        });
-
-        currentFamilyData.familyName = newName;
-        document.getElementById('headerFamilyName').textContent = newName;
-        closeEditFamilyModal();
-        renderCurrentView();
-    } catch (error) {
-        console.error("Error al actualizar nombre de familia:", error);
-        alert("Ocurrió un error al actualizar el nombre.");
-    }
-}
-
-// Otorgar o quitar rol de Administrador a un integrante
-async function toggleAdminRole(targetUid, isCurrentlyAdmin) {
-    if (!confirm(`¿Estás seguro de que deseas ${isCurrentlyAdmin ? 'quitar' : 'asignar'} el rol de Administrador a este miembro?`)) {
-        return;
-    }
-
-    try {
-        const familyRef = db.collection('families').doc(currentFamilyData.id);
-        
-        if (isCurrentlyAdmin) {
-            // Quitar de administradores
-            await familyRef.update({
-                admins: firebase.firestore.FieldValue.arrayRemove(targetUid)
-            });
-            await db.collection('users').doc(targetUid).update({ role: 'member' });
-        } else {
-            // Añadir a administradores
-            await familyRef.update({
-                admins: firebase.firestore.FieldValue.arrayUnion(targetUid)
-            });
-            await db.collection('users').doc(targetUid).update({ role: 'admin' });
-        }
-
-        // Actualizar estado local
-        if (!currentFamilyData.admins) {
-            currentFamilyData.admins = [currentFamilyData.adminUid || currentFamilyData.createdBy];
-        }
-        
-        if (isCurrentlyAdmin) {
-            currentFamilyData.admins = currentFamilyData.admins.filter(id => id !== targetUid);
-        } else {
-            currentFamilyData.admins.push(targetUid);
-        }
-
-        renderCurrentView();
-    } catch (error) {
-        console.error("Error al cambiar rol:", error);
-        alert("Ocurrió un error al modificar los permisos.");
-    }
-}
-    
   </script>
 </body>
 </html>
