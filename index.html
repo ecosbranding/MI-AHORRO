@@ -1,606 +1,427 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Ahorro Familiar</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="./icon.svg">
-  <meta name="theme-color" content="#E76F51">
-  
-  <!-- Tailwind CSS CDN -->
+
+  <!-- PWA & SEO -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#1e293b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+
+  <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              DEFAULT: '#E76F51',
-              dark: '#D05A3F',
-              light: '#F4A261',
-              cream: '#FDFBF7'
-            }
-          }
+          colors: { app: { dark: '#0f172a', card: '#1e293b', primary: '#E76F51', accent: '#f4a261' } }
         }
       }
     }
   </script>
 
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <!-- Lucide Icons CDN -->
+  <!-- External Libraries -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
-  <!-- Firebase SDKs (Compat v10.12.0) -->
+  <!-- Firebase (v10 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    body {
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-    .netlify-badge, [data-netlify-deploy] { display: none !important; }
+    body { -webkit-tap-highlight-color: transparent; }
+    .toast-enter { animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="bg-brand-cream dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen pb-20 md:pb-0 transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-app-dark text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden antialiased transition-colors duration-300">
 
-  <!-- APP SHELL -->
-  <div id="app" class="max-w-4xl mx-auto flex flex-col min-h-screen">
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-20 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- AUTHENTICATION SCREEN -->
+  <div id="authScreen" class="h-full flex flex-col bg-slate-50 dark:bg-app-dark overflow-y-auto">
     
-    <!-- HEADER -->
-    <header id="mainHeader" class="hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 sticky top-0 z-30 shadow-sm transition-colors">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white shadow-sm shrink-0">
-            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+    <!-- Login Form -->
+    <div id="loginForm" class="flex flex-col h-full items-center justify-center p-6 w-full max-w-md mx-auto">
+      <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-[#E76F51]/30">
+        <i data-lucide="heart-handshake" class="w-10 h-10 text-white"></i>
+      </div>
+      <h1 class="text-3xl font-bold mb-2 text-slate-800 dark:text-white">Bienvenido</h1>
+      <p class="text-slate-500 dark:text-slate-400 mb-8 text-center">Inicia sesión en tu Espacio Familiar</p>
+      
+      <div class="w-full space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Correo Electrónico</label>
+          <input type="email" id="loginEmail" autocomplete="username" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#E76F51] outline-none transition-shadow" placeholder="tu@correo.com">
+        </div>
+        <div class="relative">
+          <label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Contraseña</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-[#E76F51] outline-none transition-shadow" placeholder="••••••••">
+          <button type="button" onclick="togglePassword('loginPassword', 'loginEye')" class="absolute right-4 top-10 text-slate-400">
+            <i data-lucide="eye" id="loginEye" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="loginRemember" class="w-4 h-4 rounded text-[#E76F51] focus:ring-[#E76F51]" checked>
+          <label for="loginRemember" class="text-sm dark:text-slate-300">Recordarme</label>
+        </div>
+        <button onclick="handleLogin()" class="w-full bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform active:scale-95 mt-4">Entrar</button>
+        
+        <div class="text-center mt-6">
+          <p class="text-slate-500 dark:text-slate-400 text-sm">¿No tienes un Espacio?</p>
+          <button onclick="showAuthView('options')" class="text-[#E76F51] font-bold mt-2">Crear o Unirse</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Options -->
+    <div id="registerOptions" class="hidden flex-col h-full items-center justify-center p-6 w-full max-w-md mx-auto">
+      <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mb-6">
+        <i data-lucide="users" class="w-10 h-10 text-white"></i>
+      </div>
+      <h2 class="text-2xl font-bold mb-8 text-center dark:text-white">Únete a Ahorro Familiar</h2>
+      
+      <div class="w-full space-y-4">
+        <button onclick="showAuthView('createSpace')" class="w-full bg-[#E76F51] text-white font-bold py-4 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+          <span>Crear mi Espacio</span>
+        </button>
+        <button onclick="showAuthView('joinSpace')" class="w-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white font-bold py-4 px-4 rounded-xl shadow flex items-center justify-center gap-2 active:scale-95 transition-transform">
+          <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+          <span>Unirme con Código</span>
+        </button>
+        <button onclick="showAuthView('login')" class="w-full py-4 text-slate-500 dark:text-slate-400 font-medium">Volver a Iniciar Sesión</button>
+      </div>
+    </div>
+
+    <!-- Create Space Form -->
+    <div id="createSpaceForm" class="hidden flex-col h-full p-6 w-full max-w-md mx-auto overflow-y-auto">
+      <button onclick="showAuthView('options')" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-6">
+        <i data-lucide="arrow-left-right" class="w-5 h-5"></i> Volver
+      </button>
+      <h2 class="text-2xl font-bold mb-6 dark:text-white">Crear Nuevo Espacio</h2>
+      <div class="space-y-4 w-full">
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Nombre de la Familia/Espacio</label>
+          <input type="text" id="regSpaceName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]" placeholder="Ej. Familia Pérez">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Tu Nombre</label>
+          <input type="text" id="regAdminName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]" placeholder="Ej. Juan">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Correo Electrónico</label>
+          <input type="email" id="regAdminEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+        </div>
+        <div class="relative">
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Contraseña (Mín. 6)</label>
+          <input type="password" id="regAdminPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <button type="button" onclick="togglePassword('regAdminPass', 'regAdminEye')" class="absolute right-4 top-9 text-slate-400">
+            <i data-lucide="eye" id="regAdminEye" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <button onclick="handleCreateSpace()" class="w-full bg-[#E76F51] text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Crear Espacio</button>
+      </div>
+    </div>
+
+    <!-- Join Space Form -->
+    <div id="joinSpaceForm" class="hidden flex-col h-full p-6 w-full max-w-md mx-auto overflow-y-auto">
+      <button onclick="showAuthView('options')" class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-6">
+        <i data-lucide="arrow-left-right" class="w-5 h-5"></i> Volver
+      </button>
+      <h2 class="text-2xl font-bold mb-6 dark:text-white">Unirse a un Espacio</h2>
+      <div class="space-y-4 w-full">
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Código de Invitación</label>
+          <input type="text" id="regJoinCode" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none uppercase font-mono focus:ring-2 focus:ring-[#E76F51]" placeholder="FAM-XXXX">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Tu Nombre</label>
+          <input type="text" id="regJoinName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Correo Electrónico</label>
+          <input type="email" id="regJoinEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+        </div>
+        <div class="relative">
+          <label class="block text-sm font-medium mb-1 dark:text-slate-300">Contraseña (Mín. 6)</label>
+          <input type="password" id="regJoinPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <button type="button" onclick="togglePassword('regJoinPass', 'regJoinEye')" class="absolute right-4 top-9 text-slate-400">
+            <i data-lucide="eye" id="regJoinEye" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <button onclick="handleJoinSpace()" class="w-full bg-[#E76F51] text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Solicitar Unión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP SCREEN -->
+  <div id="mainApp" class="hidden h-full flex flex-col bg-slate-50 dark:bg-app-dark">
+    
+    <!-- Top Header -->
+    <header class="bg-white dark:bg-app-card px-4 pt-safe-top pb-3 shadow-sm z-10 sticky top-0 border-b border-slate-100 dark:border-slate-800">
+      <div class="flex items-center justify-between mt-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shadow-md">
+            <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
           </div>
-          <div>
-            <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white" id="headerFamilyName">Ahorro Familiar</h1>
-            <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1" id="headerUserRole">
-              <i data-lucide="user" class="w-3 h-3"></i>
-              <span id="headerUserEmail">Cargando...</span>
-            </span>
+          <div class="flex flex-col">
+            <h1 id="headerFamilyName" class="font-bold text-lg dark:text-white leading-tight">Cargando...</h1>
+            <span id="headerUserRole" class="text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wide"></span>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <!-- Botón Instalar App (PWA) en Header -->
-          <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="p-2 rounded-lg bg-brand/10 text-brand font-bold text-xs flex items-center space-x-1 hover:bg-brand/20 transition">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Instalar App</span>
+        <div class="flex items-center gap-2">
+          <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="hidden w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[#E76F51]">
+            <i data-lucide="download" class="w-5 h-5"></i>
           </button>
-          
-          <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Modo Oscuro">
-            <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-            <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+          <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+            <i data-lucide="moon" id="themeIcon" class="w-5 h-5"></i>
           </button>
-
-          <div id="headerAvatar" class="w-9 h-9 rounded-full bg-brand-light text-white font-bold flex items-center justify-center border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden text-sm">
-            U
-          </div>
+          <img id="headerAvatar" src="https://ui-avatars.com/api/?name=U&background=E76F51&color=fff" class="w-10 h-10 rounded-full object-cover border-2 border-[#E76F51] shadow-sm">
         </div>
       </div>
     </header>
 
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
-      
-      <!-- AUTH SCREEN (LOGIN / REGISTER) -->
-      <section id="screenAuth" class="max-w-md mx-auto my-auto pt-6 pb-12">
-        <div class="text-center mb-6">
-          <div class="w-20 h-20 bg-brand rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg mb-4">
-            <i data-lucide="heart-handshake" class="w-12 h-12"></i>
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto pb-24 hide-scrollbar px-4 pt-4">
+
+      <!-- SECTION: RESUMEN -->
+      <section id="secResumen" class="space-y-5">
+        
+        <!-- Mini Banner de Instalación App en Inicio (oculto por defecto) -->
+        <div id="pwaInstallBanner" class="hidden mb-5 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
+              <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-white leading-tight">Instalar Aplicación</p>
+              <p class="text-[11px] text-slate-300 leading-tight mt-0.5">Acceso rápido en inicio</p>
+            </div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Ahorro Familiar</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Gestión financiera colaborativa o personal</p>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700">
-          <div class="flex border-b border-slate-200 dark:border-slate-700 mb-6">
-            <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition">Iniciar Sesión</button>
-            <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition">Crear Cuenta</button>
-          </div>
-
-          <!-- LOGIN FORM -->
-          <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Correo Electrónico</label>
-              <input type="email" id="loginEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="tu@correo.com">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Contraseña</label>
-              <div class="relative">
-                <input type="password" id="loginPassword" autocomplete="current-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand pr-10" placeholder="••••••••">
-                <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginPasswordIcon')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
-                  <i id="loginPasswordIcon" data-lucide="eye" class="w-5 h-5"></i>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center text-sm">
-              <label class="flex items-center text-slate-600 dark:text-slate-400 cursor-pointer">
-                <input type="checkbox" id="rememberMe" checked class="rounded border-slate-300 text-brand focus:ring-brand mr-2"> Recordarme
-              </label>
-            </div>
-            <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition">Ingresar</button>
-          </form>
-
-          <!-- REGISTER FORM -->
-          <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">¿Cómo deseas comenzar?</label>
-            <div class="grid grid-cols-2 gap-3 mb-2">
-              <button type="button" id="btnOptCreate" onclick="setRegOption('create')" class="p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition">
-                <i data-lucide="home" class="w-6 h-6"></i>
-                <span class="text-center leading-tight">Crear mi<br>Espacio</span>
-              </button>
-              <button type="button" id="btnOptJoin" onclick="setRegOption('join')" class="p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition">
-                <i data-lucide="users" class="w-6 h-6"></i>
-                <span class="text-center leading-tight">Unirme con<br>Código</span>
-              </button>
-            </div>
-            <input type="hidden" id="regGroupOption" value="create">
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre Completo</label>
-              <input type="text" id="regName" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="Ej: María García">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Correo Electrónico</label>
-              <input type="email" id="regEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="tu@correo.com">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Contraseña (Mín. 6 caracteres)</label>
-              <div class="relative">
-                <input type="password" id="regPassword" autocomplete="new-password" required minlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand pr-10" placeholder="••••••••">
-                <button type="button" onclick="togglePasswordVisibility('regPassword', 'regPasswordIcon')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
-                  <i id="regPasswordIcon" data-lucide="eye" class="w-5 h-5"></i>
-                </button>
-              </div>
-            </div>
-
-            <div id="familyNameContainer">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre de tu Espacio/Familia</label>
-              <input type="text" id="regFamilyName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="Ej: Finanzas de María">
-            </div>
-            <div id="familyCodeContainer" class="hidden">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Código de Invitación (6 caracteres)</label>
-              <input type="text" id="regFamilyCode" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand uppercase" placeholder="Ej: FAM123">
-            </div>
-
-            <button type="submit" id="btnRegisterSubmit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center">
-              <span>Registrarme e Ingresar</span>
-            </button>
-          </form>
-        </div>
-      </section>
-
-      <!-- PENDING APPROVAL SCREEN -->
-      <section id="screenPending" class="hidden max-w-md mx-auto my-auto text-center py-12">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700">
-          <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i data-lucide="clock" class="w-8 h-8"></i>
-          </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Solicitud en Espera</h3>
-          <p class="text-slate-600 dark:text-slate-300 text-sm mb-6">Te has unido mediante un código de invitación. El administrador de este grupo debe aprobar tu acceso.</p>
-          <button onclick="handleLogout()" class="px-6 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-            Cerrar Sesión
+          <button onclick="triggerPWAInstall()" class="px-3.5 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white text-xs font-semibold rounded-xl shadow flex items-center gap-1.5 shrink-0 transition-transform active:scale-95">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Instalar</span>
           </button>
         </div>
-      </section>
 
-      <!-- TAB 1: DASHBOARD -->
-      <section id="screenDashboard" class="hidden space-y-6">
-        <!-- Balance Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center space-x-4">
-            <div class="p-3 bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 rounded-xl">
-              <i data-lucide="trending-up" class="w-6 h-6"></i>
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-[#E76F51] rounded-full blur-[60px] opacity-20"></div>
+          <p class="text-slate-300 text-sm font-medium mb-1">Balance Total</p>
+          <h2 id="totalBalance" class="text-4xl font-extrabold tracking-tight mb-4">$0.00</h2>
+          <div class="flex gap-4">
+            <div class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/5">
+              <div class="flex items-center gap-1 text-emerald-400 mb-1"><i data-lucide="arrow-left-right" class="w-4 h-4 rotate-45"></i><span class="text-xs font-bold">Ingresos</span></div>
+              <p id="totalIncome" class="font-bold text-lg leading-tight">$0.00</p>
             </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase">Ingresos del Mes</p>
-              <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400" id="dashIncome">$0.00</h3>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center space-x-4">
-            <div class="p-3 bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400 rounded-xl">
-              <i data-lucide="trending-down" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase">Gastos del Mes</p>
-              <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400" id="dashExpense">$0.00</h3>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center space-x-4">
-            <div class="p-3 bg-brand/10 text-brand rounded-xl">
-              <i data-lucide="pie-chart" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase">Balance Total</p>
-              <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="dashBalance">$0.00</h3>
+            <div class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/5">
+              <div class="flex items-center gap-1 text-rose-400 mb-1"><i data-lucide="arrow-left-right" class="w-4 h-4 -rotate-45"></i><span class="text-xs font-bold">Gastos</span></div>
+              <p id="totalExpense" class="font-bold text-lg leading-tight">$0.00</p>
             </div>
           </div>
         </div>
 
-        <!-- Presupuestos Mensuales -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="target" class="w-5 h-5 text-brand"></i>
-              <h3 class="font-bold text-slate-900 dark:text-white">Presupuestos Mensuales por Categoría</h3>
-            </div>
-            <button id="btnManageBudgets" onclick="openBudgetModal()" class="hidden text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-200 transition">Configurar Límites</button>
-          </div>
-          <div id="budgetsList" class="space-y-3">
-            <p class="text-xs text-slate-400 italic">Cargando presupuestos...</p>
-          </div>
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-[#E76F51]"></i> Gastos por Categoría</h3>
+          <div class="relative h-48 w-full"><canvas id="categoryChart"></canvas></div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
-              <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400"></i>
-              <span>Gastos por Categoría</span>
-            </h3>
-            <div class="h-64 relative"><canvas id="chartCategory"></canvas></div>
-          </div>
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
-              <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
-              <span>Gastos por Integrante</span>
-            </h3>
-            <div class="h-64 relative"><canvas id="chartMember"></canvas></div>
-          </div>
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-[#E76F51]"></i> Gastos por Integrante</h3>
+          <div class="relative h-48 w-full"><canvas id="memberChart"></canvas></div>
+        </div>
+
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white">Progreso de Presupuestos Mensuales</h3>
+          <div id="budgetProgressList" class="space-y-4"></div>
         </div>
       </section>
 
-      <!-- TAB 2: MOVIMIENTOS -->
-      <section id="screenMovements" class="hidden space-y-4">
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-3">
-          <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
-            <div class="relative w-full sm:w-72">
-              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
-              <input type="text" id="searchInput" oninput="renderMovementsList()" placeholder="Buscar por nota, categoría..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand">
-            </div>
-            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-              <select id="filterType" onchange="renderMovementsList()" class="px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white outline-none">
-                <option value="all">Todos los tipos</option>
-                <option value="income">Ingresos</option>
-                <option value="expense">Gastos</option>
-              </select>
-              <button onclick="openMovementModal()" class="bg-brand hover:bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center space-x-1.5 shadow-sm">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>Nuevo</span>
-              </button>
-            </div>
+      <!-- SECTION: MOVIMIENTOS -->
+      <section id="secMovimientos" class="hidden space-y-4">
+        
+        <div class="bg-white dark:bg-app-card p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-3">
+          <div class="relative">
+            <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
+            <input type="text" id="searchMovements" oninput="renderMovements()" placeholder="Buscar por nota, categoría, integrante..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#E76F51] text-sm">
           </div>
-          <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-700">
-            <span>Resultados encontrados: <strong id="movementCount" class="text-slate-700 dark:text-slate-200">0</strong></span>
-            <span>Total Filtrado: <strong id="movementFilteredTotal" class="text-brand font-bold">$0.00</strong></span>
+          <div class="flex gap-2 text-sm text-slate-500 dark:text-slate-400 px-1">
+            <span>Mostrando filtrados:</span>
+            <span id="filteredBalance" class="font-bold text-slate-800 dark:text-white">$0.00</span>
           </div>
         </div>
 
-        <div id="movementsList" class="space-y-2"></div>
+        <div class="flex justify-between items-center px-1">
+          <h2 class="font-bold text-lg dark:text-white">Últimos Movimientos</h2>
+          <button onclick="exportToCSV()" class="text-sm text-[#E76F51] font-medium flex items-center gap-1 bg-[#E76F51]/10 px-3 py-1.5 rounded-lg"><i data-lucide="download" class="w-4 h-4"></i> CSV</button>
+        </div>
+        <div id="movementsList" class="space-y-3"></div>
       </section>
 
-      <!-- TAB 3: METAS Y RECURRENTES -->
-      <section id="screenGoalsRecurring" class="hidden space-y-6">
-        <div class="flex border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl p-1 shadow-sm">
-          <button id="subtabGoalsBtn" onclick="switchGoalsSubtab('goals')" class="flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition">Metas de Ahorro</button>
-          <button id="subtabRecurringBtn" onclick="switchGoalsSubtab('recurring')" class="flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition">Gastos Recurrentes</button>
+      <!-- SECTION: METAS Y GASTOS FIJOS -->
+      <section id="secMetas" class="hidden space-y-6">
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-[#E76F51]"></i> Metas de Ahorro</h3>
+            <button onclick="promptNewGoal()" class="text-[#E76F51] bg-[#E76F51]/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+          </div>
+          <div id="goalsList" class="space-y-4"></div>
         </div>
 
-        <div id="subtabGoals" class="space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg">Alcancías Virtuales</h3>
-            <button onclick="openGoalModal()" class="bg-brand text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>Nueva Meta</span>
-            </button>
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="repeat" class="w-5 h-5 text-[#E76F51]"></i> Gastos Recurrentes</h3>
+            <button onclick="promptNewRecurring()" class="text-[#E76F51] bg-[#E76F51]/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
           </div>
-          <div id="goalsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-
-        <div id="subtabRecurring" class="hidden space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg">Suscripciones y Gastos Fijos</h3>
-            <button onclick="openRecurringModal()" class="bg-brand text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>Nuevo Gasto Fijo</span>
-            </button>
-          </div>
+          <p class="text-xs text-slate-500 mb-3">Suscripciones, luz, agua. Toca "Pagar" para registrar el gasto al instante.</p>
           <div id="recurringList" class="space-y-3"></div>
         </div>
       </section>
 
-      <!-- TAB 4: FAMILIA / ESPACIO -->
-      <section id="screenFamily" class="hidden space-y-6">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <span class="text-xs font-semibold text-brand uppercase tracking-wider">Tu Espacio Financiero</span>
-              <div class="flex items-center space-x-3 mt-1">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white" id="famTitleName">Familia</h2>
-                <button id="btnRenameFamily" onclick="handleRenameFamily()" class="hidden text-slate-400 hover:text-brand p-1" title="Cambiar Nombre">
-                  <i data-lucide="pencil" class="w-4 h-4"></i>
-                </button>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comparte tu código para que otros se unan a este grupo:</p>
-            </div>
-            <div class="flex items-center space-x-2 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl border border-slate-200 dark:border-slate-600">
-              <code class="text-xl font-mono font-bold text-brand tracking-widest" id="famCodeDisplay">------</code>
-              <button onclick="copyFamilyCode()" class="p-2 text-slate-500 hover:text-brand rounded-lg" title="Copiar Código">
-                <i data-lucide="download" class="w-5 h-5"></i>
-              </button>
-            </div>
+      <!-- SECTION: ESPACIO -->
+      <section id="secEspacio" class="hidden space-y-6">
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <p class="text-xs text-[#E76F51] font-bold tracking-wider mb-2 uppercase">Tu Espacio Financiero</p>
+          <div class="flex items-center gap-2 mb-2">
+            <h2 id="spaceTabName" class="text-2xl font-bold dark:text-white">Mi Familia</h2>
+            <button id="btnEditFamily" onclick="editFamilyName()" class="text-slate-400 hover:text-[#E76F51] hidden"><i data-lucide="pencil" class="w-4 h-4"></i></button>
           </div>
-
-          <!-- BOTÓN VERDE WHATSAPP ESTILIZADO Y CORREGIDO -->
-          <button id="btnWhatsAppShare" onclick="shareViaWhatsApp()" class="hidden w-full mt-6 bg-[#25D366] hover:bg-[#1DA851] text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center space-x-2 transition text-sm">
-            <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
-              <path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.645.823 5.097 2.223 7.07L.6 24l5.056-1.52A11.96 11.96 0 0 0 12.031 24c6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm0 22.067a9.92 9.92 0 0 1-5.068-1.39l-.364-.216-3.766 1.13.996-3.664-.236-.376A9.926 9.926 0 0 1 2.103 12.03c0-5.485 4.46-9.945 9.945-9.945 5.485 0 9.946 4.46 9.946 9.945 0 5.485-4.46 9.945-9.945 9.945zm5.45-7.462c-.298-.15-1.765-.87-2.038-.97-.272-.1-.471-.1-.637 0-.166.098-.38.27-.636.57-.258.302-.516.378-.814.228-.298-.15-1.26-.464-2.4-1.48-.888.792-1.488 1.77-1.662 2.072-.174.302-.018.465.13.614.135.135.298.347.447.521.15.174.202.302.302.503.1.202.05.378-.025.528-.075.15-.662 1.597-.908 2.186-.24.577-.484.498-.662.507-.174.008-.373.008-.572.008-.199 0-.521.074-.794.376-.272.302-1.042 1.018-1.042 2.483s1.066 2.879 1.215 3.08c.15.202 2.1 3.207 5.088 4.496 2.016.868 2.76.924 3.754.78.694-.101 2.147-.878 2.445-1.727.298-.849.298-1.578.208-1.728-.09-.15-.347-.24-.645-.39z"/>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Comparte tu código para que otros se unan a este grupo:</p>
+          <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl flex items-center justify-between mb-4">
+            <span id="spaceTabCode" class="text-2xl font-mono font-bold text-[#E76F51] tracking-widest">---</span>
+            <button onclick="copyCode()" class="text-slate-400 hover:text-[#E76F51]"><i data-lucide="download" class="w-5 h-5"></i></button>
+          </div>
+          
+          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG -->
+          <button onclick="shareViaWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition-transform active:scale-95 text-base">
+            <svg class="w-6 h-6 shrink-0 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.447-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414zM12.004 2.003c-5.512 0-9.991 4.478-9.991 9.991 0 1.762.459 3.477 1.332 4.99l-1.415 5.17 5.293-1.388c1.458.795 3.107 1.218 4.781 1.218 5.513 0 9.991-4.478 9.991-9.991 0-5.513-4.478-9.991-9.991-9.991zm0 18.234c-1.503 0-2.977-.403-4.265-1.167l-.306-.181-3.167.83.845-3.088-.198-.316c-.841-1.338-1.286-2.885-1.286-4.47 0-4.542 3.696-8.238 8.238-8.238 4.541 0 8.237 3.696 8.237 8.238 0 4.542-3.696 8.237-8.238 8.237z"/>
             </svg>
             <span>Invitar por WhatsApp</span>
           </button>
         </div>
 
-        <!-- Solicitudes Pendientes (Solo Admin) -->
-        <div id="pendingMembersSection" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="font-bold text-slate-900 dark:text-white mb-4">Solicitudes Pendientes de Aprobación</h3>
-          <div id="pendingMembersList" class="space-y-3"></div>
+        <div id="adminPanel" class="hidden bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white">Solicitudes Pendientes de Aprobación</h3>
+          <div id="pendingList" class="space-y-3"><p class="text-sm text-slate-500">Sin solicitudes pendientes.</p></div>
+          
+          <h3 class="font-bold mt-6 mb-4 dark:text-white">Presupuestos por Categoría (Gastos)</h3>
+          <div id="budgetInputsList" class="space-y-3"></div>
+          <button onclick="saveBudgets()" class="w-full mt-4 bg-slate-800 dark:bg-slate-700 text-white py-2 rounded-xl text-sm font-bold">Guardar Presupuestos</button>
         </div>
 
-        <!-- Integrantes del Grupo -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="font-bold text-slate-900 dark:text-white mb-4">Integrantes del Grupo</h3>
-          <div id="activeMembersList" class="space-y-3"></div>
+        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white">Integrantes del Grupo</h3>
+          <div id="membersList" class="space-y-3"></div>
         </div>
       </section>
 
-      <!-- TAB 5: PERFIL -->
-      <section id="screenProfile" class="hidden max-w-xl mx-auto space-y-6">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+      <!-- SECTION: PERFIL -->
+      <section id="secPerfil" class="hidden space-y-6">
+        <div class="bg-white dark:bg-app-card rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
           <div class="relative w-24 h-24 mx-auto mb-4">
-            <div id="profileAvatarDisplay" class="w-24 h-24 rounded-full bg-brand-light text-white font-bold text-3xl flex items-center justify-center border-4 border-white dark:border-slate-700 shadow-md overflow-hidden">
-              U
-            </div>
-            <label for="avatarInput" class="absolute bottom-0 right-0 p-2 bg-brand text-white rounded-full cursor-pointer shadow hover:bg-brand-dark transition">
+            <img id="profileAvatar" src="" class="w-full h-full rounded-full object-cover border-4 border-slate-100 dark:border-slate-800 shadow-md">
+            <label class="absolute bottom-0 right-0 w-8 h-8 bg-[#E76F51] rounded-full flex items-center justify-center text-white cursor-pointer shadow-lg">
               <i data-lucide="pencil" class="w-4 h-4"></i>
+              <input type="file" accept="image/*" class="hidden" onchange="uploadProfilePhoto(event)">
             </label>
-            <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
           </div>
-
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="profileDisplayName">Usuario</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400" id="profileEmail">correo@ejemplo.com</p>
-
-          <form onsubmit="handleUpdateProfileName(event)" class="mt-4 flex gap-2 max-w-xs mx-auto">
-            <input type="text" id="profileNameInput" required class="flex-1 px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none" placeholder="Nuevo Nombre">
-            <button type="submit" class="bg-brand text-white px-3 py-1.5 rounded-xl text-xs font-bold">Guardar</button>
-          </form>
+          <h2 id="profileName" class="text-2xl font-bold dark:text-white mb-1">...</h2>
+          <p id="profileEmail" class="text-slate-500 dark:text-slate-400 mb-4">...</p>
+          <button onclick="editProfileName()" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium">Editar Nombre</button>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700">
-          
-          <!-- BOTÓN INSTALAR APLICACIÓN PWA EN PERFIL -->
-          <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-            <div class="flex items-center space-x-3 text-brand">
-              <i data-lucide="download" class="w-5 h-5"></i>
-              <span class="font-medium">Instalar Aplicación en este Dispositivo</span>
-            </div>
-            <span class="text-xs bg-brand/10 text-brand px-2.5 py-1 rounded-full font-bold">PWA</span>
+        <div class="bg-white dark:bg-app-card rounded-3xl p-2 shadow-sm border border-slate-100 dark:border-slate-800">
+          <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="hidden w-full flex items-center gap-3 p-4 text-left border-b border-slate-100 dark:border-slate-800">
+            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"><i data-lucide="download" class="w-5 h-5"></i></div>
+            <div class="flex-1"><h4 class="font-medium dark:text-white">Instalar Aplicación</h4><p class="text-xs text-slate-500">Añadir a pantalla de inicio</p></div>
           </button>
-
-          <button onclick="exportToCSV()" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="download" class="w-5 h-5 text-slate-500"></i>
-              <span class="font-medium text-slate-800 dark:text-slate-200">Exportar Datos a Excel (CSV)</span>
-            </div>
+          <button onclick="handleLogout()" class="w-full flex items-center gap-3 p-4 text-left border-b border-slate-100 dark:border-slate-800">
+            <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300"><i data-lucide="log-out" class="w-5 h-5"></i></div>
+            <div class="flex-1"><h4 class="font-medium dark:text-white">Cerrar Sesión</h4><p class="text-xs text-slate-500">Desconectarse del dispositivo</p></div>
           </button>
-          
-          <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="moon" class="w-5 h-5 text-slate-500"></i>
-              <span class="font-medium text-slate-800 dark:text-slate-200">Modo Oscuro</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="sr-only peer">
-              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
-            </label>
-          </div>
-
-          <button onclick="handleLogout()" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-            <div class="flex items-center space-x-3 text-rose-600">
-              <i data-lucide="log-out" class="w-5 h-5"></i>
-              <span class="font-medium">Cerrar Sesión</span>
-            </div>
-          </button>
-
-          <button onclick="handleDeleteAccount()" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-rose-600">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="user-x" class="w-5 h-5"></i>
-              <span class="font-medium">Eliminar Cuenta Permanentemente</span>
-            </div>
+          <button onclick="handleDeleteAccount()" class="w-full flex items-center gap-3 p-4 text-left">
+            <div class="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600"><i data-lucide="trash-2" class="w-5 h-5"></i></div>
+            <div class="flex-1"><h4 class="font-medium text-rose-600">Eliminar Cuenta</h4><p class="text-xs text-rose-400">Acción irreversible</p></div>
           </button>
         </div>
       </section>
 
     </main>
 
-    <!-- NAVIGATION BAR -->
-    <nav id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 max-w-4xl mx-auto z-30 transition-colors">
-      <div class="flex justify-around items-center h-16">
-        <button onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold">
-          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Resumen</span>
-        </button>
-        <button onclick="switchTab('movements')" id="navMovements" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Movimientos</span>
-        </button>
-        <button onclick="switchTab('goalsRecurring')" id="navGoalsRecurring" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="target" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Metas/Fijos</span>
-        </button>
-        <button onclick="switchTab('family')" id="navFamily" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="users" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Espacio</span>
-        </button>
-        <button onclick="switchTab('profile')" id="navProfile" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="user" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Perfil</span>
-        </button>
-      </div>
+    <!-- FAB: Add Transaction -->
+    <button onclick="openModal()" class="fixed bottom-24 right-6 w-14 h-14 bg-[#E76F51] rounded-2xl flex items-center justify-center text-white shadow-xl shadow-[#E76F51]/40 transition-transform active:scale-90 z-20">
+      <i data-lucide="plus" class="w-7 h-7"></i>
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bg-white dark:bg-app-card border-t border-slate-100 dark:border-slate-800 px-2 py-3 pb-safe-bottom fixed bottom-0 w-full z-30">
+      <ul class="flex justify-around items-center">
+        <li><button onclick="switchTab('secResumen')" class="nav-btn active flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secResumen"><i data-lucide="layout-dashboard" class="w-6 h-6"></i><span class="text-[10px] font-medium">Resumen</span></button></li>
+        <li><button onclick="switchTab('secMovimientos')" class="nav-btn flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secMovimientos"><i data-lucide="arrow-left-right" class="w-6 h-6"></i><span class="text-[10px] font-medium">Historial</span></button></li>
+        <li><button onclick="switchTab('secMetas')" class="nav-btn flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secMetas"><i data-lucide="target" class="w-6 h-6"></i><span class="text-[10px] font-medium">Metas</span></button></li>
+        <li><button onclick="switchTab('secEspacio')" class="nav-btn flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secEspacio"><i data-lucide="users" class="w-6 h-6"></i><span class="text-[10px] font-medium">Espacio</span></button></li>
+        <li><button onclick="switchTab('secPerfil')" class="nav-btn flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secPerfil"><i data-lucide="user" class="w-6 h-6"></i><span class="text-[10px] font-medium">Perfil</span></button></li>
+      </ul>
     </nav>
   </div>
 
-  <!-- MODALS -->
-  <div id="modalMovement" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-      <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-        <h3 class="font-bold text-slate-900 dark:text-white" id="modalMovementTitle">Nuevo Movimiento</h3>
-        <button onclick="closeMovementModal()" class="text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+  <!-- TRANSACTION MODAL -->
+  <div id="txModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center">
+    <div class="bg-white dark:bg-app-card w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl p-6 pb-safe-bottom animate-[slideInUp_0.3s_ease-out]">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold dark:text-white">Nuevo Movimiento</h2>
+        <button onclick="closeModal()" class="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <form onsubmit="handleSaveMovement(event)" class="p-5 space-y-4">
-        <input type="hidden" id="movId">
-        <div class="grid grid-cols-2 gap-2">
-          <button type="button" id="btnTypeExpense" onclick="setMovementType('expense')" class="py-2.5 font-bold text-sm rounded-xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950 text-rose-600">Gasto</button>
-          <button type="button" id="btnTypeIncome" onclick="setMovementType('income')" class="py-2.5 font-bold text-sm rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-500">Ingreso</button>
-        </div>
-        <input type="hidden" id="movType" value="expense">
+      
+      <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6">
+        <button id="btnTypeExpense" onclick="setTxType('expense')" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white dark:bg-slate-600 shadow-sm text-rose-500">Gasto</button>
+        <button id="btnTypeIncome" onclick="setTxType('income')" class="flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 dark:text-slate-400">Ingreso</button>
+      </div>
 
+      <div class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Monto ($)</label>
-          <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-2.5 text-lg font-bold rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="0.00">
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Monto ($)</label>
+          <input type="number" id="txAmount" class="w-full text-3xl font-bold bg-transparent border-b-2 border-slate-200 dark:border-slate-700 py-2 outline-none focus:border-[#E76F51] dark:text-white" placeholder="0.00" step="0.01">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Categoría</label>
-          <select id="movCategory" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-            <option value="Alimentación">Alimentación / Súper</option>
-            <option value="Servicios">Servicios (Luz, Agua, Internet)</option>
-            <option value="Vivienda">Vivienda / Alquiler</option>
-            <option value="Transporte">Transporte / Gasolina</option>
-            <option value="Salud">Salud y Medicinas</option>
-            <option value="Entretenimiento">Entretenimiento / Ocio</option>
-            <option value="Educación">Educación</option>
-            <option value="Sueldo">Sueldo / Nómina</option>
-            <option value="Otros">Otros</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoría</label>
+          <select id="txCategory" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white appearance-none"></select>
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Fecha</label>
-          <input type="date" id="movDate" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nota / Descripción</label>
+          <input type="text" id="txNote" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white" placeholder="¿De qué fue?">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nota / Concepto</label>
-          <input type="text" id="movNote" placeholder="Ej: Compra supermercado" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fecha</label>
+          <input type="date" id="txDate" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Foto Comprobante (Opcional)</label>
-          <input type="file" id="movReceiptInput" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-brand/10 file:text-brand file:font-semibold">
-          <input type="hidden" id="movReceiptBase64">
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto del Recibo (Opcional)</label>
+          <input type="file" id="txReceipt" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20">
         </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeMovementModal()" class="flex-1 py-3 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3 bg-brand text-white font-bold rounded-xl shadow-md">Guardar</button>
-        </div>
-      </form>
+        <button onclick="saveTransaction()" class="w-full bg-[#E76F51] text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform mt-2">Guardar</button>
+      </div>
     </div>
   </div>
 
-  <div id="modalBudget" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-      <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-        <h3 class="font-bold text-slate-900 dark:text-white">Establecer Presupuestos Mensuales</h3>
-        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <form onsubmit="handleSaveBudgets(event)" class="p-5 space-y-3 max-h-[70vh] overflow-y-auto">
-        <div id="budgetInputsContainer" class="space-y-3"></div>
-        <div class="flex gap-2 pt-4">
-          <button type="button" onclick="closeBudgetModal()" class="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-2.5 bg-brand text-white font-bold rounded-xl shadow-md">Guardar Límites</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <style>
+    .nav-btn.active { color: #E76F51; }
+    .nav-btn.active span { font-weight: 700; }
+  </style>
 
-  <div id="modalGoal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-      <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-        <h3 class="font-bold text-slate-900 dark:text-white">Nueva Meta de Ahorro</h3>
-        <button onclick="closeGoalModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <form onsubmit="handleSaveGoal(event)" class="p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre de la Meta</label>
-          <input type="text" id="goalTitle" required placeholder="Ej: Vacaciones de Verano" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Monto Objetivo ($)</label>
-          <input type="number" step="0.01" id="goalTarget" required placeholder="1000.00" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Monto Inicial Ahorrado ($)</label>
-          <input type="number" step="0.01" id="goalCurrent" value="0" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeGoalModal()" class="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-2.5 bg-brand text-white font-bold rounded-xl shadow-md">Crear Meta</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="modalRecurring" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-      <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-        <h3 class="font-bold text-slate-900 dark:text-white">Nuevo Gasto Fijo Recurrente</h3>
-        <button onclick="closeRecurringModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <form onsubmit="handleSaveRecurring(event)" class="p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Concepto / Servicio</label>
-          <input type="text" id="recName" required placeholder="Ej: Netflix, Alquiler, Luz" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Monto Estimado ($)</label>
-          <input type="number" step="0.01" id="recAmount" required placeholder="15.00" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Categoría</label>
-          <select id="recCategory" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-            <option value="Servicios">Servicios (Luz, Agua, Internet)</option>
-            <option value="Vivienda">Vivienda / Alquiler</option>
-            <option value="Entretenimiento">Entretenimiento / Suscripciones</option>
-            <option value="Salud">Salud / Seguros</option>
-            <option value="Otros">Otros</option>
-          </select>
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeRecurringModal()" class="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-2.5 bg-brand text-white font-bold rounded-xl shadow-md">Guardar Gasto</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
-
-  <!-- JAVASCRIPT -->
   <script>
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
       authDomain: "mi-ahorro-40269.firebaseapp.com",
@@ -612,1048 +433,547 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let currentUser = null;
+    // --- GLOBALS ---
     let currentUserData = null;
     let currentFamilyData = null;
     let movementsData = [];
-    let goalsData = [];
-    let recurringData = [];
-    let familyMembers = [];
-    let activeTab = 'dashboard';
-    let unsubs = [];
-    let isRegistering = false;
-    let deferredPrompt = null; // PWA Prompt Handler
+    let usersData = {};
+    let isRegistering = false; // Registration Safety Flag
 
-    let chartCatInstance = null;
-    let chartMemInstance = null;
+    let unsubUser = null;
+    let unsubFamily = null;
+    let unsubMovements = null;
+    let unsubUsers = null;
 
-    const CATEGORIES = [
-      "Alimentación", "Servicios", "Vivienda", "Transporte", 
-      "Salud", "Entretenimiento", "Educación", "Sueldo", "Otros"
-    ];
+    let catChartInstance = null;
+    let memChartInstance = null;
 
-    // PWA Install Event Listener
+    const CATEGORIES = {
+      expense: ['Alimentación', 'Vivienda', 'Transporte', 'Servicios', 'Entretenimiento', 'Salud', 'Educación', 'Ropa', 'Otros'],
+      income: ['Salario', 'Negocio', 'Inversiones', 'Regalos', 'Otros']
+    };
+    let currentTxType = 'expense';
+
+    // --- DARK MODE ---
+    function initTheme() {
+      if (localStorage.getItem('ahorro_theme') === 'dark' || (!localStorage.getItem('ahorro_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      lucide.createIcons();
+    }
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('ahorro_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }
+    initTheme();
+
+    // --- PWA INSTALLATION ---
+    let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      const bH = document.getElementById('btnInstallPWAHeader');
-      if (bH) bH.classList.remove('hidden');
+      const btnHeader = document.getElementById('btnInstallPWAHeader');
+      const btnProfile = document.getElementById('btnInstallPWAProfile');
+      const banner = document.getElementById('pwaInstallBanner');
+      if(btnHeader) btnHeader.classList.remove('hidden');
+      if(btnProfile) btnProfile.classList.remove('hidden');
+      if(banner) banner.classList.remove('hidden');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      const banner = document.getElementById('pwaInstallBanner');
+      if(banner) banner.classList.add('hidden');
+      showToast("¡Aplicación instalada con éxito!");
     });
 
     async function triggerPWAInstall() {
       if (!deferredPrompt) {
-        showToast("Para instalar: Toca el menú de tu navegador y selecciona 'Añadir a la pantalla de inicio'.");
+        showToast("Para instalar: Toca el menú del navegador y selecciona 'Añadir a la pantalla de inicio'.");
         return;
       }
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        showToast("¡Aplicación instalada con éxito!");
-      }
+      if (outcome === 'accepted') showToast("¡Aplicación instalada con éxito!");
       deferredPrompt = null;
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // --- UTILS ---
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'bg-slate-800 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium toast-enter flex items-center gap-2';
+      t.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-[#E76F51]"></i> ${msg}`;
+      document.getElementById('toastContainer').appendChild(t);
       lucide.createIcons();
-      initTheme();
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      }
-
-      document.getElementById('movDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('movReceiptInput').addEventListener('change', handleReceiptCompress);
-
-      auth.onAuthStateChanged(user => {
-        currentUser = user;
-        if (user) {
-          if (!isRegistering) listenUserData(user.uid);
-        } else {
-          cleanupListeners();
-          showScreen('auth');
-        }
-      });
-    });
-
-    function initTheme() {
-      const savedTheme = localStorage.getItem('ahorro_theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        document.getElementById('darkModeToggle').checked = true;
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.getElementById('darkModeToggle').checked = false;
-      }
+      setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
     }
-
-    function toggleDarkMode() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('ahorro_theme', isDark ? 'dark' : 'light');
-      document.getElementById('darkModeToggle').checked = isDark;
-      renderCharts();
-    }
-
-    function cleanupListeners() {
-      unsubs.forEach(u => u());
-      unsubs = [];
-      currentUserData = null;
-      currentFamilyData = null;
-      movementsData = [];
-      goalsData = [];
-      recurringData = [];
-      familyMembers = [];
-    }
-
-    function normalizeEmail(email) {
-      return (email || "").trim().toLowerCase();
-    }
-
-    function listenUserData(uid) {
-      const unsub = db.collection('users').doc(uid).onSnapshot(doc => {
-        if (!doc.exists) {
-          if (!isRegistering) showToast("Perfil no encontrado.");
-          return;
-        }
-        currentUserData = doc.data();
-
-        if (currentUserData.status === 'pending') {
-          showScreen('pending');
-          return;
-        }
-
-        if (currentUserData.familyId) {
-          listenFamilyData(currentUserData.familyId);
-          listenMovements(currentUserData.familyId);
-          listenGoals(currentUserData.familyId);
-          listenRecurring(currentUserData.familyId);
-          listenFamilyMembers(currentUserData.familyId);
-        }
-
-        updateUIHeaderAndProfile();
-        showScreen(activeTab === 'auth' || activeTab === 'pending' ? 'dashboard' : activeTab);
-      });
-      unsubs.push(unsub);
-    }
-
-    function listenFamilyData(familyId) {
-      const unsub = db.collection('families').doc(familyId).onSnapshot(doc => {
-        if (doc.exists) {
-          currentFamilyData = doc.data();
-          const name = currentFamilyData.familyName || "Mi Espacio";
-          document.getElementById('headerFamilyName').innerText = name;
-          document.getElementById('famTitleName').innerText = name;
-          document.getElementById('famCodeDisplay').innerText = currentFamilyData.code || "------";
-          renderBudgetsProgress();
-        }
-      });
-      unsubs.push(unsub);
-    }
-
-    function listenMovements(familyId) {
-      const unsub = db.collection('movements')
-        .where('familyId', '==', familyId)
-        .onSnapshot(snapshot => {
-          movementsData = [];
-          snapshot.forEach(doc => movementsData.push({ id: doc.id, ...doc.data() }));
-          movementsData.sort((a,b) => new Date(b.date) - new Date(a.date));
-          renderDashboard();
-          renderMovementsList();
-          renderBudgetsProgress();
-        });
-      unsubs.push(unsub);
-    }
-
-    function listenGoals(familyId) {
-      const unsub = db.collection('families').doc(familyId).collection('goals').onSnapshot(snap => {
-        goalsData = [];
-        snap.forEach(doc => goalsData.push({ id: doc.id, ...doc.data() }));
-        renderGoals();
-      });
-      unsubs.push(unsub);
-    }
-
-    function listenRecurring(familyId) {
-      const unsub = db.collection('families').doc(familyId).collection('recurring').onSnapshot(snap => {
-        recurringData = [];
-        snap.forEach(doc => recurringData.push({ id: doc.id, ...doc.data() }));
-        renderRecurring();
-      });
-      unsubs.push(unsub);
-    }
-
-    function listenFamilyMembers(familyId) {
-      const unsub = db.collection('users')
-        .where('familyId', '==', familyId)
-        .onSnapshot(snap => {
-          familyMembers = [];
-          snap.forEach(doc => familyMembers.push({ uid: doc.id, ...doc.data() }));
-          renderFamilyMembers();
-          renderCharts();
-        });
-      unsubs.push(unsub);
-    }
-
-    function switchAuthTab(tab) {
-      const loginForm = document.getElementById('loginForm');
-      const regForm = document.getElementById('registerForm');
-      const loginBtn = document.getElementById('tabLoginBtn');
-      const regBtn = document.getElementById('tabRegisterBtn');
-
-      if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        regForm.classList.add('hidden');
-        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition";
-        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition";
-      } else {
-        loginForm.classList.add('hidden');
-        regForm.classList.remove('hidden');
-        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition";
-        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition";
-      }
-    }
-
-    function togglePasswordVisibility(inputId, iconId) {
+    function generateCode() { return 'FAM-' + Math.floor(1000 + Math.random() * 9000); }
+    function normalizeEmail(email) { return email.trim().toLowerCase(); }
+    function togglePassword(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.setAttribute('data-lucide', 'eye-off');
-      } else {
-        input.type = 'password';
-        icon.setAttribute('data-lucide', 'eye');
-      }
+      if (input.type === 'password') { input.type = 'text'; icon.setAttribute('data-lucide', 'eye-off'); }
+      else { input.type = 'password'; icon.setAttribute('data-lucide', 'eye'); }
       lucide.createIcons();
     }
 
-    function setRegOption(opt) {
-      document.getElementById('regGroupOption').value = opt;
-      const bC = document.getElementById('btnOptCreate');
-      const bJ = document.getElementById('btnOptJoin');
-      const boxName = document.getElementById('familyNameContainer');
-      const boxCode = document.getElementById('familyCodeContainer');
-
-      if (opt === 'create') {
-        bC.className = "p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
-        bJ.className = "p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
-        boxName.classList.remove('hidden');
-        boxCode.classList.add('hidden');
-      } else {
-        bJ.className = "p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
-        bC.className = "p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
-        boxCode.classList.remove('hidden');
-        boxName.classList.add('hidden');
-      }
+    // --- IMAGE COMPRESSION (CANVAS) ---
+    function compressImage(file, maxWidth, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
-    async function handleLogin(e) {
-      e.preventDefault();
+    // --- UI NAVIGATION ---
+    function showScreen(screenId) {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById(screenId).classList.remove('hidden');
+      if(screenId === 'mainApp') { switchTab('secResumen'); populateCategories(); document.getElementById('txDate').valueAsDate = new Date(); }
+    }
+    function showAuthView(viewId) {
+      ['loginForm', 'registerOptions', 'createSpaceForm', 'joinSpaceForm'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById(viewId === 'login' ? 'loginForm' : viewId === 'options' ? 'registerOptions' : viewId === 'createSpace' ? 'createSpaceForm' : 'joinSpaceForm').classList.remove('hidden');
+    }
+    function switchTab(tabId) {
+      ['secResumen', 'secMovimientos', 'secMetas', 'secEspacio', 'secPerfil'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) btn.classList.add('active'); else btn.classList.remove('active');
+      });
+      if(tabId === 'secResumen') { renderCharts(); renderBudgets(); }
+    }
+    function openModal() { document.getElementById('txModal').classList.remove('hidden'); }
+    function closeModal() {
+      document.getElementById('txModal').classList.add('hidden');
+      document.getElementById('txAmount').value = ''; document.getElementById('txNote').value = ''; document.getElementById('txReceipt').value = '';
+    }
+    function setTxType(type) {
+      currentTxType = type;
+      document.getElementById('btnTypeExpense').className = type === 'expense' ? 'flex-1 py-2 rounded-lg text-sm font-bold bg-white dark:bg-slate-600 shadow-sm text-rose-500' : 'flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 dark:text-slate-400';
+      document.getElementById('btnTypeIncome').className = type === 'income' ? 'flex-1 py-2 rounded-lg text-sm font-bold bg-white dark:bg-slate-600 shadow-sm text-emerald-500' : 'flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 dark:text-slate-400';
+      populateCategories();
+    }
+    function populateCategories() {
+      const select = document.getElementById('txCategory');
+      select.innerHTML = CATEGORIES[currentTxType].map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    // --- AUTHENTICATION ---
+    auth.onAuthStateChanged(user => {
+      if (isRegistering) return;
+      if (user) setupDataListeners(user.uid);
+      else { cleanupListeners(); showScreen('authScreen'); showAuthView('login'); }
+    });
+
+    async function handleLogin() {
       const email = normalizeEmail(document.getElementById('loginEmail').value);
-      const password = document.getElementById('loginPassword').value;
-      const remember = document.getElementById('rememberMe').checked;
-
+      const pass = document.getElementById('loginPassword').value;
+      const remember = document.getElementById('loginRemember').checked;
+      if (!email || !pass) return showToast("Llena todos los campos.");
       try {
-        const persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
-        await auth.setPersistence(persistence);
-        await auth.signInWithEmailAndPassword(email, password);
-        showToast("¡Bienvenido!");
-      } catch (err) {
-        showToast("Error al ingresar: Credenciales no válidas.");
-      }
+        await auth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (e) { showToast("Error al entrar: Verfica tus credenciales."); }
     }
 
-    async function handleRegister(e) {
-      e.preventDefault();
-      const name = document.getElementById('regName').value.trim();
-      const email = normalizeEmail(document.getElementById('regEmail').value);
-      const password = document.getElementById('regPassword').value;
-      const groupOpt = document.getElementById('regGroupOption').value;
+    async function handleCreateSpace() {
+      const familyName = document.getElementById('regSpaceName').value.trim();
+      const name = document.getElementById('regAdminName').value.trim();
+      const email = normalizeEmail(document.getElementById('regAdminEmail').value);
+      const pass = document.getElementById('regAdminPass').value;
+      if (!familyName || !name || !email || !pass) return showToast("Llena todos los campos.");
+      if (pass.length < 6) return showToast("La contraseña debe tener al menos 6 caracteres.");
 
       try {
-        const submitBtn = document.getElementById('btnRegisterSubmit');
-        submitBtn.innerText = "Creando cuenta...";
-        submitBtn.disabled = true;
         isRegistering = true;
-
-        let familyId = "";
-        let role = "member";
-        let status = "pending";
-
-        if (groupOpt === 'create') {
-          const famName = document.getElementById('regFamilyName').value.trim() || `Finanzas de ${name}`;
-          const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-          const famRef = await db.collection('families').add({
-            familyName: famName,
-            code: code,
-            budgets: {},
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          familyId = famRef.id;
-          role = "admin";
-          status = "approved";
-        } else {
-          const codeInput = document.getElementById('regFamilyCode').value.trim().toUpperCase();
-          const famSnap = await db.collection('families').where('code', '==', codeInput).limit(1).get();
-          if (famSnap.empty) {
-            throw new Error("Código de invitación no encontrado.");
-          }
-          familyId = famSnap.docs[0].id;
-        }
-
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        const familyRef = db.collection('families').doc();
+        await familyRef.set({ familyName, code: generateCode(), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         await db.collection('users').doc(cred.user.uid).set({
-          displayName: name,
-          email: email,
-          familyId: familyId,
-          role: role,
-          status: status,
-          photoBase64: "",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          displayName: name, email, familyId: familyRef.id, role: 'admin', status: 'approved', photoBase64: '', createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         isRegistering = false;
-        listenUserData(cred.user.uid);
-        showToast("Cuenta creada correctamente");
-
-      } catch (err) {
-        isRegistering = false;
-        const submitBtn = document.getElementById('btnRegisterSubmit');
-        submitBtn.innerText = "Registrarme e Ingresar";
-        submitBtn.disabled = false;
-        showToast(err.message || "Error al registrar la cuenta.");
-      }
+        setupDataListeners(cred.user.uid);
+      } catch (e) { isRegistering = false; showToast("Error al crear espacio: " + e.message); }
     }
 
-    async function handleLogout() {
-      cleanupListeners();
-      await auth.signOut();
-      showToast("Sesión cerrada");
+    async function handleJoinSpace() {
+      const code = document.getElementById('regJoinCode').value.trim().toUpperCase();
+      const name = document.getElementById('regJoinName').value.trim();
+      const email = normalizeEmail(document.getElementById('regJoinEmail').value);
+      const pass = document.getElementById('regJoinPass').value;
+      if (!code || !name || !email || !pass) return showToast("Llena todos los campos.");
+      if (pass.length < 6) return showToast("La contraseña debe tener al menos 6 caracteres.");
+
+      try {
+        const famSnap = await db.collection('families').where('code', '==', code).get();
+        if (famSnap.empty) return showToast("Código inválido.");
+        const familyId = famSnap.docs[0].id;
+        
+        isRegistering = true;
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(cred.user.uid).set({
+          displayName: name, email, familyId, role: 'member', status: 'pending', photoBase64: '', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        isRegistering = false;
+        setupDataListeners(cred.user.uid);
+      } catch (e) { isRegistering = false; showToast("Error al unirse: " + e.message); }
     }
+
+    function handleLogout() { cleanupListeners(); auth.signOut(); }
 
     async function handleDeleteAccount() {
-      if (!confirm("⚠️ ¿Estás completamente seguro de que deseas ELIMINAR tu cuenta?\nEsta acción es irreversible.")) return;
-      if (!confirm("Última confirmación:\n¿Eliminar definitivamente?")) return;
-
+      if(!confirm("⚠️ ¿Estás completamente seguro de que deseas ELIMINAR tu cuenta?\nEsta acción es irreversible.")) return;
+      if(!confirm("Última confirmación:\n¿Eliminar definitivamente?")) return;
       try {
         const user = auth.currentUser;
-        if (!user) return;
+        if(!user) return;
         await db.collection("users").doc(user.uid).delete();
         await user.delete();
         showToast("Cuenta eliminada.");
         cleanupListeners();
-        showScreen("auth");
-      } catch (err) {
-        showToast("Cierra sesión e iníciala nuevamente antes de eliminar tu cuenta.");
-      }
+        showScreen('authScreen');
+      } catch (err) { showToast("Error: Inicia sesión nuevamente para eliminar tu cuenta."); }
     }
 
-    function showScreen(screen) {
-      activeTab = screen;
-      document.getElementById('screenAuth').classList.add('hidden');
-      document.getElementById('screenPending').classList.add('hidden');
-      document.getElementById('screenDashboard').classList.add('hidden');
-      document.getElementById('screenMovements').classList.add('hidden');
-      document.getElementById('screenGoalsRecurring').classList.add('hidden');
-      document.getElementById('screenFamily').classList.add('hidden');
-      document.getElementById('screenProfile').classList.add('hidden');
-
-      const header = document.getElementById('mainHeader');
-      const bottomNav = document.getElementById('bottomNav');
-
-      if (screen === 'auth') {
-        header.classList.add('hidden');
-        bottomNav.classList.add('hidden');
-        document.getElementById('screenAuth').classList.remove('hidden');
-        return;
-      }
-
-      if (screen === 'pending') {
-        header.classList.remove('hidden');
-        bottomNav.classList.add('hidden');
-        document.getElementById('screenPending').classList.remove('hidden');
-        return;
-      }
-
-      header.classList.remove('hidden');
-      bottomNav.classList.remove('hidden');
-
-      ['Dashboard', 'Movements', 'GoalsRecurring', 'Family', 'Profile'].forEach(t => {
-        const el = document.getElementById(`nav${t}`);
-        if (el) el.className = "flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition";
-      });
-
-      if (screen === 'dashboard') {
-        document.getElementById('screenDashboard').classList.remove('hidden');
-        document.getElementById('navDashboard').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
-        renderDashboard();
-      } else if (screen === 'movements') {
-        document.getElementById('screenMovements').classList.remove('hidden');
-        document.getElementById('navMovements').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
-        renderMovementsList();
-      } else if (screen === 'goalsRecurring') {
-        document.getElementById('screenGoalsRecurring').classList.remove('hidden');
-        document.getElementById('navGoalsRecurring').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
-      } else if (screen === 'family') {
-        document.getElementById('screenFamily').classList.remove('hidden');
-        document.getElementById('navFamily').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
-      } else if (screen === 'profile') {
-        document.getElementById('screenProfile').classList.remove('hidden');
-        document.getElementById('navProfile').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
-      }
+    // --- DATA LISTENERS ---
+    function cleanupListeners() {
+      if (unsubUser) unsubUser(); if (unsubFamily) unsubFamily(); if (unsubMovements) unsubMovements(); if (unsubUsers) unsubUsers();
     }
 
-    function switchTab(tab) {
-      showScreen(tab);
-    }
-
-    function updateUIHeaderAndProfile() {
-      if (!currentUserData) return;
-      const initial = (currentUserData.displayName || "U")[0].toUpperCase();
-      document.getElementById('headerUserEmail').innerText = currentUserData.email || "";
-      document.getElementById('headerUserRole').innerHTML = `<i data-lucide="user" class="w-3 h-3"></i><span>${currentUserData.role === 'admin' ? 'Administrador' : 'Miembro'}</span>`;
-      
-      const avatarHeader = document.getElementById('headerAvatar');
-      const avatarProfile = document.getElementById('profileAvatarDisplay');
-      if (currentUserData.photoBase64) {
-        avatarHeader.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
-        avatarProfile.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
-      } else {
-        avatarHeader.innerText = initial;
-        avatarProfile.innerText = initial;
-      }
-
-      document.getElementById('profileDisplayName').innerText = currentUserData.displayName || "Usuario";
-      document.getElementById('profileEmail').innerText = currentUserData.email || "";
-      document.getElementById('profileNameInput').value = currentUserData.displayName || "";
-
-      const isAdmin = currentUserData.role === 'admin';
-      document.getElementById('btnRenameFamily').classList.toggle('hidden', !isAdmin);
-      document.getElementById('pendingMembersSection').classList.toggle('hidden', !isAdmin);
-      document.getElementById('btnManageBudgets').classList.toggle('hidden', !isAdmin);
-      document.getElementById('btnWhatsAppShare').classList.toggle('hidden', !isAdmin);
-
-      lucide.createIcons();
-    }
-
-    function renderDashboard() {
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-
-      let inc = 0, exp = 0;
-      movementsData.forEach(m => {
-        const d = new Date(m.date);
-        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-          if (m.type === 'income') inc += Number(m.amount);
-          if (m.type === 'expense') exp += Number(m.amount);
+    function setupDataListeners(uid) {
+      if (isRegistering) return;
+      unsubUser = db.collection('users').doc(uid).onSnapshot(doc => {
+        if (!doc.exists && !isRegistering) { handleLogout(); return; }
+        currentUserData = doc.data();
+        if (currentUserData.status === 'pending') {
+          showScreen('authScreen');
+          document.getElementById('authScreen').innerHTML = `<div class="flex flex-col h-full items-center justify-center p-6 text-center"><i data-lucide="clock" class="w-16 h-16 text-[#E76F51] mb-4"></i><h2 class="text-2xl font-bold mb-2">Solicitud Pendiente</h2><p class="text-slate-500 mb-8">El administrador debe aprobar tu ingreso.</p><button onclick="handleLogout()" class="text-[#E76F51] font-bold">Cerrar Sesión</button></div>`;
+          lucide.createIcons();
+          return;
         }
+        showScreen('mainApp');
+        updateUIWithUser();
+        if (!unsubFamily) listenToFamily(currentUserData.familyId);
+        if (!unsubMovements) listenToMovements(currentUserData.familyId);
+        if (!unsubUsers) listenToUsers(currentUserData.familyId);
+        listenToGoals(currentUserData.familyId);
+        listenToRecurring(currentUserData.familyId);
+      });
+    }
+
+    function listenToFamily(familyId) {
+      unsubFamily = db.collection('families').doc(familyId).onSnapshot(doc => {
+        currentFamilyData = doc.data();
+        document.getElementById('headerFamilyName').textContent = currentFamilyData.familyName;
+        document.getElementById('spaceTabName').textContent = currentFamilyData.familyName;
+        document.getElementById('spaceTabCode').textContent = currentFamilyData.code;
+        if (currentUserData.role === 'admin') document.getElementById('btnEditFamily').classList.remove('hidden');
+        renderBudgets();
+      });
+    }
+
+    function listenToMovements(familyId) {
+      unsubMovements = db.collection('movements').where('familyId', '==', familyId).orderBy('createdAt', 'desc')
+        .onSnapshot(snap => {
+          movementsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderMovements();
+        });
+    }
+
+    function listenToUsers(familyId) {
+      unsubUsers = db.collection('users').where('familyId', '==', familyId).onSnapshot(snap => {
+        usersData = {};
+        const pending = [], approved = [];
+        snap.forEach(doc => {
+          const d = doc.data(); d.id = doc.id; usersData[doc.id] = d;
+          if (d.status === 'pending') pending.push(d); else approved.push(d);
+        });
+        
+        if (currentUserData.role === 'admin') {
+          document.getElementById('adminPanel').classList.remove('hidden');
+          const pList = document.getElementById('pendingList');
+          if (pending.length === 0) pList.innerHTML = '<p class="text-sm text-slate-500">Sin solicitudes pendientes.</p>';
+          else pList.innerHTML = pending.map(u => `
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div><p class="font-bold text-sm dark:text-white">${u.displayName}</p><p class="text-xs text-slate-500">${u.email}</p></div>
+              <div class="flex gap-2"><button onclick="approveUser('${u.id}')" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Aprobar</button></div>
+            </div>`).join('');
+          
+          const bList = document.getElementById('budgetInputsList');
+          bList.innerHTML = CATEGORIES.expense.map(cat => {
+            const current = (currentFamilyData.budgets && currentFamilyData.budgets[cat]) || '';
+            return `<div class="flex items-center justify-between text-sm"><span class="dark:text-white">${cat}</span><input type="number" id="bud_${cat}" value="${current}" placeholder="Límite $" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded text-right outline-none dark:text-white"></div>`;
+          }).join('');
+        }
+        
+        document.getElementById('membersList').innerHTML = approved.map(u => `
+          <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+              <img src="${u.photoBase64 || `https://ui-avatars.com/api/?name=${u.displayName}&background=E76F51&color=fff`}" class="w-10 h-10 rounded-full object-cover">
+              <div>
+                <p class="font-bold text-sm dark:text-white">${u.displayName} ${u.id === auth.currentUser.uid ? '(Tú)' : ''}</p>
+                <p class="text-xs text-slate-500">${u.email} • ${u.role === 'admin' ? 'Admin' : 'Miembro'}</p>
+              </div>
+            </div>
+            ${currentUserData.role === 'admin' && u.id !== auth.currentUser.uid ? `<button onclick="expelUser('${u.id}')" class="text-rose-500 bg-rose-50 dark:bg-rose-900/30 p-2 rounded-lg"><i data-lucide="user-x" class="w-4 h-4"></i></button>` : ''}
+          </div>`).join('');
+        lucide.createIcons();
+        if(document.getElementById('secResumen').classList.contains('hidden') === false) renderCharts();
+      });
+    }
+
+    function listenToGoals(familyId) {
+      db.collection('families').doc(familyId).collection('goals').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        const list = document.getElementById('goalsList');
+        if(snap.empty) { list.innerHTML = '<p class="text-sm text-slate-500">No hay metas creadas.</p>'; return; }
+        list.innerHTML = snap.docs.map(doc => {
+          const d = doc.data(); const pct = Math.min(100, (d.currentAmount / d.targetAmount) * 100).toFixed(1);
+          return `<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="font-bold text-sm dark:text-white">${d.title}</h4>
+              <span class="text-xs font-bold ${pct >= 100 ? 'text-emerald-500' : 'text-[#E76F51]'}">${pct}%</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2"><div class="bg-[#E76F51] h-2.5 rounded-full transition-all" style="width: ${pct}%"></div></div>
+            <div class="flex justify-between text-xs text-slate-500 mb-3"><span>$${d.currentAmount.toFixed(2)} ahorrados</span><span>Meta: $${d.targetAmount.toFixed(2)}</span></div>
+            <div class="flex gap-2">
+              <button onclick="addGoalFund('${doc.id}', ${d.currentAmount})" class="flex-1 bg-emerald-100 text-emerald-700 py-1.5 rounded-lg text-xs font-bold">+ Aportar</button>
+              ${currentUserData.role === 'admin' ? `<button onclick="deleteGoal('${doc.id}')" class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+        lucide.createIcons();
+      });
+    }
+
+    function listenToRecurring(familyId) {
+      db.collection('families').doc(familyId).collection('recurring').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        const list = document.getElementById('recurringList');
+        if(snap.empty) { list.innerHTML = '<p class="text-sm text-slate-500">No hay gastos fijos.</p>'; return; }
+        list.innerHTML = snap.docs.map(doc => {
+          const d = doc.data();
+          return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div><p class="font-bold text-sm dark:text-white">${d.name}</p><p class="text-xs text-slate-500">${d.category} • $${d.amount.toFixed(2)}</p></div>
+            <div class="flex gap-2">
+              <button onclick="payRecurring('${d.name}', ${d.amount}, '${d.category}')" class="bg-[#E76F51] text-white px-3 py-1.5 rounded-lg text-xs font-bold">Pagar</button>
+              ${currentUserData.role === 'admin' ? `<button onclick="deleteRecurring('${doc.id}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+        lucide.createIcons();
+      });
+    }
+
+    // --- UI UPDATES ---
+    function updateUIWithUser() {
+      document.getElementById('headerUserRole').textContent = currentUserData.role === 'admin' ? 'Administrador' : 'Miembro';
+      const avatarSrc = currentUserData.photoBase64 || `https://ui-avatars.com/api/?name=${currentUserData.displayName}&background=E76F51&color=fff`;
+      document.getElementById('headerAvatar').src = avatarSrc;
+      document.getElementById('profileAvatar').src = avatarSrc;
+      document.getElementById('profileName').textContent = currentUserData.displayName;
+      document.getElementById('profileEmail').textContent = currentUserData.email;
+    }
+
+    function renderMovements() {
+      const q = document.getElementById('searchMovements').value.toLowerCase();
+      let inc = 0, exp = 0;
+      
+      const filtered = movementsData.filter(m => {
+        const match = m.note.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || (m.userName && m.userName.toLowerCase().includes(q));
+        if(match) { if(m.type === 'income') inc += m.amount; else exp += m.amount; }
+        return match;
       });
 
-      document.getElementById('dashIncome').innerText = `$${inc.toFixed(2)}`;
-      document.getElementById('dashExpense').innerText = `$${exp.toFixed(2)}`;
-      document.getElementById('dashBalance').innerText = `$${(inc - exp).toFixed(2)}`;
+      document.getElementById('filteredBalance').textContent = `$${(inc - exp).toFixed(2)}`;
+      if (q === '') {
+        document.getElementById('totalIncome').textContent = `$${inc.toFixed(2)}`;
+        document.getElementById('totalExpense').textContent = `$${exp.toFixed(2)}`;
+        document.getElementById('totalBalance').textContent = `$${(inc - exp).toFixed(2)}`;
+      }
 
-      renderCharts();
+      document.getElementById('movementsList').innerHTML = filtered.map(m => {
+        const isInc = m.type === 'income';
+        return `<div class="bg-white dark:bg-app-card p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}">
+              <i data-lucide="${isInc ? 'arrow-down-left' : 'arrow-up-right'}" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="font-bold text-sm dark:text-white">${m.category}</p>
+              <p class="text-xs text-slate-500">${m.note} • ${m.date}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} ${m.receipt ? '• 📎 Foto' : ''}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-bold ${isInc ? 'text-emerald-500' : 'text-rose-500'}">${isInc ? '+' : '-'}$${m.amount.toFixed(2)}</p>
+            ${currentUserData.role === 'admin' || m.userId === auth.currentUser.uid ? `<button onclick="deleteTransaction('${m.id}')" class="text-xs text-rose-500 mt-1">Borrar</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      lucide.createIcons();
+      if(document.getElementById('secResumen').classList.contains('hidden') === false) { renderCharts(); renderBudgets(); }
     }
 
     function renderCharts() {
-      if (activeTab !== 'dashboard') return;
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#94A3B8' : '#64748B';
-
-      const catTotals = {};
-      CATEGORIES.forEach(c => catTotals[c] = 0);
-      movementsData.filter(m => m.type === 'expense').forEach(m => {
-        catTotals[m.category] = (catTotals[m.category] || 0) + Number(m.amount);
-      });
-
-      const catLabels = Object.keys(catTotals).filter(k => catTotals[k] > 0);
-      const catValues = catLabels.map(k => catTotals[k]);
-
-      const ctxCat = document.getElementById('chartCategory').getContext('2d');
-      if (chartCatInstance) chartCatInstance.destroy();
-      chartCatInstance = new Chart(ctxCat, {
-        type: 'doughnut',
-        data: {
-          labels: catLabels.length ? catLabels : ['Sin gastos'],
-          datasets: [{
-            data: catValues.length ? catValues : [1],
-            backgroundColor: ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#A8DADC', '#6D597A', '#B5838D', '#CBD5E1']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 11 } } } }
+      const catTotals = {}, memTotals = {};
+      movementsData.forEach(m => {
+        if(m.type === 'expense') {
+          catTotals[m.category] = (catTotals[m.category] || 0) + m.amount;
+          const uName = usersData[m.userId] ? usersData[m.userId].displayName : 'Usuario Eliminado';
+          memTotals[uName] = (memTotals[uName] || 0) + m.amount;
         }
       });
 
-      const memTotals = {};
-      familyMembers.forEach(mem => { memTotals[mem.displayName || mem.email] = 0; });
-      movementsData.filter(m => m.type === 'expense').forEach(m => {
-        const memName = m.userName || 'Familiar';
-        memTotals[memName] = (memTotals[memName] || 0) + Number(m.amount);
-      });
-
-      const memLabels = Object.keys(memTotals).filter(k => memTotals[k] > 0);
-      const memValues = memLabels.map(k => memTotals[k]);
-
-      const ctxMem = document.getElementById('chartMember').getContext('2d');
-      if (chartMemInstance) chartMemInstance.destroy();
-      chartMemInstance = new Chart(ctxMem, {
-        type: 'pie',
-        data: {
-          labels: memLabels.length ? memLabels : ['Sin datos'],
-          datasets: [{
-            data: memValues.length ? memValues : [1],
-            backgroundColor: ['#2A9D8F', '#E76F51', '#E9C46A', '#457B9D', '#F4A261']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 11 } } } }
-        }
-      });
-    }
-
-    function renderBudgetsProgress() {
-      const container = document.getElementById('budgetsList');
-      if (!container) return;
-      const budgets = (currentFamilyData && currentFamilyData.budgets) || {};
+      const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#264653', '#8AB17D', '#E07A5F', '#3D5A80'];
       
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-
-      const catSpent = {};
-      movementsData.filter(m => {
-        const d = new Date(m.date);
-        return m.type === 'expense' && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-      }).forEach(m => {
-        catSpent[m.category] = (catSpent[m.category] || 0) + Number(m.amount);
+      if(catChartInstance) catChartInstance.destroy();
+      catChartInstance = new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(catTotals), datasets: [{ data: Object.values(catTotals), backgroundColor: colors, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{color:'#94a3b8', font:{size:10}} } }, cutout: '70%' }
       });
 
-      const activeCategories = CATEGORIES.filter(c => budgets[c] && Number(budgets[c]) > 0);
+      if(memChartInstance) memChartInstance.destroy();
+      memChartInstance = new Chart(document.getElementById('memberChart'), {
+        type: 'pie',
+        data: { labels: Object.keys(memTotals), datasets: [{ data: Object.values(memTotals), backgroundColor: colors, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{color:'#94a3b8', font:{size:10}} } } }
+      });
+    }
 
-      if (activeCategories.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 italic">No hay presupuestos configurados.</p>`;
-        return;
-      }
+    function renderBudgets() {
+      if(!currentFamilyData || !currentFamilyData.budgets) return;
+      const bList = document.getElementById('budgetProgressList');
+      const expenses = {};
+      
+      const currentMonth = new Date().toISOString().slice(0,7);
+      movementsData.forEach(m => {
+        if(m.type === 'expense' && m.date.startsWith(currentMonth)) expenses[m.category] = (expenses[m.category] || 0) + m.amount;
+      });
 
-      container.innerHTML = activeCategories.map(cat => {
-        const limit = Number(budgets[cat]);
-        const spent = catSpent[cat] || 0;
-        const pct = Math.min(100, Math.round((spent / limit) * 100));
-        
-        let colorClass = "bg-emerald-500";
-        if (pct >= 80 && pct < 100) colorClass = "bg-amber-500";
-        if (pct >= 100) colorClass = "bg-rose-500";
-
-        return `
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="font-medium text-slate-700 dark:text-slate-200">${cat}</span>
-              <span class="text-slate-500 dark:text-slate-400">$${spent.toFixed(2)} / <strong>$${limit.toFixed(2)}</strong> (${pct}%)</span>
-            </div>
-            <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-              <div class="h-full ${colorClass} transition-all duration-300" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
+      const html = Object.keys(currentFamilyData.budgets).map(cat => {
+        const limit = parseFloat(currentFamilyData.budgets[cat]);
+        if(!limit) return '';
+        const spent = expenses[cat] || 0;
+        const pct = Math.min(100, (spent / limit) * 100);
+        const color = pct >= 100 ? 'bg-rose-500' : pct > 80 ? 'bg-amber-400' : 'bg-emerald-500';
+        return `<div><div class="flex justify-between text-xs font-bold mb-1"><span class="dark:text-white">${cat}</span><span class="text-slate-500">$${spent.toFixed(2)} / $${limit}</span></div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2"><div class="${color} h-2 rounded-full transition-all" style="width: ${pct}%"></div></div></div>`;
       }).join('');
+      bList.innerHTML = html || '<p class="text-sm text-slate-500">Sin presupuestos asignados por el admin.</p>';
     }
 
-    function openBudgetModal() {
-      const container = document.getElementById('budgetInputsContainer');
-      const budgets = (currentFamilyData && currentFamilyData.budgets) || {};
-      container.innerHTML = CATEGORIES.map(cat => `
-        <div class="flex items-center justify-between gap-3">
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-200">${cat}</label>
-          <input type="number" step="0.01" data-cat="${cat}" value="${budgets[cat] || ''}" placeholder="Límite" class="w-32 px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-        </div>
-      `).join('');
-      document.getElementById('modalBudget').classList.remove('hidden');
-    }
+    // --- ACTIONS ---
+    function saveTransaction() {
+      const amt = parseFloat(document.getElementById('txAmount').value);
+      const cat = document.getElementById('txCategory').value;
+      const note = document.getElementById('txNote').value.trim();
+      const date = document.getElementById('txDate').value;
+      const fileInput = document.getElementById('txReceipt');
 
-    function closeBudgetModal() {
-      document.getElementById('modalBudget').classList.add('hidden');
-    }
-
-    async function handleSaveBudgets(e) {
-      e.preventDefault();
-      const inputs = document.querySelectorAll('#budgetInputsContainer input');
-      const newBudgets = {};
-      inputs.forEach(inp => {
-        const val = parseFloat(inp.value);
-        if (!isNaN(val) && val > 0) newBudgets[inp.dataset.cat] = val;
-      });
-
-      try {
-        await db.collection('families').doc(currentUserData.familyId).update({ budgets: newBudgets });
-        showToast("Presupuestos actualizados");
-        closeBudgetModal();
-      } catch (err) {
-        showToast("Error al guardar presupuestos");
-      }
-    }
-
-    function renderMovementsList() {
-      const container = document.getElementById('movementsList');
-      const search = (document.getElementById('searchInput').value || "").toLowerCase();
-      const filter = document.getElementById('filterType').value;
-
-      let filtered = movementsData.filter(m => {
-        if (filter !== 'all' && m.type !== filter) return false;
-        if (search) {
-          const noteMatch = (m.note || "").toLowerCase().includes(search);
-          const catMatch = (m.category || "").toLowerCase().includes(search);
-          const userMatch = (m.userName || "").toLowerCase().includes(search);
-          if (!noteMatch && !catMatch && !userMatch) return false;
-        }
-        return true;
-      });
-
-      document.getElementById('movementCount').innerText = filtered.length;
-      const sum = filtered.reduce((acc, m) => acc + (m.type === 'income' ? Number(m.amount) : -Number(m.amount)), 0);
-      document.getElementById('movementFilteredTotal').innerText = `$${sum.toFixed(2)}`;
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No se encontraron registros.</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(m => {
-        const isInc = m.type === 'income';
-        return `
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-between shadow-sm">
-            <div class="flex items-center space-x-3">
-              <div class="p-2.5 rounded-xl ${isInc ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400'}">
-                <i data-lucide="${isInc ? 'trending-up' : 'trending-down'}" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="font-bold text-slate-900 dark:text-white text-sm">${m.note || m.category}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">${m.category} • ${m.userName || 'Familiar'} • ${m.date}</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-3">
-              <span class="font-bold text-base ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}">
-                ${isInc ? '+' : '-'}$${Number(m.amount).toFixed(2)}
-              </span>
-              <button onclick="handleDeleteMovement('${m.id}')" class="text-slate-400 hover:text-rose-600 p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-      lucide.createIcons();
-    }
-
-    function openMovementModal() {
-      document.getElementById('movId').value = "";
-      document.getElementById('movAmount').value = "";
-      document.getElementById('movNote').value = "";
-      document.getElementById('movReceiptBase64').value = "";
-      setMovementType('expense');
-      document.getElementById('modalMovement').classList.remove('hidden');
-    }
-
-    function closeMovementModal() {
-      document.getElementById('modalMovement').classList.add('hidden');
-    }
-
-    function setMovementType(type) {
-      document.getElementById('movType').value = type;
-      const bExp = document.getElementById('btnTypeExpense');
-      const bInc = document.getElementById('btnTypeIncome');
-      if (type === 'expense') {
-        bExp.className = "py-2.5 font-bold text-sm rounded-xl border-2 border-rose-500 bg-rose-50 dark:bg-rose-950 text-rose-600";
-        bInc.className = "py-2.5 font-bold text-sm rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-500";
-      } else {
-        bInc.className = "py-2.5 font-bold text-sm rounded-xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950 text-emerald-600";
-        bExp.className = "py-2.5 font-bold text-sm rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-500";
-      }
-    }
-
-    function handleReceiptCompress(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxW = 400;
-          const scale = maxW / img.width;
-          canvas.width = maxW;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          document.getElementById('movReceiptBase64').value = canvas.toDataURL('image/jpeg', 0.38);
-        };
-        img.src = evt.target.result;
+      if(!amt || !cat || !date) return showToast("Monto, categoría y fecha son obligatorios.");
+      const txData = {
+        familyId: currentUserData.familyId, type: currentTxType, amount: amt, category: cat, note: note || cat, date: date,
+        userId: auth.currentUser.uid, userName: currentUserData.displayName, userEmail: currentUserData.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(), receipt: ""
       };
-      reader.readAsDataURL(file);
+
+      const finalize = () => {
+        db.collection('movements').add(txData).then(() => { showToast("Movimiento guardado."); closeModal(); }).catch(e => showToast("Error: " + e.message));
+      };
+
+      if (fileInput.files.length > 0) compressImage(fileInput.files[0], 400, 0.38, b64 => { txData.receipt = b64; finalize(); });
+      else finalize();
     }
 
-    async function handleSaveMovement(e) {
-      e.preventDefault();
-      const amount = parseFloat(document.getElementById('movAmount').value);
-      const category = document.getElementById('movCategory').value;
-      const date = document.getElementById('movDate').value;
-      const note = document.getElementById('movNote').value.trim();
-      const type = document.getElementById('movType').value;
-      const receipt = document.getElementById('movReceiptBase64').value;
+    function deleteTransaction(id) { if(confirm("¿Borrar este movimiento?")) db.collection('movements').doc(id).delete(); }
+    
+    function promptNewGoal() {
+      if(currentUserData.role !== 'admin') return showToast("Solo el admin puede crear metas.");
+      const title = prompt("Nombre de la meta (Ej. Viaje):");
+      if(!title) return;
+      const target = parseFloat(prompt("Monto objetivo ($):"));
+      if(!target) return;
+      db.collection('families').doc(currentUserData.familyId).collection('goals').add({ title, targetAmount: target, currentAmount: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    function addGoalFund(id, curr) {
+      const add = parseFloat(prompt("¿Cuánto deseas aportar? ($)"));
+      if(!add) return;
+      db.collection('families').doc(currentUserData.familyId).collection('goals').doc(id).update({ currentAmount: curr + add });
+    }
+    function deleteGoal(id) { if(confirm("¿Eliminar esta meta?")) db.collection('families').doc(currentUserData.familyId).collection('goals').doc(id).delete(); }
 
-      try {
-        await db.collection('movements').add({
-          familyId: currentUserData.familyId,
-          type: type,
-          amount: amount,
-          category: category,
-          date: date,
-          note: note,
-          receipt: receipt,
-          userId: auth.currentUser.uid,
-          userName: currentUserData.displayName || "Familiar",
-          userEmail: currentUserData.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Movimiento registrado");
-        closeMovementModal();
-      } catch (err) {
-        showToast("Error al guardar movimiento");
+    function promptNewRecurring() {
+      if(currentUserData.role !== 'admin') return showToast("Solo el admin puede crear gastos fijos.");
+      const name = prompt("Nombre del gasto (Ej. Netflix):"); if(!name) return;
+      const amount = parseFloat(prompt("Monto ($):")); if(!amount) return;
+      const category = prompt("Categoría (Ej. Entretenimiento):") || 'Otros';
+      db.collection('families').doc(currentUserData.familyId).collection('recurring').add({ name, amount, category, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    function payRecurring(name, amount, category) {
+      db.collection('movements').add({
+        familyId: currentUserData.familyId, type: 'expense', amount, category, note: "Pago Fijo: " + name, date: new Date().toISOString().split('T')[0],
+        userId: auth.currentUser.uid, userName: currentUserData.displayName, userEmail: currentUserData.email, receipt: "", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => showToast(`Gasto "${name}" registrado.`));
+    }
+    function deleteRecurring(id) { if(confirm("¿Eliminar gasto recurrente?")) db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete(); }
+
+    function editFamilyName() {
+      const n = prompt("Nuevo nombre del Espacio/Familia:", currentFamilyData.familyName);
+      if(n && n.trim()) db.collection('families').doc(currentUserData.familyId).update({ familyName: n.trim() });
+    }
+    function editProfileName() {
+      const n = prompt("Tu nuevo nombre:", currentUserData.displayName);
+      if(n && n.trim()) db.collection('users').doc(auth.currentUser.uid).update({ displayName: n.trim() });
+    }
+    function uploadProfilePhoto(e) {
+      if (e.target.files.length > 0) {
+        compressImage(e.target.files[0], 200, 0.4, b64 => { db.collection('users').doc(auth.currentUser.uid).update({ photoBase64: b64 }).then(()=>showToast("Foto actualizada.")); });
       }
-    }
-
-    async function handleDeleteMovement(id) {
-      if (!confirm("¿Eliminar este registro?")) return;
-      try {
-        await db.collection('movements').doc(id).delete();
-        showToast("Movimiento eliminado");
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
-    }
-
-    function switchGoalsSubtab(tab) {
-      const gBtn = document.getElementById('subtabGoalsBtn');
-      const rBtn = document.getElementById('subtabRecurringBtn');
-      const gBox = document.getElementById('subtabGoals');
-      const rBox = document.getElementById('subtabRecurring');
-
-      if (tab === 'goals') {
-        gBox.classList.remove('hidden');
-        rBox.classList.add('hidden');
-        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition";
-        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition";
-      } else {
-        rBox.classList.remove('hidden');
-        gBox.classList.add('hidden');
-        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition";
-        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition";
-      }
-    }
-
-    function renderGoals() {
-      const container = document.getElementById('goalsList');
-      if (goalsData.length === 0) {
-        container.innerHTML = `<div class="col-span-full p-8 text-center text-slate-400 text-sm">No hay metas definidas. ¡Crea tu primera alcancía!</div>`;
-        return;
-      }
-
-      container.innerHTML = goalsData.map(g => {
-        const current = Number(g.currentAmount || 0);
-        const target = Number(g.targetAmount || 1);
-        const pct = Math.min(100, Math.round((current / target) * 100));
-
-        return `
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-3">
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="font-bold text-slate-900 dark:text-white text-base">${g.title}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Objetivo: $${target.toFixed(2)}</p>
-              </div>
-              <button onclick="handleDeleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-600 p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-            
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-brand">$${current.toFixed(2)} acumulados</span>
-                <span class="text-slate-500">${pct}%</span>
-              </div>
-              <div class="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div class="h-full bg-brand transition-all duration-300" style="width: ${pct}%"></div>
-              </div>
-            </div>
-
-            <button onclick="handleAddFundsGoal('${g.id}', ${current})" class="w-full py-2 bg-brand/10 hover:bg-brand/20 text-brand font-bold rounded-xl text-xs flex items-center justify-center space-x-1">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Aportar Fondos</span>
-            </button>
-          </div>
-        `;
-      }).join('');
-      lucide.createIcons();
-    }
-
-    function openGoalModal() { document.getElementById('modalGoal').classList.remove('hidden'); }
-    function closeGoalModal() { document.getElementById('modalGoal').classList.add('hidden'); }
-
-    async function handleSaveGoal(e) {
-      e.preventDefault();
-      const title = document.getElementById('goalTitle').value.trim();
-      const target = parseFloat(document.getElementById('goalTarget').value);
-      const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
-
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('goals').add({
-          title, targetAmount: target, currentAmount: current, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Meta creada");
-        closeGoalModal();
-      } catch (err) { showToast("Error al crear meta"); }
-    }
-
-    async function handleAddFundsGoal(goalId, currentAmount) {
-      const amountStr = prompt("Monto a aportar a esta meta ($):");
-      const amount = parseFloat(amountStr);
-      if (!isNaN(amount) && amount > 0) {
-        try {
-          await db.collection('families').doc(currentUserData.familyId).collection('goals').doc(goalId).update({
-            currentAmount: currentAmount + amount
-          });
-          showToast("Aporte registrado");
-        } catch (err) { showToast("Error al aportar"); }
-      }
-    }
-
-    async function handleDeleteGoal(goalId) {
-      if (!confirm("¿Eliminar esta meta?")) return;
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('goals').doc(goalId).delete();
-        showToast("Meta eliminada");
-      } catch (err) { showToast("Error al eliminar meta"); }
-    }
-
-    function renderRecurring() {
-      const container = document.getElementById('recurringList');
-      if (recurringData.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No hay suscripciones registradas.</div>`;
-        return;
-      }
-
-      container.innerHTML = recurringData.map(r => `
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-              <i data-lucide="repeat" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="font-bold text-slate-900 dark:text-white text-sm">${r.name}</h4>
-              <p class="text-xs text-slate-500 dark:text-slate-400">${r.category} • Estimado: $${Number(r.amount).toFixed(2)}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="handlePayRecurring('${r.name}', ${r.amount}, '${r.category}')" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-sm">
-              Registrar Pago
-            </button>
-            <button onclick="handleDeleteRecurring('${r.id}')" class="text-slate-400 hover:text-rose-600 p-1">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function openRecurringModal() { document.getElementById('modalRecurring').classList.remove('hidden'); }
-    function closeRecurringModal() { document.getElementById('modalRecurring').classList.add('hidden'); }
-
-    async function handleSaveRecurring(e) {
-      e.preventDefault();
-      const name = document.getElementById('recName').value.trim();
-      const amount = parseFloat(document.getElementById('recAmount').value);
-      const category = document.getElementById('recCategory').value;
-
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
-          name, amount, category, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Gasto fijo guardado");
-        closeRecurringModal();
-      } catch (err) { showToast("Error al guardar"); }
-    }
-
-    async function handlePayRecurring(name, amount, category) {
-      try {
-        await db.collection('movements').add({
-          familyId: currentUserData.familyId,
-          type: 'expense',
-          amount: amount,
-          category: category,
-          date: new Date().toISOString().split('T')[0],
-          note: `Pago Recurrente: ${name}`,
-          receipt: "",
-          userId: auth.currentUser.uid,
-          userName: currentUserData.displayName || "Familiar",
-          userEmail: currentUserData.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast(`Pago de ${name} registrado en movimientos`);
-      } catch (err) { showToast("Error al registrar pago"); }
-    }
-
-    async function handleDeleteRecurring(id) {
-      if (!confirm("¿Eliminar este gasto recurrente?")) return;
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
-        showToast("Gasto recurrente eliminado");
-      } catch (err) { showToast("Error al eliminar"); }
-    }
-
-    function renderFamilyMembers() {
-      const activeContainer = document.getElementById('activeMembersList');
-      const pendingContainer = document.getElementById('pendingMembersList');
-
-      const active = familyMembers.filter(m => m.status === 'approved');
-      const pending = familyMembers.filter(m => m.status === 'pending');
-
-      activeContainer.innerHTML = active.map(m => {
-        const isAdmin = currentUserData.role === 'admin';
-        const isSelf = m.uid === auth.currentUser.uid;
-        return `
-          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
-            <div class="flex items-center space-x-3">
-              <div class="w-9 h-9 rounded-full bg-brand-light text-white font-bold flex items-center justify-center">
-                ${(m.displayName || "U")[0].toUpperCase()}
-              </div>
-              <div>
-                <h4 class="font-bold text-sm text-slate-900 dark:text-white">${m.displayName || "Usuario"} ${isSelf ? '(Tú)' : ''}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">${m.email} • <strong class="capitalize">${m.role}</strong></p>
-              </div>
-            </div>
-            ${isAdmin && !isSelf ? `
-              <button onclick="handleExpelMember('${m.uid}')" class="text-slate-400 hover:text-rose-600 p-1" title="Expulsar">
-                <i data-lucide="user-x" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
-
-      pendingContainer.innerHTML = pending.length === 0 ? `<p class="text-xs text-slate-400">Sin solicitudes pendientes.</p>` : pending.map(m => `
-        <div class="flex items-center justify-between p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-          <div>
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white">${m.displayName}</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">${m.email}</p>
-          </div>
-          <div class="flex space-x-2">
-            <button onclick="handleApproveMember('${m.uid}')" class="px-3 py-1 bg-emerald-500 text-white text-xs font-bold rounded-lg">Aprobar</button>
-            <button onclick="handleExpelMember('${m.uid}')" class="px-3 py-1 bg-rose-500 text-white text-xs font-bold rounded-lg">Rechazar</button>
-          </div>
-        </div>
-      `).join('');
-
-      lucide.createIcons();
     }
 
     function shareViaWhatsApp() {
       const appUrl = window.location.href.split('?')[0];
-      const code = currentFamilyData.code;
-      const text = `¡Hola! Te invito a unirte a mi grupo en *Ahorro Familiar* 📊.\n\n👉 Ingresa aquí: ${appUrl}\n🔑 Usa mi código de invitación: *${code}*`;
+      const text = `¡Hola! Te invito a unirte a mi grupo en *Ahorro Familiar* 📊.\n\n👉 Ingresa aquí: ${appUrl}\n🔑 Usa mi código de invitación: *${currentFamilyData.code}*`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
-
-    async function handleRenameFamily() {
-      const currentName = currentFamilyData?.familyName || "";
-      const newName = prompt("Ingresa el nuevo nombre para el grupo:", currentName);
-      if (newName !== null && newName.trim() !== "" && newName !== currentName) {
-        try {
-          await db.collection("families").doc(currentUserData.familyId).update({ familyName: newName.trim() });
-          showToast("Nombre actualizado");
-        } catch (error) { showToast("Error al actualizar"); }
-      }
-    }
-
-    function copyFamilyCode() {
-      const code = document.getElementById('famCodeDisplay').innerText;
-      navigator.clipboard.writeText(code);
-      showToast("Código copiado al portapapeles");
-    }
-
-    async function handleApproveMember(uid) {
-      await db.collection('users').doc(uid).update({ status: 'approved' });
-      showToast("Miembro aprobado");
-    }
-
-    async function handleExpelMember(uid) {
-      if (!confirm("¿Seguro que deseas remover a este integrante?")) return;
-      await db.collection('users').doc(uid).update({ familyId: "", status: 'pending' });
-      showToast("Integrante removido");
-    }
-
-    async function handleUpdateProfileName(e) {
-      e.preventDefault();
-      const name = document.getElementById('profileNameInput').value.trim();
-      if (!name) return;
-      try {
-        await db.collection('users').doc(auth.currentUser.uid).update({ displayName: name });
-        showToast("Nombre actualizado");
-      } catch (err) { showToast("Error al actualizar nombre"); }
-    }
-
-    function handleAvatarUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = 120;
-          canvas.height = 120;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, 120, 120);
-          const base64 = canvas.toDataURL('image/jpeg', 0.8);
-          db.collection('users').doc(auth.currentUser.uid).update({ photoBase64: base64 });
-          showToast("Foto de perfil actualizada");
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
+    function copyCode() { navigator.clipboard.writeText(currentFamilyData.code); showToast("Código copiado."); }
+    
+    function approveUser(uid) { db.collection('users').doc(uid).update({ status: 'approved' }); }
+    function expelUser(uid) { if(confirm("¿Expulsar a este integrante?")) db.collection('users').doc(uid).delete(); }
+    
+    function saveBudgets() {
+      const b = {};
+      CATEGORIES.expense.forEach(c => { const val = document.getElementById(`bud_${c}`).value; if(val) b[c] = parseFloat(val); });
+      db.collection('families').doc(currentUserData.familyId).update({ budgets: b }).then(()=>showToast("Presupuestos guardados."));
     }
 
     function exportToCSV() {
-      if (movementsData.length === 0) {
-        showToast("No hay movimientos para exportar.");
-        return;
-      }
-      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Registrado Por\n";
-      movementsData.forEach(m => {
-        csv += `"${m.date}","${m.type}","${m.category}","${m.amount}","${m.note || ''}","${m.userName || ''}"\n`;
-      });
-
+      if(movementsData.length === 0) return showToast("No hay movimientos.");
+      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Usuario\n";
+      movementsData.forEach(m => { csv += `${m.date},${m.type==='income'?'Ingreso':'Gasto'},"${m.category}",${m.amount},"${m.note}","${m.userName}"\n`; });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `ahorro_familiar_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.classList.remove('opacity-0');
-      toast.classList.add('opacity-100');
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0');
-      }, 3000);
+      link.setAttribute("download", `movimientos_${currentFamilyData.familyName}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
   </script>
 </body>
