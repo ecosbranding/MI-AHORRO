@@ -187,6 +187,12 @@
           <i data-lucide="download" class="w-5 h-5"></i>
         </button>
 
+        <!-- Botón Instalación PWA -->
+        <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" title="Instalar App" class="hidden p-2.5 rounded-xl bg-[#E76F51]/10 text-[#E76F51] hover:bg-[#E76F51] hover:text-white transition flex items-center gap-1.5 text-xs font-bold">
+        <i data-lucide="download" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">Instalar App</span>
+        </button>
+
         <!-- Toggle Modo Oscuro -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
           <i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i>
@@ -196,6 +202,12 @@
         <button onclick="handleLogout()" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors" title="Cerrar Sesión">
           <i data-lucide="log-out" class="w-5 h-5"></i>
         </button>
+        <!-- ACCIÓN DE INSTALACIÓN EN PERFIL -->
+<div id="btnInstallPWAProfileWrap" class="hidden mb-4">
+  <button onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] text-white font-bold text-xs rounded-xl shadow-md hover:brightness-110 transition flex items-center justify-center gap-2">
+    <i data-lucide="download-cloud" class="w-4 h-4"></i> Instalar Aplicación en este Dispositivo
+  </button>
+</div>
       </div>
     </header>
 
@@ -285,6 +297,22 @@
             <p id="totalExpensesDisplay" class="text-xl font-bold text-rose-600 dark:text-rose-400">$0.00</p>
           </div>
 
+          <!-- BANNER PARA INSTALAR APP -->
+<div id="homeInstallBanner" class="hidden bg-gradient-to-r from-[#E76F51] to-[#D05A3F] rounded-2xl p-4 text-white shadow-xl flex items-center justify-between mb-4">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
+      <i data-lucide="download" class="w-5 h-5 text-white"></i>
+    </div>
+    <div>
+      <h4 class="font-bold text-sm">¿Instalar App en tu celular?</h4>
+      <p class="text-xs text-white/80">Acceso rápido desde tu pantalla de inicio</p>
+    </div>
+  </div>
+  <button onclick="triggerPWAInstall()" class="py-2 px-3.5 bg-white text-[#E76F51] font-bold text-xs rounded-xl shadow-md hover:bg-white/90 transition shrink-0 flex items-center gap-1">
+    <i data-lucide="download-cloud" class="w-4 h-4"></i> Instalar
+  </button>
+</div>
+          
           <div class="bg-gradient-to-br from-[#E76F51] to-[#D05A3F] p-4 rounded-2xl border-0 shadow-lg shadow-[#E76F51]/20">
             <div class="flex items-center justify-between text-white/80 mb-2">
               <span class="text-xs font-semibold">Balance Neto</span>
@@ -767,6 +795,50 @@
       </form>
     </div>
   </div>
+
+  <!-- MODAL DE GUÍA / INSTALACIÓN PWA -->
+<div id="installGuideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+  <div class="bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl p-6 max-w-md w-full border border-gray-100 dark:border-gray-800 shadow-2xl animate-slide-up sm:animate-fade-in">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
+          <i data-lucide="download" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-gray-900 dark:text-white">Instalar App en tu Celular</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Acceso rápido sin abrir el navegador</p>
+        </div>
+      </div>
+      <button onclick="closeInstallGuideModal()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div class="space-y-4 my-4">
+      <div class="p-3 bg-gray-50 dark:bg-gray-800/60 rounded-2xl flex items-start gap-3">
+        <div class="w-8 h-8 rounded-full bg-brand/20 text-brand flex items-center justify-center shrink-0 text-sm font-bold">1</div>
+        <div class="text-xs text-gray-600 dark:text-gray-300">
+          <span class="font-semibold block text-gray-900 dark:text-white mb-0.5">Android / Chrome / Edge</span>
+          Toca <strong>"Instalar Ahora"</strong>. Si no sale la ventana nativa, abre el menú ⋮ del navegador y elige <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla principal"</strong>.
+        </div>
+      </div>
+      <div class="p-3 bg-gray-50 dark:bg-gray-800/60 rounded-2xl flex items-start gap-3">
+        <div class="w-8 h-8 rounded-full bg-brand/20 text-brand flex items-center justify-center shrink-0 text-sm font-bold">2</div>
+        <div class="text-xs text-gray-600 dark:text-gray-300">
+          <span class="font-semibold block text-gray-900 dark:text-white mb-0.5">iPhone / Safari</span>
+          Presiona el botón <strong>Compartir</strong> y luego <strong>"Agregar a inicio"</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2 flex gap-3">
+      <button onclick="closeInstallGuideModal()" class="flex-1 py-3 rounded-xl font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm">Entendido</button>
+      <button onclick="executePWAInstallPrompt()" class="flex-1 py-3 rounded-xl font-bold bg-brand text-white shadow-lg shadow-brand/30 hover:bg-brand-dark transition text-sm flex items-center justify-center gap-2">
+        <i data-lucide="download" class="w-4 h-4"></i> Instalar Ahora
+      </button>
+    </div>
+  </div>
+</div>
 
   <!-- MODAL: SELECTOR DE CATEGORÍA INTERACTIVO -->
   <div id="categoryPickerModal" class="hidden fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
@@ -2106,6 +2178,131 @@
         toast.classList.add('opacity-0');
       }, 3500);
     }
+
+// ==========================================
+// SISTEMA DE INSTALACIÓN PWA (PASO 4)
+// ==========================================
+let deferredPrompt = null;
+
+// Inyección del manifest dinámico
+(function setupDynamicManifest() {
+  const manifest = {
+    name: "Ahorro Familiar",
+    short_name: "AhorroFam",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#FDFBF7",
+    theme_color: "#E76F51",
+    icons: [
+      { src: "https://img.icons8.com/isometric/192/000000/wallet.png", sizes: "192x192", type: "image/png" },
+      { src: "https://img.icons8.com/isometric/512/000000/wallet.png", sizes: "512x512", type: "image/png" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  const manifestLink = document.getElementById('dynamicManifest');
+  if (manifestLink) manifestLink.href = URL.createObjectURL(blob);
+})();
+
+// Service Worker mínimo para habilitar la instalación nativa
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => clients.claim());
+    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+  `;
+  const swBlob = new Blob([swCode], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+}
+
+// Captura del evento de instalación nativa
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButtons(true);
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  showInstallButtons(false);
+  if (typeof showToast === 'function') {
+    showToast('¡App instalada correctamente en tu dispositivo!', 'success');
+  }
+});
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function showInstallButtons(show) {
+  const elements = ['btnInstallPWAHeader', 'homeInstallBanner', 'btnInstallPWAProfileWrap'];
+  elements.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (show) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+  });
+
+  // En iPhone/Safari (iOS) no existe beforeinstallprompt, mostramos la guía
+  if (isIOS() && !isStandalone()) {
+    elements.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+  }
+}
+
+function triggerPWAInstall() {
+  if (isStandalone()) {
+    if (typeof showToast === 'function') {
+      showToast('Ahorro Familiar ya está instalada en tu dispositivo', 'info');
+    }
+    return;
+  }
+  openInstallGuideModal();
+}
+
+async function executePWAInstallPrompt() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      if (typeof showToast === 'function') showToast('¡Gracias por instalar Ahorro Familiar!', 'success');
+    }
+    deferredPrompt = null;
+    showInstallButtons(false);
+    closeInstallGuideModal();
+  } else {
+    if (typeof showToast === 'function') {
+      showToast('Sigue las instrucciones en pantalla para agregar a la pantalla de Inicio', 'info');
+    }
+  }
+}
+
+function openInstallGuideModal() {
+  const modal = document.getElementById('installGuideModal');
+  if (modal) modal.classList.remove('hidden');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closeInstallGuideModal() {
+  const modal = document.getElementById('installGuideModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+// Verificación inicial al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  if (isStandalone()) {
+    showInstallButtons(false);
+  } else if (isIOS()) {
+    showInstallButtons(true);
+  }
+});
+    
   </script>
 </body>
 </html>
