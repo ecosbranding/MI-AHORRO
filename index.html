@@ -12,6 +12,33 @@
   <link rel="apple-touch-icon" href="./icon-192.png">
   
   <title>Ahorro Familiar - Gestión Financiera Colaborativa</title>
+
+  <!-- Dynamic Web App Manifest Injection (GitHub Pages PWA Support) -->
+  <script>
+    const manifestData = {
+      name: "Ahorro Familiar",
+      short_name: "AhorroFam",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#F8FAFC",
+      theme_color: "#E76F51",
+      icons: [
+        {
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='none' stroke='%23E76F51' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'/></svg>",
+          sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        }
+      ]
+    };
+    const stringManifest = JSON.stringify(manifestData);
+    const blobManifest = new Blob([stringManifest], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(blobManifest);
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = manifestURL;
+    document.head.appendChild(manifestLink);
+  </script>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -248,7 +275,6 @@
         <!-- Mini Banner de Instalación App en Inicio (Oculto por defecto, revelado si el navegador lo permite) -->
         <div id="pwaInstallBanner" class="hidden mb-5 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
-            <!-- Loguito de la App (Terracota + Icono Blanco) -->
             <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
               <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
             </div>
@@ -867,7 +893,7 @@
     });
 
     function triggerPWAInstall() {
-      if (!deferredPrompt) return; // Ya no hay mensajes falsos, si no existe no hace nada (los botones están ocultos)
+      if (!deferredPrompt) return;
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
@@ -885,21 +911,28 @@
 
       // Service Worker para PWA
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-          .catch(err => console.log('SW Reg Error:', err));
+        const swCode = `
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', (e) => {});
+        `;
+        const blobSW = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blobSW);
+        navigator.serviceWorker.register('./sw.js').catch(() => {
+          navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
+        });
       }
 
       // Escuchador de Autenticación
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          if (isRegistering) return; // Evitar carrera en registro
+          if (isRegistering) return;
           try {
             const userDoc = await db.collection('users').doc(user.uid).get();
             if (userDoc.exists) {
               currentUserData = { uid: user.uid, ...userDoc.data() };
               setupMainApp();
             } else {
-              // Si aún no existe el documento y no está registrándose
               if (!isRegistering) {
                 showToast("Cargando perfil de usuario...");
               }
@@ -1107,6 +1140,9 @@
         currentUserData = null;
         currentFamilyData = null;
         movementsData = [];
+        goalsData = [];
+        recurringData = [];
+        budgetsData = {};
         showAuthScreen();
         showToast("Sesión cerrada");
       });
@@ -1118,15 +1154,16 @@
 
       try {
         const uid = auth.currentUser.uid;
-        // 1. Borrar documento primero
         await db.collection('users').doc(uid).delete();
-        // 2. Borrar en Auth
         await auth.currentUser.delete();
         
         // Limpieza de memoria
         currentUserData = null;
         currentFamilyData = null;
         movementsData = [];
+        goalsData = [];
+        recurringData = [];
+        budgetsData = {};
 
         showToast("Cuenta eliminada con éxito");
         showAuthScreen();
@@ -1326,7 +1363,6 @@
       lucide.createIcons();
       modal.classList.remove('hidden');
       
-      // Animación de subida
       setTimeout(() => {
         content.classList.remove('translate-y-full');
       }, 10);
@@ -1339,7 +1375,7 @@
       content.classList.add('translate-y-full');
       setTimeout(() => {
         modal.classList.add('hidden');
-      }, 300); // duración de la animación
+      }, 300);
     }
 
     function selectCategory(categoryName, iconName) {
@@ -1493,12 +1529,10 @@
       document.getElementById('movReceiptBase64').value = '';
       clearReceiptPreview();
       
-      // Reset custom category button
       document.getElementById('movCategory').value = '';
       document.getElementById('movCategoryText').innerText = 'Seleccionar...';
       document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
       lucide.createIcons();
-      
       document.getElementById('movementModal').classList.remove('hidden');
     }
 
