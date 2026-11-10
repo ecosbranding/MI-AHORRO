@@ -20,12 +20,18 @@
       short_name: "AhorroFam",
       start_url: "./",
       display: "standalone",
-      background_color: "#F8FAFC",
+      background_color: "#0F172A",
       theme_color: "#E76F51",
       icons: [
         {
-          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='none' stroke='%23E76F51' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'/></svg>",
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='%23E76F51'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>",
           sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        },
+        {
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 24 24' fill='%23E76F51'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>",
+          sizes: "512x512",
           type: "image/svg+xml",
           purpose: "any maskable"
         }
@@ -209,8 +215,8 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Botón Instalar PWA Header -->
-        <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#E76F51] hover:bg-[#E76F51]/10 transition-colors" title="Instalar Aplicación">
+        <!-- Botón Instalar PWA Header (Siempre visible para fácil acceso) -->
+        <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#E76F51] hover:bg-[#E76F51]/10 transition-colors" title="Instalar Aplicación">
           <i data-lucide="download" class="w-5 h-5"></i>
         </button>
 
@@ -272,8 +278,8 @@
       <!-- SECCIÓN 1: RESUMEN / INICIO -->
       <section id="secResumen" class="space-y-6">
 
-        <!-- Mini Banner de Instalación App en Inicio (Oculto por defecto, revelado si el navegador lo permite) -->
-        <div id="pwaInstallBanner" class="hidden mb-5 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
+        <!-- Mini Banner de Instalación App en Inicio -->
+        <div id="pwaInstallBanner" class="p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
               <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
@@ -556,8 +562,8 @@
 
           <!-- Opciones Adicionales -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-            <!-- Botón Instalar App PWA (Oculto por defecto, revelado si el navegador lo permite) -->
-            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="hidden w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
+            <!-- Botón Instalar App PWA (SIEMPRE VISIBLE) -->
+            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
             </button>
@@ -578,6 +584,55 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- MODAL: GUÍA DE INSTALACIÓN PWA PASO A PASO -->
+  <div id="installGuideModal" class="hidden fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-[#E76F51] flex items-center justify-center text-white shadow">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Instalar Aplicación</h3>
+        </div>
+        <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
+        <!-- Guía Android / Chrome -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+          <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+            <i data-lucide="smartphone" class="w-4 h-4 text-[#E76F51]"></i>
+            <span>En Android / Google Chrome:</span>
+          </span>
+          <ol class="list-decimal pl-4 space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+            <li>Toca el botón de <strong>tres puntos (⋮)</strong> en la esquina superior derecha de Chrome.</li>
+            <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Añadir a la pantalla de inicio"</strong>.</li>
+            <li>Confirma en el mensaje emergente.</li>
+          </ol>
+        </div>
+
+        <!-- Guía iPhone / Safari -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+          <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+            <i data-lucide="apple" class="w-4 h-4 text-[#E76F51]"></i>
+            <span>En iPhone / Safari:</span>
+          </span>
+          <ol class="list-decimal pl-4 space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+            <li>Toca el botón <strong>Compartir ( <i data-lucide="share" class="inline w-3 h-3"></i> )</strong> en la barra inferior.</li>
+            <li>Desplázate hacia abajo y selecciona <strong>"Agregar a inicio"</strong>.</li>
+            <li>Toca <strong>"Agregar"</strong> arriba a la derecha.</li>
+          </ol>
+        </div>
+      </div>
+
+      <button onclick="closeInstallGuideModal()" class="w-full py-3 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold text-xs rounded-xl shadow transition-transform active:scale-95">
+        Entendido
+      </button>
+    </div>
   </div>
 
   <!-- MODAL: AGREGAR / EDITAR MOVIMIENTO -->
@@ -864,43 +919,40 @@
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-    // Manejo de Instalación PWA (Estricto: Mostrar botones SOLO si está disponible el prompt)
-    let deferredPrompt;
+    // Manejo Inteligente de Instalación PWA
+    let deferredPrompt = null;
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      
-      // Mostrar todos los botones solo si el evento se dispara y es capturado
-      const btnHeader = document.getElementById('btnInstallPWAHeader');
-      const btnProfile = document.getElementById('btnInstallPWAProfile');
-      const installBanner = document.getElementById('pwaInstallBanner');
-
-      if (btnHeader) btnHeader.classList.remove('hidden');
-      if (btnProfile) btnProfile.classList.remove('hidden');
-      if (installBanner) installBanner.classList.remove('hidden');
     });
 
-    // Al instalar con éxito, ocultar el banner y los botones
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
-      const installBanner = document.getElementById('pwaInstallBanner');
-      if (installBanner) installBanner.classList.add('hidden');
-      const btnHeader = document.getElementById('btnInstallPWAHeader');
-      const btnProfile = document.getElementById('btnInstallPWAProfile');
-      if (btnHeader) btnHeader.classList.add('hidden');
-      if (btnProfile) btnProfile.classList.add('hidden');
       showToast("¡Aplicación instalada con éxito!");
     });
 
     function triggerPWAInstall() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Usuario aceptó instalar PWA');
-        }
-        deferredPrompt = null;
-      });
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Usuario aceptó instalar PWA');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        openInstallGuideModal();
+      }
+    }
+
+    function openInstallGuideModal() {
+      document.getElementById('installGuideModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeInstallGuideModal() {
+      document.getElementById('installGuideModal').classList.add('hidden');
     }
 
     // Inicialización al cargar la página
@@ -909,7 +961,7 @@
       initTheme();
       populateFilterCategory();
 
-      // Service Worker para PWA
+      // Service Worker para PWA (Inline Blob Fallback si sw.js directo no existe)
       if ('serviceWorker' in navigator) {
         const swCode = `
           self.addEventListener('install', (e) => self.skipWaiting());
@@ -918,6 +970,7 @@
         `;
         const blobSW = new Blob([swCode], { type: 'application/javascript' });
         const swUrl = URL.createObjectURL(blobSW);
+        
         navigator.serviceWorker.register('./sw.js').catch(() => {
           navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
         });
@@ -962,9 +1015,9 @@
       return dateStr;
     }
 
-    // MODO OSCURO
+    // MODO OSCURO (Forzar oscuro si el usuario lo guardó o preferencia del sistema)
     function initTheme() {
-      const theme = localStorage.getItem('ahorro_theme') || 'light';
+      const theme = localStorage.getItem('ahorro_theme') || 'dark';
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
         document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
@@ -1136,7 +1189,6 @@
 
     function handleLogout() {
       auth.signOut().then(() => {
-        // Limpieza total en memoria
         currentUserData = null;
         currentFamilyData = null;
         movementsData = [];
@@ -1157,7 +1209,6 @@
         await db.collection('users').doc(uid).delete();
         await auth.currentUser.delete();
         
-        // Limpieza de memoria
         currentUserData = null;
         currentFamilyData = null;
         movementsData = [];
@@ -1282,7 +1333,6 @@
           snapshot.forEach(doc => {
             movementsData.push({ id: doc.id, ...doc.data() });
           });
-          // Ordenar por fecha descendente
           movementsData.sort((a, b) => new Date(b.date) - new Date(a.date));
           renderResumen();
           renderMovementsList();
