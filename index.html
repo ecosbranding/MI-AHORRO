@@ -1,800 +1,557 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ahorro Familiar - Gestión Financiera</title>
-  
-  <!-- PWA & Favicon -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#E76F51">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="AhorroFam">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Ahorro Familiar</title>
+  <meta name="theme-color" content="#E76F51" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AhorroFam" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
-  
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-
-  <!-- Firebase JS SDK (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Estilos globales y paleta Hogar Cálido */
     :root {
       --terracota: #E76F51;
       --terracota-dark: #D4573B;
       --arena: #F4A261;
       --verde: #2A9D8F;
-      --verde-dark: #218377;
       --crema: #FDFBF7;
-      --card-bg: #FFFFFF;
       --texto: #2B2D42;
-      --texto-suave: #6C757D;
+      --suave: #6C757D;
       --rojo: #E63946;
       --borde: #EAE6DF;
-      --sombra: 0 4px 15px rgba(0, 0, 0, 0.05);
-      --radio: 16px;
+      --card: #FFFFFF;
+      --sombra: 0 10px 40px rgba(231, 111, 81, 0.12);
+      --radio: 18px;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      background-color: var(--crema);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--crema);
       color: var(--texto);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
-
-    /* Ocultar marca de agua Netlify */
-    iframe[src*="netlify"],
-    a[href*="netlify.com"],
-    [class*="netlify-badge"] {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
+    iframe[src*="netlify"], a[href*="netlify.com"], [class*="netlify-badge"] {
+      display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
-
-    /* Utilitarios */
     .hidden { display: none !important; }
-    .btn {
-      display: inline-flex;
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+
+    /* AUTH — estilo de tu captura */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, #FFF8F3 0%, var(--crema) 100%);
     }
-    .btn-primary {
-      background-color: var(--terracota);
-      color: white;
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 36px 28px 28px;
+      box-shadow: var(--sombra);
+      border: 1px solid rgba(231,111,81,0.08);
     }
-    .btn-primary:hover { background-color: var(--terracota-dark); }
-    .btn-secondary {
-      background-color: var(--verde);
-      color: white;
-    }
-    .btn-secondary:hover { background-color: var(--verde-dark); }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--borde);
-      color: var(--texto);
-    }
-    .btn-outline:hover { background-color: #F5F2EC; }
-    .btn-danger {
-      background-color: #FEE2E2;
-      color: var(--rojo);
-    }
-    .btn-danger:hover { background-color: #FCA5A5; }
-    .btn-icon {
-      padding: 8px;
-      border-radius: 50%;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
+    .auth-logo {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
     }
+    .auth-logo .logo-icon {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #E76F51, #F4A261);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(231,111,81,0.35);
+    }
+    .auth-logo h1 {
+      font-size: 1.45rem;
+      color: var(--terracota);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .auth-sub {
+      text-align: center;
+      color: var(--suave);
+      font-size: 0.92rem;
+      margin-bottom: 28px;
+    }
+    .form-group { margin-bottom: 16px; }
     .form-group label {
-      font-size: 0.85rem;
+      display: block;
+      font-size: 0.82rem;
       font-weight: 600;
-      color: var(--texto-suave);
+      color: var(--texto);
+      margin-bottom: 6px;
     }
     .form-control {
       width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--borde);
-      border-radius: 10px;
+      padding: 13px 14px;
+      border: 1.5px solid var(--borde);
+      border-radius: 12px;
       font-size: 1rem;
+      background: #F7F5F2;
+      color: var(--texto);
       outline: none;
-      background-color: #FFF;
-      transition: border-color 0.2s;
+      transition: border-color .2s, background .2s;
     }
     .form-control:focus {
       border-color: var(--terracota);
+      background: #fff;
     }
-
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
+    .password-wrap { position: relative; }
+    .password-wrap .form-control { padding-right: 46px; }
+    .eye-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      border: none; background: none; cursor: pointer; color: var(--suave);
+      display: flex; padding: 4px;
     }
-    .password-wrapper input {
-      padding-right: 44px;
+    .check-row {
+      display: flex; align-items: center; gap: 8px;
+      margin: 8px 0 18px;
+      font-size: 0.85rem; color: var(--suave);
     }
-    .password-toggle-btn {
-      position: absolute;
-      right: 10px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--texto-suave);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
+    .check-row input { width: 16px; height: 16px; accent-color: var(--terracota); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border: none; cursor: pointer; font-weight: 700; border-radius: 12px;
+      padding: 13px 18px; font-size: 1rem; transition: .15s ease;
     }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radio);
-      padding: 20px;
-      box-shadow: var(--sombra);
-      border: 1px solid var(--borde);
-      margin-bottom: 20px;
+    .btn-primary {
+      background: var(--terracota); color: #fff; width: 100%;
+      box-shadow: 0 8px 20px rgba(231,111,81,0.3);
     }
-
-    /* Pantallas */
-    .screen {
-      display: none;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-    .screen.active {
-      display: block;
-    }
-
-    /* Auth Screen */
-    #auth-screen {
-      max-width: 420px;
-      margin: auto;
-      padding: 24px;
-    }
-    .auth-header {
+    .btn-primary:hover { background: var(--terracota-dark); }
+    .btn-primary:disabled { opacity: .65; cursor: not-allowed; }
+    .btn-secondary { background: var(--verde); color: #fff; }
+    .btn-outline { background: #fff; border: 1.5px solid var(--borde); color: var(--texto); }
+    .btn-danger { background: #FEE2E2; color: var(--rojo); }
+    .btn-icon { padding: 8px; border-radius: 10px; }
+    .auth-switch {
       text-align: center;
-      margin-bottom: 24px;
+      margin-top: 18px;
+      font-size: 0.9rem;
+      color: var(--suave);
     }
-    .auth-tabs {
-      display: flex;
-      margin-bottom: 20px;
-      background: #EAE6DF;
-      border-radius: 10px;
-      padding: 4px;
-    }
-    .auth-tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--texto-suave);
-    }
-    .auth-tab.active {
-      background: white;
+    .auth-switch a {
       color: var(--terracota);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .auth-error {
+      text-align: center;
+      color: var(--rojo);
+      font-size: 0.88rem;
+      margin-top: 14px;
+      min-height: 1.2em;
+      font-weight: 600;
     }
 
-    /* Onboarding Screen */
-    #onboarding-screen {
-      max-width: 500px;
-      margin: auto;
-      padding: 24px;
-    }
-
-    /* Layout Principal Desktop/Mobile */
+    /* Resto app */
     .app-header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--borde);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 50;
+      background: #fff; border-bottom: 1px solid var(--borde);
+      padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: var(--terracota);
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; color: var(--terracota); font-size: 1.05rem;
     }
-    .user-profile-menu {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .brand .mini-logo {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: linear-gradient(135deg, #E76F51, #F4A261);
+      display: flex; align-items: center; justify-content: center; color: #fff;
     }
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: var(--arena);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--arena); color: #fff; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-
     .main-grid {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 24px;
-      padding: 24px 0;
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 18px 16px 90px;
     }
-    @media (max-width: 768px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-        padding-bottom: 80px;
-      }
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
       .desktop-nav { display: none; }
     }
-
-    /* Navegación Desktop & Mobile */
-    .nav-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .card {
+      background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
+      padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,.04); margin-bottom: 16px;
     }
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: var(--texto-suave);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border-radius: 12px; cursor: pointer;
+      color: var(--suave); font-weight: 600; margin-bottom: 4px;
     }
-    .nav-item:hover, .nav-item.active {
-      background-color: #F5EBE6;
-      color: var(--terracota);
-    }
-
+    .nav-item.active, .nav-item:hover { background: #F8EDE8; color: var(--terracota); }
     .mobile-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      border-top: 1px solid var(--borde);
-      padding: 8px 16px;
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+      background: #fff; border-top: 1px solid var(--borde);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
       justify-content: space-around;
-      z-index: 100;
     }
-    @media (max-width: 768px) {
-      .mobile-nav { display: flex; }
-    }
+    @media (max-width: 800px) { .mobile-nav { display: flex; } }
     .mobile-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      color: var(--texto-suave);
-      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      font-size: 0.7rem; color: var(--suave); cursor: pointer; font-weight: 600;
     }
-    .mobile-nav-item.active {
-      color: var(--terracota);
+    .mobile-nav-item.active { color: var(--terracota); }
+    .metrics {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;
     }
-
-    /* Dashboard Widgets */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .metric-card {
-      background: white;
-      border-radius: var(--radio);
-      padding: 16px;
-      border: 1px solid var(--borde);
-    }
-    .metric-title {
-      font-size: 0.85rem;
-      color: var(--texto-suave);
-      margin-bottom: 6px;
-    }
-    .metric-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    .metric-value.income { color: var(--verde); }
-    .metric-value.expense { color: var(--rojo); }
-    .metric-value.balance { color: var(--terracota); }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      padding: 16px;
-    }
-    .modal-content {
-      background: white;
-      border-radius: var(--radio);
-      width: 100%;
-      max-width: 500px;
-      padding: 24px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #2B2D42;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      z-index: 300;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Tablas y Lista de Movimientos */
+    .metric { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 14px; }
+    .metric .t { font-size: 0.78rem; color: var(--suave); margin-bottom: 4px; }
+    .metric .v { font-size: 1.35rem; font-weight: 800; }
+    .income { color: var(--verde); } .expense { color: var(--rojo); } .balance { color: var(--terracota); }
     .movement-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--borde);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--borde); gap: 10px;
     }
     .movement-item:last-child { border-bottom: none; }
-    .movement-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
+    .m-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .receipt-preview {
-      max-width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-top: 8px;
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 16px;
     }
-
-    /* PWA Install Banner */
+    .modal {
+      background: #fff; width: 100%; max-width: 480px; border-radius: 18px;
+      padding: 22px; max-height: 90vh; overflow-y: auto;
+    }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #2B2D42; color: #fff; padding: 12px 18px; border-radius: 12px;
+      z-index: 300; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      max-width: 90vw; text-align: center;
+    }
+    .center-box {
+      max-width: 460px; margin: 40px auto; padding: 16px;
+    }
     .pwa-banner {
-      background: var(--arena);
-      color: white;
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 10px;
-      margin-bottom: 16px;
+      background: linear-gradient(135deg, #F4A261, #E76F51); color: #fff;
+      border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600;
     }
+    .receipt-preview { max-width: 100%; max-height: 140px; border-radius: 10px; margin-top: 8px; object-fit: cover; }
   </style>
 </head>
 <body>
+  <div id="toast" class="toast hidden"></div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast hidden">
-    <span id="toast-message">Notificación</span>
-  </div>
-
-  <!-- AUTH SCREEN (Login / Registro) -->
+  <!-- ========== AUTH ========== -->
   <div id="auth-screen" class="screen active">
-    <div class="auth-header">
-      <div class="brand" style="justify-content: center; font-size: 1.8rem; margin-bottom: 8px;">
-        <i data-lucide="home" style="width: 32px; height: 32px;"></i>
-        <span>Ahorro Familiar</span>
-      </div>
-      <p style="color: var(--texto-suave);">Organiza tus finanzas en hogar y armonía</p>
-    </div>
-
-    <div class="card">
-      <div class="auth-tabs">
-        <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</div>
-        <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-icon"><i data-lucide="heart-handshake" style="width:24px;height:24px;"></i></div>
+        <h1>Ahorro Familiar</h1>
       </div>
 
-      <!-- Formulario Login -->
-      <form id="form-login" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>Correo Electrónico</label>
-          <input type="email" id="login-email" class="form-control" autocomplete="username" required placeholder="tu@correo.com">
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <div class="password-wrapper">
-            <input type="password" id="login-password" class="form-control" autocomplete="current-password" required placeholder="••••••••">
-            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password', this)">
-              <i data-lucide="eye" style="width: 20px; height: 20px;"></i>
-            </button>
+      <!-- LOGIN -->
+      <div id="panel-login">
+        <p class="auth-sub">Inicia sesión en tu cuenta</p>
+        <form id="form-login" onsubmit="return handleLogin(event)">
+          <div class="form-group">
+            <label for="login-email">Correo</label>
+            <input id="login-email" class="form-control" type="email" autocomplete="username" required placeholder="tu@correo.com" />
           </div>
-        </div>
-        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
-          <input type="checkbox" id="login-remember" checked style="width: 16px; height: 16px;">
-          <label for="login-remember" style="margin:0; cursor:pointer;">Recordarme en este dispositivo</label>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-          <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
-          Iniciar Sesión
-        </button>
-      </form>
+          <div class="form-group">
+            <label for="login-password">Contraseña</label>
+            <div class="password-wrap">
+              <input id="login-password" class="form-control" type="password" autocomplete="current-password" required placeholder="••••••••" />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('login-password', this)" aria-label="Ver contraseña">
+                <i data-lucide="eye" style="width:20px;height:20px;"></i>
+              </button>
+            </div>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="login-remember" checked />
+            Recordarme en este dispositivo (Face ID / Huella)
+          </label>
+          <button class="btn btn-primary" id="btn-login" type="submit">Ingresar</button>
+        </form>
+        <div class="auth-switch">¿No tienes cuenta? <a onclick="showRegister()">Regístrate aquí</a></div>
+        <div id="login-error" class="auth-error"></div>
+      </div>
 
-      <!-- Formulario Registro -->
-      <form id="form-register" class="hidden" onsubmit="handleRegister(event)">
-        <div class="form-group">
-          <label>Nombre Completo</label>
-          <input type="text" id="reg-name" class="form-control" required placeholder="Ej: Maria Perez">
-        </div>
-        <div class="form-group">
-          <label>Correo Electrónico</label>
-          <input type="email" id="reg-email" class="form-control" autocomplete="username" required placeholder="tu@correo.com">
-        </div>
-        <div class="form-group">
-          <label>Contraseña (mínimo 6 caracteres)</label>
-          <div class="password-wrapper">
-            <input type="password" id="reg-password" class="form-control" autocomplete="new-password" required placeholder="••••••••" minlength="6">
-            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)">
-              <i data-lucide="eye" style="width: 20px; height: 20px;"></i>
-            </button>
+      <!-- REGISTER -->
+      <div id="panel-register" class="hidden">
+        <p class="auth-sub">Crea tu cuenta familiar</p>
+        <form id="form-register" onsubmit="return handleRegister(event)">
+          <div class="form-group">
+            <label for="reg-name">Nombre</label>
+            <input id="reg-name" class="form-control" type="text" autocomplete="name" required placeholder="Tu nombre" />
           </div>
-        </div>
-        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
-          <input type="checkbox" id="reg-remember" checked style="width: 16px; height: 16px;">
-          <label for="reg-remember" style="margin:0; cursor:pointer;">Recordarme en este dispositivo</label>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-          <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
-          Crear Cuenta
-        </button>
-      </form>
+          <div class="form-group">
+            <label for="reg-email">Correo</label>
+            <input id="reg-email" class="form-control" type="email" autocomplete="username" required placeholder="tu@correo.com" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Contraseña (mín. 6 caracteres)</label>
+            <div class="password-wrap">
+              <input id="reg-password" class="form-control" type="password" autocomplete="new-password" required minlength="6" placeholder="••••••••" />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('reg-password', this)">
+                <i data-lucide="eye" style="width:20px;height:20px;"></i>
+              </button>
+            </div>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="reg-remember" checked />
+            Recordarme en este dispositivo (Face ID / Huella)
+          </label>
+          <button class="btn btn-primary" id="btn-register" type="submit">Crear cuenta</button>
+        </form>
+        <div class="auth-switch">¿Ya tienes cuenta? <a onclick="showLogin()">Inicia sesión</a></div>
+        <div id="register-error" class="auth-error"></div>
+      </div>
     </div>
   </div>
 
-  <!-- ONBOARDING SCREEN (Crear o Unirse a Familia) -->
+  <!-- ========== ONBOARDING ========== -->
   <div id="onboarding-screen" class="screen">
-    <div class="card" style="text-align: center;">
-      <i data-lucide="users" style="width: 48px; height: 48px; color: var(--terracota); margin-bottom: 12px;"></i>
-      <h2 style="margin-bottom: 8px;">Bienvenido/a a Ahorro Familiar</h2>
-      <p style="color: var(--texto-suave); margin-bottom: 24px;">Para comenzar, crea un nuevo grupo familiar o únete a uno existente.</p>
+    <div class="center-box">
+      <div class="card" style="text-align:center;">
+        <div class="logo-icon" style="margin:0 auto 12px;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#E76F51,#F4A261);display:flex;align-items:center;justify-content:center;color:#fff;">
+          <i data-lucide="heart-handshake" style="width:28px;height:28px;"></i>
+        </div>
+        <h2 style="margin-bottom:6px;">Tu hogar financiero</h2>
+        <p style="color:var(--suave);margin-bottom:18px;font-size:.92rem;">Crea un grupo familiar o únete con un código.</p>
 
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <!-- Crear Familia -->
-        <div class="card" style="background: var(--crema); border: 1px dashed var(--terracota); text-align: left;">
-          <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--terracota);">Crear nueva familia</h3>
-          <p style="font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 12px;">Serás el Administrador del grupo y podrás invitar a otros miembros.</p>
-          <div class="form-group">
-            <input type="text" id="new-family-name" class="form-control" placeholder="Ej: Familia Rodriguez">
-          </div>
-          <button onclick="handleCreateFamily()" class="btn btn-primary" style="width: 100%;">
-            <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
-            Crear Grupo
-          </button>
+        <div class="card" style="text-align:left;background:#FFF8F3;border-style:dashed;border-color:#E76F51;">
+          <strong style="color:var(--terracota);">Crear familia</strong>
+          <p style="font-size:.82rem;color:var(--suave);margin:6px 0 10px;">Serás administrador y podrás aprobar miembros.</p>
+          <input id="new-family-name" class="form-control" placeholder="Ej: Familia Carvajal Vera" style="margin-bottom:10px;" />
+          <button class="btn btn-primary" style="width:100%;" onclick="handleCreateFamily()">Crear grupo</button>
         </div>
 
-        <!-- Unirse a Familia -->
-        <div class="card" style="background: var(--crema); border: 1px dashed var(--verde); text-align: left;">
-          <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--verde);">Unirse a una familia</h3>
-          <p style="font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 12px;">Ingresa el código único proporcionado por el administrador de tu familia.</p>
-          <div class="form-group">
-            <input type="text" id="join-family-code" class="form-control" placeholder="Ej: FAM-8912" style="text-transform: uppercase;">
-          </div>
-          <button onclick="handleJoinFamily()" class="btn btn-secondary" style="width: 100%;">
-            <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
-            Unirme a la Familia
-          </button>
+        <div class="card" style="text-align:left;background:#F1FAF8;border-style:dashed;border-color:#2A9D8F;margin-bottom:0;">
+          <strong style="color:var(--verde);">Unirse con código</strong>
+          <p style="font-size:.82rem;color:var(--suave);margin:6px 0 10px;">Te quedas en pendiente hasta que el admin apruebe (salvo invitación por correo).</p>
+          <input id="join-family-code" class="form-control" placeholder="Ej: VIC-6050" style="margin-bottom:10px;text-transform:uppercase;" />
+          <button class="btn btn-secondary" style="width:100%;" onclick="handleJoinFamily()">Unirme</button>
         </div>
+
+        <button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="handleLogout()">Cerrar sesión</button>
       </div>
     </div>
   </div>
 
-  <!-- PENDING APPROVAL SCREEN -->
-  <div id="pending-screen" class="screen" style="max-width: 450px; margin: auto; text-align: center;">
-    <div class="card">
-      <i data-lucide="clock" style="width: 48px; height: 48px; color: var(--arena); margin-bottom: 12px;"></i>
-      <h2 style="margin-bottom: 8px;">Solicitud Pendiente</h2>
-      <p style="color: var(--texto-suave); margin-bottom: 20px;">Has solicitado unirte al grupo familiar. El administrador del grupo debe aprobar tu acceso.</p>
-      <button onclick="checkStatusManual()" class="btn btn-outline" style="width: 100%; margin-bottom: 10px;">
-        <i data-lucide="refresh-cw" style="width: 18px; height: 18px;"></i>
-        Verificar Estado
-      </button>
-      <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
-        Cerrar Sesión
-      </button>
+  <!-- ========== PENDING ========== -->
+  <div id="pending-screen" class="screen">
+    <div class="center-box">
+      <div class="card" style="text-align:center;">
+        <i data-lucide="clock" style="width:42px;height:42px;color:var(--arena);margin-bottom:10px;"></i>
+        <h2>Solicitud pendiente</h2>
+        <p style="color:var(--suave);margin:10px 0 18px;">El administrador de la familia debe aprobar tu ingreso.</p>
+        <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="showToast('Seguimos esperando la aprobación...')">Verificar estado</button>
+        <button class="btn btn-danger" style="width:100%;" onclick="handleLogout()">Cerrar sesión</button>
+      </div>
     </div>
   </div>
 
-  <!-- MAIN APP SCREEN -->
+  <!-- ========== APP ========== -->
   <div id="app-screen" class="screen">
-    <!-- Header App -->
     <header class="app-header">
       <div class="brand">
-        <i data-lucide="home" style="width: 24px; height: 24px;"></i>
+        <div class="mini-logo"><i data-lucide="heart-handshake" style="width:18px;height:18px;"></i></div>
         <span id="app-family-title">Ahorro Familiar</span>
       </div>
-      <div class="user-profile-menu">
+      <div style="display:flex;align-items:center;gap:10px;">
         <div id="user-avatar" class="avatar">U</div>
-        <span id="user-display-name" style="font-weight: 600; display: none; @media(min-width:768px){display:inline;}">Usuario</span>
-        <button onclick="handleLogout()" class="btn btn-outline btn-icon" title="Cerrar Sesión">
-          <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+        <button class="btn btn-outline btn-icon" onclick="handleLogout()" title="Salir">
+          <i data-lucide="log-out" style="width:18px;height:18px;"></i>
         </button>
       </div>
     </header>
 
     <div class="main-grid">
-      <!-- Nav Desktop -->
       <nav class="desktop-nav">
-        <div class="card" style="padding: 12px;">
-          <ul class="nav-list">
-            <li class="nav-item active" onclick="switchSection('dashboard', this)">
-              <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
-              Panel Principal
-            </li>
-            <li class="nav-item" onclick="switchSection('movements', this)">
-              <i data-lucide="arrow-left-right" style="width: 20px; height: 20px;"></i>
-              Movimientos
-            </li>
-            <li class="nav-item" onclick="switchSection('analytics', this)">
-              <i data-lucide="pie-chart" style="width: 20px; height: 20px;"></i>
-              Estadísticas
-            </li>
-            <li class="nav-item" onclick="switchSection('family', this)">
-              <i data-lucide="users" style="width: 20px; height: 20px;"></i>
-              Familia / Admin
-            </li>
-            <li class="nav-item" onclick="switchSection('profile', this)">
-              <i data-lucide="user" style="width: 20px; height: 20px;"></i>
-              Mi Perfil
-            </li>
-          </ul>
+        <div class="card" style="padding:10px;">
+          <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)">
+            <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Panel
+          </div>
+          <div class="nav-item" data-section="movements" onclick="switchSection('movements', this)">
+            <i data-lucide="arrow-left-right" style="width:18px;height:18px;"></i> Movimientos
+          </div>
+          <div class="nav-item" data-section="analytics" onclick="switchSection('analytics', this)">
+            <i data-lucide="pie-chart" style="width:18px;height:18px;"></i> Estadísticas
+          </div>
+          <div class="nav-item" data-section="family" onclick="switchSection('family', this)">
+            <i data-lucide="users" style="width:18px;height:18px;"></i> Familia
+          </div>
+          <div class="nav-item" data-section="profile" onclick="switchSection('profile', this)">
+            <i data-lucide="user" style="width:18px;height:18px;"></i> Perfil
+          </div>
         </div>
       </nav>
 
-      <!-- Main Content Area -->
       <main>
-        <!-- Banner PWA si es instalable -->
         <div id="pwa-install-container" class="pwa-banner hidden">
-          <span>¡Instala la App en tu dispositivo para un acceso más rápido!</span>
-          <button id="btn-pwa-install" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Instalar</button>
+          <span>Instala Ahorro Familiar en tu dispositivo</span>
+          <button id="btn-pwa-install" class="btn" style="background:#fff;color:var(--terracota);padding:8px 12px;font-size:.82rem;">Instalar</button>
         </div>
 
-        <!-- DASHBOARD SECTION -->
-        <section id="section-dashboard" class="app-section">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2>Resumen del Mes</h2>
-            <button onclick="openMovementModal()" class="btn btn-primary">
-              <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
-              Nuevo Movimiento
+        <!-- Dashboard -->
+        <section id="section-dashboard">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <h2>Resumen del mes</h2>
+            <button class="btn btn-primary" style="width:auto;padding:10px 14px;" onclick="openMovementModal()">
+              <i data-lucide="plus" style="width:16px;height:16px;"></i> Nuevo
             </button>
           </div>
-
-          <!-- Métricas -->
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <div class="metric-title">Ingresos Totales</div>
-              <div id="metric-income" class="metric-value income">$0.00</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Gastos Totales</div>
-              <div id="metric-expenses" class="metric-value expense">$0.00</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Balance Neto</div>
-              <div id="metric-balance" class="metric-value balance">$0.00</div>
-            </div>
+          <div class="metrics">
+            <div class="metric"><div class="t">Ingresos</div><div id="metric-income" class="v income">$0.00</div></div>
+            <div class="metric"><div class="t">Gastos</div><div id="metric-expenses" class="v expense">$0.00</div></div>
+            <div class="metric"><div class="t">Balance</div><div id="metric-balance" class="v balance">$0.00</div></div>
           </div>
-
-          <!-- Gráfico Rápido & Últimos Movimientos -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
             <div class="card">
-              <h3 style="margin-bottom: 12px; font-size: 1rem;">Comparativa Ingresos vs Gastos</h3>
-              <canvas id="chart-quick-bar" style="max-height: 220px;"></canvas>
+              <h3 style="font-size:.95rem;margin-bottom:10px;">Ingresos vs Gastos</h3>
+              <canvas id="chart-quick-bar" height="180"></canvas>
             </div>
             <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 1rem;">Últimos Movimientos</h3>
-                <span onclick="switchSection('movements')" style="font-size: 0.85rem; color: var(--terracota); cursor: pointer; font-weight: 600;">Ver Todos</span>
-              </div>
-              <div id="recent-movements-list">
-                <p style="color: var(--texto-suave); font-size: 0.9rem;">Cargando registros...</p>
-              </div>
+              <h3 style="font-size:.95rem;margin-bottom:10px;">Últimos movimientos</h3>
+              <div id="recent-movements-list"></div>
             </div>
           </div>
         </section>
 
-        <!-- MOVEMENTS SECTION -->
-        <section id="section-movements" class="app-section hidden">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2>Historial de Movimientos</h2>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="exportData('csv')" class="btn btn-outline" style="padding: 8px 12px;">
-                <i data-lucide="download" style="width: 16px; height: 16px;"></i> CSV
-              </button>
-              <button onclick="openMovementModal()" class="btn btn-primary">
-                <i data-lucide="plus" style="width: 18px; height: 18px;"></i> Nuevo
-              </button>
+        <!-- Movements -->
+        <section id="section-movements" class="hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <h2>Movimientos</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline" style="padding:8px 12px;" onclick="exportData('csv')"><i data-lucide="download" style="width:16px;height:16px;"></i> CSV</button>
+              <button class="btn btn-primary" style="width:auto;padding:8px 12px;" onclick="openMovementModal()"><i data-lucide="plus" style="width:16px;height:16px;"></i></button>
             </div>
           </div>
-
           <div class="card">
-            <!-- Filtros -->
-            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-              <input type="text" id="filter-search" class="form-control" placeholder="Buscar concepto..." style="flex:1; min-width: 150px;" oninput="applyMovementsFilter()">
-              <select id="filter-type" class="form-control" style="width: auto;" onchange="applyMovementsFilter()">
-                <option value="ALL">Todos los tipos</option>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <input id="filter-search" class="form-control" placeholder="Buscar..." style="flex:1;min-width:140px;" oninput="applyMovementsFilter()" />
+              <select id="filter-type" class="form-control" style="width:auto;" onchange="applyMovementsFilter()">
+                <option value="ALL">Todos</option>
                 <option value="ingreso">Ingresos</option>
                 <option value="gasto">Gastos</option>
               </select>
             </div>
+            <div id="full-movements-list"></div>
+          </div>
+        </section>
 
-            <div id="full-movements-list">
-              <p style="color: var(--texto-suave);">No hay movimientos registrados.</p>
+        <!-- Analytics -->
+        <section id="section-analytics" class="hidden">
+          <h2 style="margin-bottom:12px;">Estadísticas</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+            <div class="card">
+              <h3 style="font-size:.95rem;margin-bottom:10px;">Gastos por categoría</h3>
+              <canvas id="chart-doughnut-categories" height="200"></canvas>
+            </div>
+            <div class="card">
+              <h3 style="font-size:.95rem;margin-bottom:10px;">Ahorro (balance actual)</h3>
+              <canvas id="chart-line-savings" height="200"></canvas>
             </div>
           </div>
         </section>
 
-        <!-- ANALYTICS SECTION -->
-        <section id="section-analytics" class="app-section hidden">
-          <h2 style="margin-bottom: 16px;">Estadísticas Financieras</h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <div class="card">
-              <h3 style="margin-bottom: 12px; font-size: 1rem;">Gastos por Categoría</h3>
-              <canvas id="chart-doughnut-categories" style="max-height: 250px;"></canvas>
-            </div>
-            <div class="card">
-              <h3 style="margin-bottom: 12px; font-size: 1rem;">Evolución de Ahorro (6 meses)</h3>
-              <canvas id="chart-line-savings" style="max-height: 250px;"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <!-- FAMILY SECTION -->
-        <section id="section-family" class="app-section hidden">
-          <h2 style="margin-bottom: 16px;">Gestión Familiar</h2>
-          
+        <!-- Family -->
+        <section id="section-family" class="hidden">
+          <h2 style="margin-bottom:12px;">Familia</h2>
           <div class="card">
-            <h3 style="margin-bottom: 8px; font-size: 1.1rem; color: var(--terracota);">Información del Grupo</h3>
-            <p style="margin-bottom: 4px;"><strong>Familia:</strong> <span id="family-info-name">---</span></p>
-            <p style="margin-bottom: 12px;"><strong>Código de Invitación:</strong> <span id="family-info-code" style="font-family: monospace; font-size: 1.1rem; background: #F5EBE6; padding: 2px 8px; border-radius: 6px;">---</span></p>
+            <div><strong>Nombre:</strong> <span id="family-info-name">—</span></div>
+            <div style="margin-top:6px;"><strong>Código:</strong>
+              <span id="family-info-code" style="font-family:ui-monospace,monospace;background:#F8EDE8;padding:3px 8px;border-radius:8px;">—</span>
+            </div>
           </div>
-
-          <!-- Solo para Admin: Invitaciones y Solicitudes -->
           <div id="admin-controls-container" class="hidden">
             <div class="card">
-              <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Invitar por Correo (Auto-aprobación)</h3>
-              <div style="display: flex; gap: 8px;">
-                <input type="email" id="invite-email-input" class="form-control" placeholder="correo@familiar.com">
-                <button onclick="handleSendInvite()" class="btn btn-secondary">Invitar</button>
+              <h3 style="font-size:1rem;margin-bottom:8px;">Invitar correo (auto-aprobación)</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input id="invite-email-input" class="form-control" type="email" placeholder="correo@ejemplo.com" style="flex:1;" />
+                <button class="btn btn-secondary" onclick="handleSendInvite()">Invitar</button>
               </div>
             </div>
-
             <div class="card">
-              <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Solicitudes Pendientes</h3>
-              <div id="pending-users-list">
-                <p style="color: var(--texto-suave);">No hay solicitudes pendientes.</p>
-              </div>
+              <h3 style="font-size:1rem;margin-bottom:8px;">Solicitudes pendientes</h3>
+              <div id="pending-users-list"></div>
             </div>
           </div>
-
-          <!-- Miembros de la familia -->
           <div class="card">
-            <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Miembros del Grupo</h3>
-            <div id="family-members-list">
-              <p style="color: var(--texto-suave);">Cargando miembros...</p>
-            </div>
+            <h3 style="font-size:1rem;margin-bottom:8px;">Miembros</h3>
+            <div id="family-members-list"></div>
           </div>
         </section>
 
-        <!-- PROFILE SECTION -->
-        <section id="section-profile" class="app-section hidden">
-          <h2 style="margin-bottom: 16px;">Mi Perfil</h2>
-          <div class="card" style="max-width: 500px;">
-            <div class="form-group" style="align-items: center; margin-bottom: 20px;">
-              <div id="profile-avatar-preview" class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 8px;">U</div>
-              <input type="file" id="profile-photo-input" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
-              <button onclick="document.getElementById('profile-photo-input').click()" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;">Cambiar Fotografía</button>
+        <!-- Profile -->
+        <section id="section-profile" class="hidden">
+          <h2 style="margin-bottom:12px;">Mi perfil</h2>
+          <div class="card" style="max-width:480px;">
+            <div style="text-align:center;margin-bottom:14px;">
+              <div id="profile-avatar-preview" class="avatar" style="width:72px;height:72px;margin:0 auto 8px;font-size:1.4rem;">U</div>
+              <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)" />
+              <button class="btn btn-outline" style="padding:8px 12px;font-size:.85rem;" onclick="document.getElementById('profile-photo-input').click()">Cambiar foto</button>
             </div>
             <div class="form-group">
-              <label>Nombre Completo</label>
-              <input type="text" id="profile-name-input" class="form-control">
+              <label>Nombre</label>
+              <input id="profile-name-input" class="form-control" />
             </div>
             <div class="form-group">
-              <label>Correo Electrónico (No modificable)</label>
-              <input type="email" id="profile-email-input" class="form-control" disabled>
+              <label>Correo (no editable)</label>
+              <input id="profile-email-input" class="form-control" disabled />
             </div>
-            <button onclick="handleSaveProfile()" class="btn btn-primary" style="width: 100%;">Guardar Cambios</button>
+            <button class="btn btn-primary" onclick="handleSaveProfile()">Guardar cambios</button>
           </div>
         </section>
       </main>
     </div>
 
-    <!-- Mobile Navigation Bottom -->
     <nav class="mobile-nav">
-      <div class="mobile-nav-item active" onclick="switchSection('dashboard', this)">
-        <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
-        <span>Panel</span>
-      </div>
-      <div class="mobile-nav-item" onclick="switchSection('movements', this)">
-        <i data-lucide="arrow-left-right" style="width: 20px; height: 20px;"></i>
-        <span>Movs</span>
-      </div>
-      <div class="mobile-nav-item" onclick="switchSection('analytics', this)">
-        <i data-lucide="pie-chart" style="width: 20px; height: 20px;"></i>
-        <span>Stats</span>
-      </div>
-      <div class="mobile-nav-item" onclick="switchSection('family', this)">
-        <i data-lucide="users" style="width: 20px; height: 20px;"></i>
-        <span>Familia</span>
-      </div>
+      <div class="mobile-nav-item active" onclick="switchSection('dashboard', this)"><i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i><span>Panel</span></div>
+      <div class="mobile-nav-item" onclick="switchSection('movements', this)"><i data-lucide="arrow-left-right" style="width:20px;height:20px;"></i><span>Movs</span></div>
+      <div class="mobile-nav-item" onclick="switchSection('analytics', this)"><i data-lucide="pie-chart" style="width:20px;height:20px;"></i><span>Stats</span></div>
+      <div class="mobile-nav-item" onclick="switchSection('family', this)"><i data-lucide="users" style="width:20px;height:20px;"></i><span>Familia</span></div>
+      <div class="mobile-nav-item" onclick="switchSection('profile', this)"><i data-lucide="user" style="width:20px;height:20px;"></i><span>Perfil</span></div>
     </nav>
   </div>
 
-  <!-- MODAL: AGREGAR / EDITAR MOVIMIENTO -->
+  <!-- Modal movimiento -->
   <div id="modal-movement" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h3 id="modal-movement-title">Nuevo Movimiento</h3>
-        <button onclick="closeMovementModal()" class="btn btn-outline btn-icon"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 id="modal-movement-title">Nuevo movimiento</h3>
+        <button class="btn btn-outline btn-icon" type="button" onclick="closeMovementModal()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
       </div>
-      <form id="form-movement" onsubmit="handleSaveMovement(event)">
-        <input type="hidden" id="mov-id">
+      <form id="form-movement" onsubmit="return handleSaveMovement(event)">
+        <input type="hidden" id="mov-id" />
         <div class="form-group">
           <label>Tipo</label>
-          <select id="mov-type" class="form-control" onchange="updateCategoriesDropdown()" required>
+          <select id="mov-type" class="form-control" onchange="updateCategoriesDropdown()">
             <option value="gasto">Gasto</option>
             <option value="ingreso">Ingreso</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Monto ($)</label>
-          <input type="number" step="0.01" id="mov-amount" class="form-control" required placeholder="0.00">
+          <label>Monto</label>
+          <input id="mov-amount" class="form-control" type="number" step="0.01" min="0" required />
         </div>
         <div class="form-group">
           <label>Categoría</label>
@@ -802,895 +559,756 @@
         </div>
         <div class="form-group">
           <label>Fecha</label>
-          <input type="date" id="mov-date" class="form-control" required>
+          <input id="mov-date" class="form-control" type="date" required />
         </div>
         <div class="form-group">
-          <label>Nota / Descripción</label>
-          <input type="text" id="mov-note" class="form-control" placeholder="Ej: Compras del supermercado">
+          <label>Nota</label>
+          <input id="mov-note" class="form-control" type="text" placeholder="Opcional" />
         </div>
         <div class="form-group">
-          <label>Foto de Recibo / Comprobante (Opcional)</label>
-          <input type="file" id="mov-receipt-input" accept="image/*" class="form-control" onchange="previewReceiptImage(event)">
-          <img id="mov-receipt-preview" class="receipt-preview hidden" src="" alt="Recibo">
+          <label>Recibo (opcional)</label>
+          <input id="mov-receipt-input" class="form-control" type="file" accept="image/*" onchange="previewReceiptImage(event)" />
+          <img id="mov-receipt-preview" class="receipt-preview hidden" alt="Recibo" />
         </div>
-        <div style="display: flex; gap: 8px; margin-top: 20px;">
-          <button type="button" onclick="closeMovementModal()" class="btn btn-outline" style="flex:1;">Cancelar</button>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeMovementModal()">Cancelar</button>
           <button type="submit" class="btn btn-primary" style="flex:1;">Guardar</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT DE LA APLICACIÓN -->
-  <script>
-    // 1. CONFIGURACIÓN FIREBASE
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
-      authDomain: "mi-ahorro-40269.firebaseapp.com",
-      projectId: "mi-ahorro-40269",
-      messagingSenderId: "797154545127",
-      appId: "1:797154545127:web:11e7b6efc42f9b6bc98142"
+<script>
+  // ===== Firebase =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
+    authDomain: "mi-ahorro-40269.firebaseapp.com",
+    projectId: "mi-ahorro-40269",
+    messagingSenderId: "797154545127",
+    appId: "1:797154545127:web:11e7b6efc42f9b6bc98142"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // ===== State =====
+  let currentUserData = null;
+  let currentFamilyData = null;
+  let movementsData = [];
+  let currentReceiptBase64 = "";
+  let userUnsub = null;
+  let movUnsub = null;
+  let famUnsub = null;
+  let membersUnsub = null;
+  let ensuringUserDoc = false;
+
+  const CATEGORIES = {
+    gasto: ["Alimentación", "Vivienda", "Transporte", "Servicios", "Salud", "Educación", "Entretenimiento", "Otros"],
+    ingreso: ["Sueldo", "Negocio", "Inversión", "Otros"]
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+    const d = document.getElementById("mov-date");
+    if (d) d.valueAsDate = new Date();
+    updateCategoriesDropdown();
+    setupPWA();
+  });
+
+  // ===== Helpers UI =====
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.remove("hidden");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.add("hidden"), 3500);
+  }
+  function setAuthError(which, msg) {
+    const el = document.getElementById(which === "login" ? "login-error" : "register-error");
+    if (el) el.textContent = msg || "";
+  }
+  function showScreen(name) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+    const el = document.getElementById(name + "-screen");
+    if (el) el.classList.add("active");
+    lucide.createIcons();
+  }
+  function showLogin() {
+    document.getElementById("panel-login").classList.remove("hidden");
+    document.getElementById("panel-register").classList.add("hidden");
+    setAuthError("login", "");
+    setAuthError("register", "");
+    lucide.createIcons();
+  }
+  function showRegister() {
+    document.getElementById("panel-register").classList.remove("hidden");
+    document.getElementById("panel-login").classList.add("hidden");
+    setAuthError("login", "");
+    setAuthError("register", "");
+    lucide.createIcons();
+  }
+  function goToLoginWithCredentials(email, password) {
+    showLogin();
+    document.getElementById("login-email").value = email || "";
+    document.getElementById("login-password").value = password || "";
+  }
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.innerHTML = `<i data-lucide="${show ? "eye-off" : "eye"}" style="width:20px;height:20px;"></i>`;
+    lucide.createIcons();
+  }
+  function normalizeEmail(v) {
+    return String(v || "").trim().toLowerCase();
+  }
+  function authErrorMessage(err) {
+    const c = err && err.code;
+    if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found" || c === "auth/invalid-login-credentials") {
+      return "Error: correo o contraseña incorrectos.";
+    }
+    if (c === "auth/too-many-requests") return "Demasiados intentos. Espera un momento.";
+    if (c === "auth/invalid-email") return "Correo no válido.";
+    if (c === "auth/email-already-in-use") return "Este correo ya está registrado.";
+    if (c === "auth/weak-password") return "La contraseña debe tener al menos 6 caracteres.";
+    if (c === "auth/network-request-failed") return "Sin conexión. Revisa tu internet.";
+    return (err && err.message) || "No se pudo completar la operación.";
+  }
+
+  // ===== AUTH CORE (arreglo del login) =====
+  async function ensureUserDocument(user, extra = {}) {
+    const ref = db.collection("users").doc(user.uid);
+    const snap = await ref.get();
+    if (snap.exists) return snap.data();
+
+    const payload = {
+      displayName: extra.displayName || user.displayName || (user.email || "").split("@")[0] || "Usuario",
+      email: normalizeEmail(user.email),
+      familyId: null,
+      role: null,
+      status: null,
+      photoBase64: "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    await ref.set(payload, { merge: true });
+    return payload;
+  }
 
-    // Variables de Estado Global
-    let currentUserData = null;
-    let currentFamilyData = null;
-    let movementsData = [];
-    let familyMembers = [];
-    let currentReceiptBase64 = "";
-    let userUnsubscribe = null;
-    let movementsUnsubscribe = null;
-    let familyUnsubscribe = null;
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      cleanupListeners();
+      currentUserData = null;
+      showScreen("auth");
+      return;
+    }
 
-    // Categorías predefinidas
-    const CATEGORIES = {
-      gasto: ['Alimentación', 'Vivienda', 'Transporte', 'Servicios', 'Salud', 'Educación', 'Entretenimiento', 'Otros'],
-      ingreso: ['Sueldo', 'Negocio', 'Inversión', 'Otros']
-    };
-
-    // 2. INICIALIZACIÓN Y OBSERVA ESTADO DE AUTH
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      document.getElementById('mov-date').valueAsDate = new Date();
-      updateCategoriesDropdown();
-      setupPWA();
-    });
-
-    // Listener Principal Firebase Auth
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        cleanAppState();
-        showScreen('auth');
-        return;
+    try {
+      if (!ensuringUserDoc) {
+        ensuringUserDoc = true;
+        await ensureUserDocument(user);
+        ensuringUserDoc = false;
       }
+    } catch (e) {
+      ensuringUserDoc = false;
+      console.error(e);
+      showToast("No se pudo preparar tu perfil");
+    }
 
-      // Escuchar cambios en el documento del usuario en Firestore real-time
-      if (userUnsubscribe) userUnsubscribe();
-      userUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(async (snap) => {
+    if (userUnsub) userUnsub();
+    userUnsub = db.collection("users").doc(user.uid).onSnapshot(
+      (snap) => {
         if (!snap.exists) {
-          // El usuario fue eliminado de Firestore -> Cerrar sesión automáticamente
-          await auth.signOut();
-          showToast('Tu cuenta ha sido eliminada. Sesión cerrada.');
+          // Perfil borrado en consola → salir
+          auth.signOut();
+          showToast("Tu usuario fue eliminado. Sesión cerrada.");
           return;
         }
-
-        currentUserData = snap.data();
-        currentUserData.uid = user.uid;
-
-        // Actualizar UI Perfil
+        currentUserData = { ...snap.data(), uid: user.uid };
         updateUserProfileUI();
 
         if (!currentUserData.familyId) {
-          showScreen('onboarding');
+          showScreen("onboarding");
           return;
         }
-
-        if (currentUserData.status === 'pending') {
-          showScreen('pending');
+        if (currentUserData.status === "pending") {
+          showScreen("pending");
           return;
         }
-
-        if (currentUserData.status === 'approved') {
-          showScreen('app');
+        if (currentUserData.status === "approved") {
+          showScreen("app");
           startFamilyListeners(currentUserData.familyId);
+          return;
         }
-      }, (err) => {
-        console.error("Error listener usuario:", err);
+        // estado raro → onboarding
+        showScreen("onboarding");
+      },
+      (err) => console.error("user listener", err)
+    );
+  });
+
+  function cleanupListeners() {
+    if (userUnsub) { userUnsub(); userUnsub = null; }
+    if (movUnsub) { movUnsub(); movUnsub = null; }
+    if (famUnsub) { famUnsub(); famUnsub = null; }
+    if (membersUnsub) { membersUnsub(); membersUnsub = null; }
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    setAuthError("login", "");
+    const email = normalizeEmail(document.getElementById("login-email").value);
+    const password = document.getElementById("login-password").value; // NO trim de contraseña
+    const remember = document.getElementById("login-remember").checked;
+    const btn = document.getElementById("btn-login");
+
+    if (!email || !password) {
+      setAuthError("login", "Completa correo y contraseña.");
+      return false;
+    }
+
+    btn.disabled = true;
+    try {
+      await auth.setPersistence(
+        remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
+      );
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      // Garantiza doc users aunque falte (tu caso actual)
+      await ensureUserDocument(cred.user);
+      showToast("¡Bienvenido/a!");
+    } catch (err) {
+      console.error("login", err);
+      setAuthError("login", authErrorMessage(err));
+    } finally {
+      btn.disabled = false;
+    }
+    return false;
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    setAuthError("register", "");
+    const name = document.getElementById("reg-name").value.trim();
+    const email = normalizeEmail(document.getElementById("reg-email").value);
+    const password = document.getElementById("reg-password").value;
+    const remember = document.getElementById("reg-remember").checked;
+    const btn = document.getElementById("btn-register");
+
+    if (password.length < 6) {
+      setAuthError("register", "La contraseña debe tener al menos 6 caracteres.");
+      return false;
+    }
+
+    btn.disabled = true;
+    try {
+      await auth.setPersistence(
+        remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
+      );
+
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      try {
+        await cred.user.updateProfile({ displayName: name });
+      } catch (_) {}
+
+      // Doc de usuario (NUNCA se guarda la contraseña)
+      await db.collection("users").doc(cred.user.uid).set({
+        displayName: name,
+        email: email,
+        familyId: null,
+        role: null,
+        status: null,
+        photoBase64: "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      // Sesión ya iniciada → onAuthStateChanged lleva a onboarding/app
+      showToast("Cuenta creada. ¡Bienvenido/a!");
+    } catch (err) {
+      console.error("register", err);
+      if (err.code === "auth/email-already-in-use") {
+        goToLoginWithCredentials(email, password);
+        setAuthError("login", "Este correo ya está registrado. Solo pulsa Ingresar.");
+        showToast("Correo ya registrado: inicia sesión");
+      } else {
+        setAuthError("register", authErrorMessage(err));
+      }
+    } finally {
+      btn.disabled = false;
+    }
+    return false;
+  }
+
+  async function handleLogout() {
+    cleanupListeners();
+    await auth.signOut();
+    showLogin();
+    showToast("Sesión cerrada");
+  }
+
+  // ===== Familia =====
+  function generateFamilyCode(name) {
+    const prefix = (String(name).replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, "").substring(0, 3) || "FAM")
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .substring(0, 3) || "FAM";
+    return `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
+  async function handleCreateFamily() {
+    const familyName = document.getElementById("new-family-name").value.trim();
+    if (!familyName) return showToast("Escribe el nombre de la familia");
+    if (!auth.currentUser) return showToast("Sesión no válida");
+
+    try {
+      const code = generateFamilyCode(familyName);
+      const ref = await db.collection("families").add({
+        familyName,
+        code,
+        invitedEmails: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      await db.collection("users").doc(auth.currentUser.uid).set({
+        familyId: ref.id,
+        role: "admin",
+        status: "approved",
+        displayName: currentUserData?.displayName || auth.currentUser.displayName || "",
+        email: normalizeEmail(auth.currentUser.email)
+      }, { merge: true });
+      showToast("Familia creada");
+    } catch (err) {
+      console.error(err);
+      showToast("No se pudo crear la familia");
+    }
+  }
+
+  async function handleJoinFamily() {
+    const code = document.getElementById("join-family-code").value.trim().toUpperCase();
+    if (!code) return showToast("Escribe el código");
+    if (!auth.currentUser) return showToast("Sesión no válida");
+
+    try {
+      const q = await db.collection("families").where("code", "==", code).limit(1).get();
+      if (q.empty) return showToast("Código no encontrado");
+      const familyDoc = q.docs[0];
+      const data = familyDoc.data();
+      const email = normalizeEmail(auth.currentUser.email);
+      const invited = (data.invitedEmails || []).map(normalizeEmail).includes(email);
+      await db.collection("users").doc(auth.currentUser.uid).set({
+        familyId: familyDoc.id,
+        role: "member",
+        status: invited ? "approved" : "pending",
+        email
+      }, { merge: true });
+      showToast(invited ? "Te uniste a la familia" : "Solicitud enviada");
+    } catch (err) {
+      console.error(err);
+      showToast("No se pudo unir a la familia");
+    }
+  }
+
+  function startFamilyListeners(familyId) {
+    if (famUnsub) famUnsub();
+    famUnsub = db.collection("families").doc(familyId).onSnapshot((doc) => {
+      if (!doc.exists) return;
+      currentFamilyData = doc.data();
+      document.getElementById("app-family-title").textContent = currentFamilyData.familyName || "Ahorro Familiar";
+      document.getElementById("family-info-name").textContent = currentFamilyData.familyName || "—";
+      document.getElementById("family-info-code").textContent = currentFamilyData.code || "—";
     });
 
-    function cleanAppState() {
-      currentUserData = null;
-      currentFamilyData = null;
+    if (membersUnsub) membersUnsub();
+    membersUnsub = db.collection("users").where("familyId", "==", familyId).onSnapshot((snap) => {
+      const approved = [];
+      const pending = [];
+      snap.forEach((d) => {
+        const u = { ...d.data(), uid: d.id };
+        if (u.status === "approved") approved.push(u);
+        else if (u.status === "pending") pending.push(u);
+      });
+      renderFamilyMembers(approved);
+      renderPendingUsers(pending);
+    });
+
+    if (movUnsub) movUnsub();
+    // sin orderBy para no exigir índice compuesto obligatorio
+    movUnsub = db.collection("movements").where("familyId", "==", familyId).onSnapshot((snap) => {
       movementsData = [];
-      familyMembers = [];
-      if (userUnsubscribe) userUnsubscribe();
-      if (movementsUnsubscribe) movementsUnsubscribe();
-      if (familyUnsubscribe) familyUnsubscribe();
-    }
+      snap.forEach((d) => movementsData.push({ ...d.data(), id: d.id }));
+      movementsData.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+      updateDashboardMetrics();
+      renderRecentMovements();
+      renderFullMovementsList(movementsData);
+      renderCharts();
+    }, (err) => console.error("movs", err));
+  }
 
-    // 3. AUTENTICACIÓN (LOGIN & REGISTRO DIRECTO)
-    function switchAuthTab(tab) {
-      const loginTab = document.getElementById('tab-login');
-      const registerTab = document.getElementById('tab-register');
-      const loginForm = document.getElementById('form-login');
-      const registerForm = document.getElementById('form-register');
-
-      if (tab === 'login') {
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-      } else {
-        registerTab.classList.add('active');
-        loginTab.classList.remove('active');
-        registerForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-      }
-      lucide.createIcons();
-    }
-
-    function togglePasswordVisibility(inputId, btn) {
-      const input = document.getElementById(inputId);
-      if (input.type === 'password') {
-        input.type = 'text';
-        btn.innerHTML = `<i data-lucide="eye-off" style="width:20px;height:20px;"></i>`;
-      } else {
-        input.type = 'password';
-        btn.innerHTML = `<i data-lucide="eye" style="width:20px;height:20px;"></i>`;
-      }
-      lucide.createIcons();
-    }
-
-    // INICIAR SESIÓN
-    async function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value.trim().toLowerCase();
-      const password = document.getElementById('login-password').value;
-      const remember = document.getElementById('login-remember').checked;
-
-      try {
-        const persistence = remember
-          ? firebase.auth.Auth.Persistence.LOCAL
-          : firebase.auth.Auth.Persistence.SESSION;
-        await auth.setPersistence(persistence);
-
-        await auth.signInWithEmailAndPassword(email, password);
-        showToast('¡Bienvenido de nuevo!');
-      } catch (err) {
-        console.error(err);
-        showToast('Correo o contraseña incorrectos');
-      }
-    }
-
-    // REGISTRO DIRECTO CORREGIDO
-    async function handleRegister(e) {
-      e.preventDefault();
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim().toLowerCase();
-      const password = document.getElementById('reg-password').value;
-      const remember = document.getElementById('reg-remember').checked;
-
-      if (password.length < 6) {
-        showToast('La contraseña debe tener al menos 6 caracteres');
-        return;
-      }
-
-      try {
-        const persistence = remember
-          ? firebase.auth.Auth.Persistence.LOCAL
-          : firebase.auth.Auth.Persistence.SESSION;
-        await auth.setPersistence(persistence);
-
-        // Crear cuenta en Firebase Auth
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
-        await cred.user.updateProfile({ displayName: name });
-
-        // Crear documento en Firestore (Sin contraseña)
-        await db.collection('users').doc(cred.user.uid).set({
-          displayName: name,
-          email: email,
-          familyId: null,
-          role: null,
-          status: null,
-          photoBase64: '',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // NO cerramos sesión, entra directo por onAuthStateChanged
-        showToast('¡Cuenta creada con éxito! Bienvenido/a.');
-
-      } catch (err) {
-        console.error(err);
-        if (err.code === 'auth/email-already-in-use') {
-          // Correo existente -> Pasar al login rellenado
-          goToLoginWithCredentials(email, password);
-          showToast('Este correo ya está registrado. Solo inicia sesión.');
-        } else if (err.code === 'auth/weak-password') {
-          showToast('La contraseña debe tener al menos 6 caracteres');
-        } else {
-          showToast('No se pudo crear la cuenta: ' + err.message);
-        }
-      }
-    }
-
-    function goToLoginWithCredentials(email, password) {
-      switchAuthTab('login');
-      const loginEmail = document.getElementById('login-email');
-      const loginPassword = document.getElementById('login-password');
-      if (loginEmail) loginEmail.value = email || '';
-      if (loginPassword) loginPassword.value = password || '';
-      lucide.createIcons();
-    }
-
-    async function handleLogout() {
-      await auth.signOut();
-      showToast('Sesión cerrada');
-    }
-
-    // 4. ONBOARDING & FAMILIAS
-    async function handleCreateFamily() {
-      const familyName = document.getElementById('new-family-name').value.trim();
-      if (!familyName) {
-        showToast('Ingresa un nombre para tu familia');
-        return;
-      }
-
-      try {
-        const code = generateFamilyCode(familyName);
-        const familyRef = await db.collection('families').add({
-          familyName: familyName,
-          code: code,
-          invitedEmails: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // El creador es Admin y Aprobado
-        await db.collection('users').doc(currentUserData.uid).update({
-          familyId: familyRef.id,
-          role: 'admin',
-          status: 'approved'
-        });
-
-        showToast('¡Grupo familiar creado!');
-      } catch (err) {
-        showToast('Error al crear el grupo');
-      }
-    }
-
-    async function handleJoinFamily() {
-      const code = document.getElementById('join-family-code').value.trim().toUpperCase();
-      if (!code) {
-        showToast('Ingresa el código de invitación');
-        return;
-      }
-
-      try {
-        const snap = await db.collection('families').where('code', '==', code).get();
-        if (snap.empty) {
-          showToast('El código introducido no existe');
-          return;
-        }
-
-        const familyDoc = snap.docs[0];
-        const familyData = familyDoc.data();
-        
-        // Verificar si su correo fue invitado explícitamente por el Admin
-        const isInvited = (familyData.invitedEmails || []).includes(currentUserData.email);
-        const status = isInvited ? 'approved' : 'pending';
-
-        await db.collection('users').doc(currentUserData.uid).update({
-          familyId: familyDoc.id,
-          role: 'member',
-          status: status
-        });
-
-        if (status === 'approved') {
-          showToast('¡Unido con éxito a la familia!');
-        } else {
-          showToast('Solicitud enviada. Esperando aprobación del admin.');
-        }
-
-      } catch (err) {
-        showToast('Error al unirse al grupo');
-      }
-    }
-
-    function generateFamilyCode(name) {
-      const prefix = (name.replace(/[^a-zA-Z]/g, '').substring(0, 3) || 'FAM').toUpperCase();
-      const rand = Math.floor(1000 + Math.random() * 9000);
-      return `${prefix}-${rand}`;
-    }
-
-    function checkStatusManual() {
-      if (currentUserData && currentUserData.status === 'approved') {
-        showScreen('app');
-      } else {
-        showToast('Aún en espera de aprobación por el administrador');
-      }
-    }
-
-    // 5. LISTENERS REALTIME FAMILIA Y MOVIMIENTOS
-    function startFamilyListeners(familyId) {
-      // Listener Datos de la familia
-      if (familyUnsubscribe) familyUnsubscribe();
-      familyUnsubscribe = db.collection('families').doc(familyId).onSnapshot((doc) => {
-        if (doc.exists) {
-          currentFamilyData = doc.data();
-          document.getElementById('app-family-title').textContent = currentFamilyData.familyName;
-          document.getElementById('family-info-name').textContent = currentFamilyData.familyName;
-          document.getElementById('family-info-code').textContent = currentFamilyData.code;
-        }
-      });
-
-      // Listener Miembros de la familia
-      db.collection('users').where('familyId', '==', familyId).onSnapshot((snap) => {
-        familyMembers = [];
-        const pendingUsers = [];
-        snap.forEach(doc => {
-          const u = doc.data();
-          u.uid = doc.id;
-          if (u.status === 'approved') {
-            familyMembers.push(u);
-          } else if (u.status === 'pending') {
-            pendingUsers.push(u);
-          }
-        });
-        renderFamilyMembers(familyMembers);
-        renderPendingUsers(pendingUsers);
-      });
-
-      // Listener Movimientos
-      if (movementsUnsubscribe) movementsUnsubscribe();
-      movementsUnsubscribe = db.collection('movements')
-        .where('familyId', '==', familyId)
-        .orderBy('date', 'desc')
-        .onSnapshot((snap) => {
-          movementsData = [];
-          snap.forEach(doc => {
-            const m = doc.data();
-            m.id = doc.id;
-            movementsData.push(m);
-          });
-          updateDashboardMetrics();
-          renderRecentMovements();
-          renderFullMovementsList(movementsData);
-          renderCharts();
-        });
-    }
-
-    // 6. GESTIÓN DE MOVIMIENTOS Y RECIBOS
-    function updateCategoriesDropdown() {
-      const type = document.getElementById('mov-type').value;
-      const select = document.getElementById('mov-category');
-      select.innerHTML = '';
-      CATEGORIES[type].forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        select.appendChild(opt);
-      });
-    }
-
-    function openMovementModal(editId = null) {
-      document.getElementById('form-movement').reset();
-      currentReceiptBase64 = "";
-      document.getElementById('mov-receipt-preview').classList.add('hidden');
-      document.getElementById('mov-date').valueAsDate = new Date();
-
-      if (editId) {
-        const mov = movementsData.find(m => m.id === editId);
-        if (mov) {
-          document.getElementById('modal-movement-title').textContent = "Editar Movimiento";
-          document.getElementById('mov-id').value = mov.id;
-          document.getElementById('mov-type').value = mov.type;
-          updateCategoriesDropdown();
-          document.getElementById('mov-amount').value = mov.amount;
-          document.getElementById('mov-category').value = mov.category;
-          document.getElementById('mov-date').value = mov.date;
-          document.getElementById('mov-note').value = mov.note || "";
-          if (mov.receipt) {
-            currentReceiptBase64 = mov.receipt;
-            const img = document.getElementById('mov-receipt-preview');
-            img.src = mov.receipt;
-            img.classList.remove('hidden');
-          }
-        }
-      } else {
-        document.getElementById('modal-movement-title').textContent = "Nuevo Movimiento";
-        document.getElementById('mov-id').value = "";
+  // ===== Movimientos =====
+  function updateCategoriesDropdown() {
+    const type = document.getElementById("mov-type").value;
+    const sel = document.getElementById("mov-category");
+    sel.innerHTML = CATEGORIES[type].map((c) => `<option value="${c}">${c}</option>`).join("");
+  }
+  function openMovementModal(id) {
+    document.getElementById("form-movement").reset();
+    currentReceiptBase64 = "";
+    const prev = document.getElementById("mov-receipt-preview");
+    prev.classList.add("hidden");
+    prev.removeAttribute("src");
+    document.getElementById("mov-date").valueAsDate = new Date();
+    document.getElementById("mov-id").value = "";
+    document.getElementById("modal-movement-title").textContent = "Nuevo movimiento";
+    if (id) {
+      const m = movementsData.find((x) => x.id === id);
+      if (m) {
+        document.getElementById("modal-movement-title").textContent = "Editar movimiento";
+        document.getElementById("mov-id").value = m.id;
+        document.getElementById("mov-type").value = m.type;
         updateCategoriesDropdown();
+        document.getElementById("mov-amount").value = m.amount;
+        document.getElementById("mov-category").value = m.category;
+        document.getElementById("mov-date").value = m.date;
+        document.getElementById("mov-note").value = m.note || "";
+        if (m.receipt) {
+          currentReceiptBase64 = m.receipt;
+          prev.src = m.receipt;
+          prev.classList.remove("hidden");
+        }
       }
-
-      document.getElementById('modal-movement').classList.remove('hidden');
-    }
-
-    function closeMovementModal() {
-      document.getElementById('modal-movement').classList.add('hidden');
-    }
-
-    // Compresión HTML5 Canvas de la imagen del recibo
-    function previewReceiptImage(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const maxW = 400;
-          const scale = maxW / img.width;
-          canvas.width = maxW;
-          canvas.height = img.height * scale;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          currentReceiptBase64 = canvas.toDataURL('image/jpeg', 0.38);
-          const prevImg = document.getElementById('mov-receipt-preview');
-          prevImg.src = currentReceiptBase64;
-          prevImg.classList.remove('hidden');
-        };
-        img.src = evt.target.result;
+    } else updateCategoriesDropdown();
+    document.getElementById("modal-movement").classList.remove("hidden");
+    lucide.createIcons();
+  }
+  function closeMovementModal() {
+    document.getElementById("modal-movement").classList.add("hidden");
+  }
+  function previewReceiptImage(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxW = 400;
+        const scale = maxW / img.width;
+        canvas.width = maxW;
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        currentReceiptBase64 = canvas.toDataURL("image/jpeg", 0.38);
+        const prev = document.getElementById("mov-receipt-preview");
+        prev.src = currentReceiptBase64;
+        prev.classList.remove("hidden");
       };
-      reader.readAsDataURL(file);
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  async function handleSaveMovement(e) {
+    e.preventDefault();
+    if (!currentUserData?.familyId) return false;
+    const id = document.getElementById("mov-id").value;
+    const payload = {
+      familyId: currentUserData.familyId,
+      type: document.getElementById("mov-type").value,
+      amount: parseFloat(document.getElementById("mov-amount").value),
+      category: document.getElementById("mov-category").value,
+      date: document.getElementById("mov-date").value,
+      note: document.getElementById("mov-note").value.trim(),
+      receipt: currentReceiptBase64 || "",
+      userId: currentUserData.uid,
+      userName: currentUserData.displayName || "",
+      userEmail: currentUserData.email || "",
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    try {
+      if (id) await db.collection("movements").doc(id).update(payload);
+      else {
+        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection("movements").add(payload);
+      }
+      closeMovementModal();
+      showToast("Movimiento guardado");
+    } catch (err) {
+      console.error(err);
+      showToast("Error al guardar");
     }
+    return false;
+  }
+  async function deleteMovement(id) {
+    if (!confirm("¿Eliminar este movimiento?")) return;
+    try {
+      await db.collection("movements").doc(id).delete();
+      showToast("Eliminado");
+    } catch (_) {
+      showToast("No se pudo eliminar");
+    }
+  }
 
-    async function handleSaveMovement(e) {
+  function money(n) {
+    return `$${Number(n || 0).toFixed(2)}`;
+  }
+  function updateDashboardMetrics() {
+    const month = new Date().toISOString().substring(0, 7);
+    let income = 0, expenses = 0;
+    movementsData.forEach((m) => {
+      if (!String(m.date || "").startsWith(month)) return;
+      if (m.type === "ingreso") income += Number(m.amount) || 0;
+      if (m.type === "gasto") expenses += Number(m.amount) || 0;
+    });
+    document.getElementById("metric-income").textContent = money(income);
+    document.getElementById("metric-expenses").textContent = money(expenses);
+    const bal = income - expenses;
+    const el = document.getElementById("metric-balance");
+    el.textContent = money(bal);
+    el.style.color = bal >= 0 ? "var(--verde)" : "var(--rojo)";
+  }
+  function createMovementHTML(m, actions) {
+    const inc = m.type === "ingreso";
+    const color = inc ? "var(--verde)" : "var(--rojo)";
+    const bg = inc ? "#E6F4F1" : "#FDE8E8";
+    const icon = inc ? "arrow-up-right" : "arrow-down-left";
+    return `<div class="movement-item">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+        <div class="m-icon" style="background:${bg};color:${color};"><i data-lucide="${icon}" style="width:18px;height:18px;"></i></div>
+        <div style="min-width:0;">
+          <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.category}${m.note ? ` <span style="color:var(--suave);font-weight:500;font-size:.82rem;">· ${m.note}</span>` : ""}</div>
+          <div style="font-size:.75rem;color:var(--suave);">${m.date || ""} · ${m.userName || "Familiar"}</div>
+          ${m.receipt ? `<span style="font-size:.75rem;color:var(--terracota);cursor:pointer;" onclick="viewReceipt('${m.id}')">Ver recibo</span>` : ""}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-weight:800;color:${color};">${inc ? "+" : "-"}${money(m.amount)}</div>
+        ${actions ? `<div style="margin-top:4px;display:flex;gap:4px;justify-content:flex-end;">
+          <button class="btn btn-outline btn-icon" style="padding:4px;" onclick="openMovementModal('${m.id}')"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+          <button class="btn btn-danger btn-icon" style="padding:4px;" onclick="deleteMovement('${m.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+        </div>` : ""}
+      </div>
+    </div>`;
+  }
+  function viewReceipt(id) {
+    const m = movementsData.find((x) => x.id === id);
+    if (!m?.receipt) return;
+    const w = window.open("");
+    if (w) w.document.write(`<img src="${m.receipt}" style="max-width:100%;height:auto;" />`);
+  }
+  function renderRecentMovements() {
+    const el = document.getElementById("recent-movements-list");
+    const list = movementsData.slice(0, 5);
+    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, false)).join("") : `<p style="color:var(--suave);font-size:.9rem;">Sin movimientos aún.</p>`;
+    lucide.createIcons();
+  }
+  function renderFullMovementsList(list) {
+    const el = document.getElementById("full-movements-list");
+    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, true)).join("") : `<p style="color:var(--suave);">No hay movimientos.</p>`;
+    lucide.createIcons();
+  }
+  function applyMovementsFilter() {
+    const s = document.getElementById("filter-search").value.toLowerCase();
+    const t = document.getElementById("filter-type").value;
+    const filtered = movementsData.filter((m) => {
+      const okS = !s || (m.note || "").toLowerCase().includes(s) || (m.category || "").toLowerCase().includes(s);
+      const okT = t === "ALL" || m.type === t;
+      return okS && okT;
+    });
+    renderFullMovementsList(filtered);
+  }
+
+  // Charts
+  let chartBar, chartDonut, chartLine;
+  function renderCharts() {
+    let inc = 0, exp = 0;
+    const cat = {};
+    movementsData.forEach((m) => {
+      const a = Number(m.amount) || 0;
+      if (m.type === "ingreso") inc += a;
+      if (m.type === "gasto") {
+        exp += a;
+        cat[m.category] = (cat[m.category] || 0) + a;
+      }
+    });
+    const bar = document.getElementById("chart-quick-bar");
+    const don = document.getElementById("chart-doughnut-categories");
+    const line = document.getElementById("chart-line-savings");
+    if (chartBar) chartBar.destroy();
+    if (chartDonut) chartDonut.destroy();
+    if (chartLine) chartLine.destroy();
+    if (bar) chartBar = new Chart(bar, {
+      type: "bar",
+      data: { labels: ["Ingresos", "Gastos"], datasets: [{ data: [inc, exp], backgroundColor: ["#2A9D8F", "#E63946"], borderRadius: 8 }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+    if (don) chartDonut = new Chart(don, {
+      type: "doughnut",
+      data: {
+        labels: Object.keys(cat),
+        datasets: [{ data: Object.values(cat), backgroundColor: ["#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653", "#9B5DE5"] }]
+      },
+      options: { plugins: { legend: { position: "bottom" } } }
+    });
+    if (line) chartLine = new Chart(line, {
+      type: "line",
+      data: {
+        labels: ["Inicio", "Actual"],
+        datasets: [{ label: "Balance", data: [0, inc - exp], borderColor: "#E76F51", backgroundColor: "rgba(231,111,81,.15)", fill: true, tension: 0.3 }]
+      },
+      options: { plugins: { legend: { display: false } } }
+    });
+  }
+
+  // Admin familia
+  function renderFamilyMembers(members) {
+    const isAdmin = currentUserData?.role === "admin";
+    document.getElementById("admin-controls-container").classList.toggle("hidden", !isAdmin);
+    const list = document.getElementById("family-members-list");
+    list.innerHTML = members.map((m) => {
+      const initial = (m.displayName || "?").charAt(0).toUpperCase();
+      const av = m.photoBase64
+        ? `<img src="${m.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />`
+        : initial;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--borde);">
+        <div style="display:flex;gap:10px;align-items:center;min-width:0;">
+          <div class="avatar" style="width:36px;height:36px;">${av}</div>
+          <div style="min-width:0;">
+            <div style="font-weight:700;">${m.displayName || "Sin nombre"}${m.uid === currentUserData?.uid ? " (Tú)" : ""}</div>
+            <div style="font-size:.75rem;color:var(--suave);">${m.role === "admin" ? "Admin" : "Miembro"} · ${m.email || ""}</div>
+          </div>
+        </div>
+        ${isAdmin && m.uid !== currentUserData?.uid ? `<div style="display:flex;gap:4px;">
+          ${m.role !== "admin" ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:.75rem;" onclick="promoteToAdmin('${m.uid}')">Admin</button>` : ""}
+          <button class="btn btn-danger btn-icon" style="padding:4px 6px;" onclick="removeFamilyMember('${m.uid}')"><i data-lucide="user-x" style="width:14px;height:14px;"></i></button>
+        </div>` : ""}
+      </div>`;
+    }).join("") || `<p style="color:var(--suave);">Sin miembros</p>`;
+    lucide.createIcons();
+  }
+  function renderPendingUsers(pending) {
+    const el = document.getElementById("pending-users-list");
+    if (!pending.length) {
+      el.innerHTML = `<p style="color:var(--suave);font-size:.9rem;">No hay solicitudes.</p>`;
+      return;
+    }
+    el.innerHTML = pending.map((p) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--borde);">
+      <div><div style="font-weight:700;">${p.displayName || ""}</div><div style="font-size:.75rem;color:var(--suave);">${p.email || ""}</div></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-secondary" style="padding:6px 10px;font-size:.8rem;" onclick="approveMember('${p.uid}')">Aprobar</button>
+        <button class="btn btn-danger" style="padding:6px 10px;font-size:.8rem;" onclick="rejectMember('${p.uid}')">Rechazar</button>
+      </div>
+    </div>`).join("");
+  }
+  async function handleSendInvite() {
+    const email = normalizeEmail(document.getElementById("invite-email-input").value);
+    if (!email) return showToast("Correo inválido");
+    try {
+      await db.collection("families").doc(currentUserData.familyId).update({
+        invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
+      });
+      document.getElementById("invite-email-input").value = "";
+      showToast("Correo invitado (auto-aprobación)");
+    } catch (_) {
+      showToast("No se pudo invitar");
+    }
+  }
+  async function approveMember(uid) {
+    await db.collection("users").doc(uid).update({ status: "approved" });
+    showToast("Aprobado");
+  }
+  async function rejectMember(uid) {
+    await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
+    showToast("Rechazado");
+  }
+  async function promoteToAdmin(uid) {
+    await db.collection("users").doc(uid).update({ role: "admin" });
+    showToast("Ahora es admin");
+  }
+  async function removeFamilyMember(uid) {
+    if (!confirm("¿Expulsar a este miembro?")) return;
+    await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
+    showToast("Miembro expulsado");
+  }
+
+  // Perfil
+  function updateUserProfileUI() {
+    if (!currentUserData) return;
+    const name = currentUserData.displayName || "Usuario";
+    const initial = name.charAt(0).toUpperCase();
+    const av = document.getElementById("user-avatar");
+    const pv = document.getElementById("profile-avatar-preview");
+    const html = currentUserData.photoBase64
+      ? `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />`
+      : initial;
+    av.innerHTML = html;
+    pv.innerHTML = html;
+    document.getElementById("profile-name-input").value = name;
+    document.getElementById("profile-email-input").value = currentUserData.email || "";
+  }
+  function handleProfilePhotoUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file || !auth.currentUser) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 120; canvas.height = 120;
+        canvas.getContext("2d").drawImage(img, 0, 0, 120, 120);
+        const base64 = canvas.toDataURL("image/jpeg", 0.5);
+        await db.collection("users").doc(auth.currentUser.uid).set({ photoBase64: base64 }, { merge: true });
+        showToast("Foto actualizada");
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  async function handleSaveProfile() {
+    const name = document.getElementById("profile-name-input").value.trim();
+    if (!name || !auth.currentUser) return;
+    await db.collection("users").doc(auth.currentUser.uid).set({ displayName: name }, { merge: true });
+    try { await auth.currentUser.updateProfile({ displayName: name }); } catch (_) {}
+    showToast("Perfil guardado");
+  }
+
+  function exportData() {
+    if (!movementsData.length) return showToast("No hay datos");
+    const headers = ["Fecha", "Tipo", "Categoria", "Monto", "Nota", "Usuario"];
+    const rows = movementsData.map((m) => [m.date, m.type, m.category, m.amount, `"${(m.note || "").replace(/"/g, '""')}"`, m.userName || ""]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `ahorro_familiar_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+  }
+
+  function switchSection(id, el) {
+    document.querySelectorAll("main > section").forEach((s) => s.classList.add("hidden"));
+    const sec = document.getElementById("section-" + id);
+    if (sec) sec.classList.remove("hidden");
+    document.querySelectorAll(".nav-item, .mobile-nav-item").forEach((n) => n.classList.remove("active"));
+    if (el) el.classList.add("active");
+    // activar equivalente desktop/mobile
+    document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach((n) => n.classList.add("active"));
+    lucide.createIcons();
+  }
+
+  // PWA
+  let deferredPrompt = null;
+  function setupPWA() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+    window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
-      const id = document.getElementById('mov-id').value;
-      const type = document.getElementById('mov-type').value;
-      const amount = parseFloat(document.getElementById('mov-amount').value);
-      const category = document.getElementById('mov-category').value;
-      const date = document.getElementById('mov-date').value;
-      const note = document.getElementById('mov-note').value.trim();
-
-      const movDoc = {
-        familyId: currentUserData.familyId,
-        type: type,
-        amount: amount,
-        category: category,
-        date: date,
-        note: note,
-        receipt: currentReceiptBase64,
-        userId: currentUserData.uid,
-        userName: currentUserData.displayName,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      try {
-        if (id) {
-          await db.collection('movements').doc(id).update(movDoc);
-          showToast('Movimiento actualizado');
-        } else {
-          await db.collection('movements').add(movDoc);
-          showToast('Movimiento guardado');
-        }
-        closeMovementModal();
-      } catch (err) {
-        showToast('Error al guardar el movimiento');
-      }
-    }
-
-    async function deleteMovement(id) {
-      if (!confirm('¿Deseas eliminar este registro de movimiento?')) return;
-      try {
-        await db.collection('movements').doc(id).delete();
-        showToast('Movimiento eliminado');
-      } catch (err) {
-        showToast('Error al eliminar');
-      }
-    }
-
-    // 7. RENDER Y DASHBOARD
-    function updateDashboardMetrics() {
-      let income = 0;
-      let expenses = 0;
-
-      const currentMonth = new Date().toISOString().substring(0, 7);
-      movementsData.forEach(m => {
-        if (m.date.startsWith(currentMonth)) {
-          if (m.type === 'ingreso') income += m.amount;
-          if (m.type === 'gasto') expenses += m.amount;
-        }
-      });
-
-      document.getElementById('metric-income').textContent = `$${income.toFixed(2)}`;
-      document.getElementById('metric-expenses').textContent = `$${expenses.toFixed(2)}`;
-      const balance = income - expenses;
-      const balEl = document.getElementById('metric-balance');
-      balEl.textContent = `$${balance.toFixed(2)}`;
-      balEl.style.color = balance >= 0 ? 'var(--verde)' : 'var(--rojo)';
-    }
-
-    function renderRecentMovements() {
-      const container = document.getElementById('recent-movements-list');
-      const recent = movementsData.slice(0, 5);
-      if (recent.length === 0) {
-        container.innerHTML = `<p style="color: var(--texto-suave); font-size: 0.9rem;">Sin movimientos este mes.</p>`;
-        return;
-      }
-      container.innerHTML = recent.map(m => createMovementHTML(m)).join('');
-      lucide.createIcons();
-    }
-
-    function renderFullMovementsList(list) {
-      const container = document.getElementById('full-movements-list');
-      if (list.length === 0) {
-        container.innerHTML = `<p style="color: var(--texto-suave);">No hay movimientos que coincidan con el filtro.</p>`;
-        return;
-      }
-      container.innerHTML = list.map(m => createMovementHTML(m, true)).join('');
-      lucide.createIcons();
-    }
-
-    function createMovementHTML(m, showActions = false) {
-      const isIncome = m.type === 'ingreso';
-      const color = isIncome ? 'var(--verde)' : 'var(--rojo)';
-      const icon = isIncome ? 'arrow-up-right' : 'arrow-down-left';
-
-      return `
-        <div class="movement-item">
-          <div style="display: flex; align-items: center;">
-            <div class="movement-icon" style="background: ${isIncome ? '#E6F4F1' : '#FDE8E8'}; color: ${color};">
-              <i data-lucide="${icon}" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div>
-              <div style="font-weight: 600;">${m.category} ${m.note ? `<span style="font-size:0.85rem; font-weight:normal; color:var(--texto-suave);">(${m.note})</span>` : ''}</div>
-              <div style="font-size: 0.75rem; color: var(--texto-suave);">${m.date} • Por ${m.userName || 'Familiar'}</div>
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-weight: 700; color: ${color};">${isIncome ? '+' : '-'}$${m.amount.toFixed(2)}</div>
-            ${m.receipt ? `<span onclick="viewReceipt('${m.receipt}')" style="font-size: 0.75rem; color: var(--terracota); cursor: pointer;">Ver Recibo</span>` : ''}
-            ${showActions ? `
-              <div style="margin-top: 4px;">
-                <button onclick="openMovementModal('${m.id}')" class="btn btn-outline btn-icon" style="padding: 2px 4px;"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
-                <button onclick="deleteMovement('${m.id}')" class="btn btn-danger btn-icon" style="padding: 2px 4px;"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    }
-
-    function applyMovementsFilter() {
-      const search = document.getElementById('filter-search').value.toLowerCase();
-      const type = document.getElementById('filter-type').value;
-
-      const filtered = movementsData.filter(m => {
-        const matchesSearch = (m.note || '').toLowerCase().includes(search) || m.category.toLowerCase().includes(search);
-        const matchesType = type === 'ALL' || m.type === type;
-        return matchesSearch && matchesType;
-      });
-
-      renderFullMovementsList(filtered);
-    }
-
-    function viewReceipt(base64) {
-      const win = window.open("");
-      win.document.write(`<img src="${base64}" style="max-width:100%; height:auto;" />`);
-    }
-
-    // 8. GRÁFICOS (CHART.JS)
-    let quickBarChart = null;
-    let categoryDoughnutChart = null;
-    let savingsLineChart = null;
-
-    function renderCharts() {
-      // Gráfico comparativo rápido
-      const ctxBar = document.getElementById('chart-quick-bar').getContext('2d');
-      let totalInc = 0, totalExp = 0;
-      movementsData.forEach(m => {
-        if (m.type === 'ingreso') totalInc += m.amount;
-        if (m.type === 'gasto') totalExp += m.amount;
-      });
-
-      if (quickBarChart) quickBarChart.destroy();
-      quickBarChart = new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-          labels: ['Ingresos', 'Gastos'],
-          datasets: [{
-            data: [totalInc, totalExp],
-            backgroundColor: ['#2A9D8F', '#E63946'],
-            borderRadius: 8
-          }]
-        },
-        options: { plugins: { legend: { display: false } } }
-      });
-
-      // Gráfico de Gastos por Categoría
-      const ctxDoughnut = document.getElementById('chart-doughnut-categories').getContext('2d');
-      const catTotals = {};
-      movementsData.filter(m => m.type === 'gasto').forEach(m => {
-        catTotals[m.category] = (catTotals[m.category] || 0) + m.amount;
-      });
-
-      if (categoryDoughnutChart) categoryDoughnutChart.destroy();
-      categoryDoughnutChart = new Chart(ctxDoughnut, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(catTotals),
-          datasets: [{
-            data: Object.values(catTotals),
-            backgroundColor: ['#E76F51', '#F4A261', '#E9C46A', '#2A9D8F', '#264653', '#9B5DE5']
-          }]
-        }
-      });
-
-      // Gráfico de Línea de Ahorro
-      const ctxLine = document.getElementById('chart-line-savings').getContext('2d');
-      if (savingsLineChart) savingsLineChart.destroy();
-      savingsLineChart = new Chart(ctxLine, {
-        type: 'line',
-        data: {
-          labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Actual'],
-          datasets: [{
-            label: 'Balance Neto',
-            data: [0, 0, 0, 0, 0, totalInc - totalExp],
-            borderColor: '#E76F51',
-            tension: 0.3
-          }]
-        }
-      });
-    }
-
-    // 9. ADMINISTRACIÓN DE FAMILIA
-    function renderFamilyMembers(members) {
-      const list = document.getElementById('family-members-list');
-      const isAdmin = currentUserData && currentUserData.role === 'admin';
-      const adminContainer = document.getElementById('admin-controls-container');
-
-      if (isAdmin) {
-        adminContainer.classList.remove('hidden');
-      } else {
-        adminContainer.classList.add('hidden');
-      }
-
-      list.innerHTML = members.map(m => `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--borde);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar" style="width: 36px; height: 36px;">
-              ${m.photoBase64 ? `<img src="${m.photoBase64}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : m.displayName.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <div style="font-weight: 600;">${m.displayName} ${m.uid === currentUserData.uid ? '(Tú)' : ''}</div>
-              <div style="font-size: 0.75rem; color: var(--texto-suave);">${m.role === 'admin' ? 'Administrador' : 'Miembro'} • ${m.email}</div>
-            </div>
-          </div>
-          ${isAdmin && m.uid !== currentUserData.uid ? `
-            <div>
-              ${m.role !== 'admin' ? `<button onclick="promoteToAdmin('${m.uid}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">Hacer Admin</button>` : ''}
-              <button onclick="removeFamilyMember('${m.uid}')" class="btn btn-danger btn-icon" style="padding: 4px 6px;" title="Expulsar"><i data-lucide="user-x" style="width:14px;height:14px;"></i></button>
-            </div>
-          ` : ''}
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function renderPendingUsers(pending) {
-      const container = document.getElementById('pending-users-list');
-      if (pending.length === 0) {
-        container.innerHTML = `<p style="color: var(--texto-suave); font-size: 0.9rem;">No hay solicitudes pendientes.</p>`;
-        return;
-      }
-
-      container.innerHTML = pending.map(p => `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--borde);">
-          <div>
-            <div style="font-weight: 600;">${p.displayName}</div>
-            <div style="font-size: 0.75rem; color: var(--texto-suave);">${p.email}</div>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button onclick="approveMember('${p.uid}')" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;">Aprobar</button>
-            <button onclick="rejectMember('${p.uid}')" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;">Rechazar</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function handleSendInvite() {
-      const email = document.getElementById('invite-email-input').value.trim().toLowerCase();
-      if (!email) {
-        showToast('Ingresa un correo válido');
-        return;
-      }
-      try {
-        await db.collection('families').doc(currentUserData.familyId).update({
-          invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
-        });
-        showToast(`Invitación agregada para ${email}`);
-        document.getElementById('invite-email-input').value = '';
-      } catch (err) {
-        showToast('Error al enviar invitación');
-      }
-    }
-
-    async function approveMember(uid) {
-      try {
-        await db.collection('users').doc(uid).update({ status: 'approved' });
-        showToast('Miembro aprobado');
-      } catch (err) {
-        showToast('Error al aprobar');
-      }
-    }
-
-    async function rejectMember(uid) {
-      try {
-        await db.collection('users').doc(uid).update({ familyId: null, status: null, role: null });
-        showToast('Solicitud rechazada');
-      } catch (err) {
-        showToast('Error al rechazar');
-      }
-    }
-
-    async function promoteToAdmin(uid) {
-      try {
-        await db.collection('users').doc(uid).update({ role: 'admin' });
-        showToast('Miembro ascendido a Administrador');
-      } catch (err) {
-        showToast('Error al ascender');
-      }
-    }
-
-    async function removeFamilyMember(uid) {
-      if (!confirm('¿Deseas expulsar a este miembro del grupo?')) return;
-      try {
-        await db.collection('users').doc(uid).update({ familyId: null, status: null, role: null });
-        showToast('Miembro expulsado');
-      } catch (err) {
-        showToast('Error al expulsar');
-      }
-    }
-
-    // 10. PERFIL DE USUARIO
-    function updateUserProfileUI() {
-      if (!currentUserData) return;
-      document.getElementById('user-display-name').textContent = currentUserData.displayName;
-      const avatarEl = document.getElementById('user-avatar');
-      const profilePreview = document.getElementById('profile-avatar-preview');
-
-      if (currentUserData.photoBase64) {
-        avatarEl.innerHTML = `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-        profilePreview.innerHTML = `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-      } else {
-        const initial = currentUserData.displayName ? currentUserData.displayName.charAt(0).toUpperCase() : 'U';
-        avatarEl.textContent = initial;
-        profilePreview.textContent = initial;
-      }
-
-      document.getElementById('profile-name-input').value = currentUserData.displayName || '';
-      document.getElementById('profile-email-input').value = currentUserData.email || '';
-    }
-
-    function handleProfilePhotoUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          canvas.width = 120;
-          canvas.height = 120;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, 120, 120);
-
-          const base64 = canvas.toDataURL('image/jpeg', 0.5);
-          db.collection('users').doc(currentUserData.uid).update({ photoBase64: base64 })
-            .then(() => showToast('Foto de perfil actualizada'))
-            .catch(() => showToast('Error al guardar imagen'));
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    async function handleSaveProfile() {
-      const name = document.getElementById('profile-name-input').value.trim();
-      if (!name) return;
-      try {
-        await db.collection('users').doc(currentUserData.uid).update({ displayName: name });
-        await auth.currentUser.updateProfile({ displayName: name });
-        showToast('Perfil actualizado');
-      } catch (err) {
-        showToast('Error al actualizar el perfil');
-      }
-    }
-
-    // 11. EXPORTACIÓN DE DATOS
-    function exportData(format) {
-      if (movementsData.length === 0) {
-        showToast('No hay datos para exportar');
-        return;
-      }
-
-      let content = "";
-      let mimeType = "";
-      let filename = `ahorro_familiar_${new Date().toISOString().substring(0, 10)}`;
-
-      if (format === 'csv') {
-        const headers = ["Fecha", "Tipo", "Categoria", "Monto", "Nota", "Usuario"];
-        const rows = movementsData.map(m => [
-          `"${m.date}"`,
-          `"${m.type}"`,
-          `"${m.category}"`,
-          m.amount,
-          `"${m.note || ''}"`,
-          `"${m.userName || ''}"`
-        ]);
-        content = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        mimeType = 'text/csv;charset=utf-8;';
-        filename += '.csv';
-      }
-
-      const blob = new Blob([content], { type: mimeType });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-    }
-
-    // 12. ROUTING DE PANTALLAS Y SECCIONES
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(`${screenId}-screen`).classList.add('active');
-    }
-
-    function switchSection(sectionId, element) {
-      document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(`section-${sectionId}`).classList.remove('hidden');
-
-      if (element) {
-        document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-      }
-      lucide.createIcons();
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-message').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3500);
-    }
-
-    // 13. PWA SERVICE WORKER & BANNER DE INSTALACIÓN
-    let deferredPrompt;
-    function setupPWA() {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('Service Worker Registrado'))
-          .catch(err => console.error('SW Error:', err));
-      }
-
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        const banner = document.getElementById('pwa-install-container');
-        if (banner) banner.classList.remove('hidden');
-      });
-
-      const btnInstall = document.getElementById('btn-pwa-install');
-      if (btnInstall) {
-        btnInstall.addEventListener('click', () => {
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
-              deferredPrompt = null;
-              document.getElementById('pwa-install-container').classList.add('hidden');
-            });
-          }
-        });
-      }
-    }
-  </script>
+      deferredPrompt = e;
+      document.getElementById("pwa-install-container").classList.remove("hidden");
+    });
+    document.getElementById("btn-pwa-install")?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      document.getElementById("pwa-install-container").classList.add("hidden");
+    });
+  }
+</script>
 </body>
 </html>
