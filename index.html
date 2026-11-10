@@ -1014,86 +1014,15 @@
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-       // Manejo Inteligente de Instalación PWA y Ocultamiento
+    // Manejo Inteligente de Instalación PWA y Ocultamiento
     let deferredPrompt = null;
 
-    // Inicialización INMEDIATA de PWA (Manifest + Service Worker)
-    // Se ejecuta al instante para que Chrome/Android/PC capturen el evento nativo de instalación
-    (function initPWANativeRequirements() {
-      try {
-        // 1. Crear icono PNG de alta resolución dinámico
-        function generatePNGIcon(size) {
-          const canvas = document.createElement('canvas');
-          canvas.width = size;
-          canvas.height = size;
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#E76F51';
-          ctx.fillRect(0, 0, size, size);
-          ctx.fillStyle = '#FFFFFF';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.font = `bold ${Math.round(size * 0.5)}px sans-serif`;
-          ctx.fillText('🤝', size / 2, size / 2 + size * 0.04);
-          return canvas.toDataURL('image/png');
-        }
-
-        const icon192 = generatePNGIcon(192);
-        const icon512 = generatePNGIcon(512);
-
-        // 2. Generar Manifest JSON para PWA Standalone
-        const manifestData = {
-          "name": "Mi Ahorro",
-          "short_name": "Mi Ahorro",
-          "description": "Gestión de ahorro familiar",
-          "start_url": "./",
-          "scope": "./",
-          "display": "standalone",
-          "orientation": "portrait",
-          "background_color": "#0F172A",
-          "theme_color": "#0F172A",
-          "icons": [
-            { "src": icon192, "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-            { "src": icon512, "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-          ]
-        };
-
-        let manifestLink = document.getElementById('pwa-manifest') || document.querySelector('link[rel="manifest"]');
-        if (!manifestLink) {
-          manifestLink = document.createElement('link');
-          manifestLink.id = 'pwa-manifest';
-          manifestLink.rel = 'manifest';
-          document.head.appendChild(manifestLink);
-        }
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        manifestLink.href = URL.createObjectURL(manifestBlob);
-
-        // 3. Registrar Service Worker Inmediatamente
-        if ('serviceWorker' in navigator) {
-          const swCode = `
-            self.addEventListener('install', (e) => self.skipWaiting());
-            self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-            self.addEventListener('fetch', (e) => {
-              e.respondWith(fetch(e.request).catch(() => new Response("Offline")));
-            });
-          `;
-          const blobSW = new Blob([swCode], { type: 'application/javascript' });
-          navigator.serviceWorker.register(URL.createObjectURL(blobSW))
-            .then(() => console.log('PWA SW Activo'))
-            .catch(err => console.log('PWA SW Error:', err));
-        }
-      } catch (err) {
-        console.error('Error al inicializar PWA nativa:', err);
-      }
-    })();
-
-    // Detectar si la app ya está corriendo como PWA instalada
     function isPWAInstalled() {
       return window.matchMedia('(display-mode: standalone)').matches 
           || window.navigator.standalone === true 
           || document.referrer.includes('android-app://');
     }
 
-    // Ocultar/Mostrar botones de instalación
     function updatePWAUIVisibility() {
       const installed = isPWAInstalled();
       const banner = document.getElementById('pwaInstallBanner');
@@ -1101,9 +1030,9 @@
       const btnProfile = document.getElementById('btnInstallPWAProfile');
 
       if (installed) {
-        if (banner) banner.style.setProperty('display', 'none', 'important');
-        if (btnHeader) btnHeader.style.setProperty('display', 'none', 'important');
-        if (btnProfile) btnProfile.style.setProperty('display', 'none', 'important');
+        if (banner) banner.style.display = 'none';
+        if (btnHeader) btnHeader.style.display = 'none';
+        if (btnProfile) btnProfile.style.display = 'none';
       } else {
         if (banner) banner.style.display = 'flex';
         if (btnHeader) btnHeader.style.display = 'block';
@@ -1111,101 +1040,93 @@
       }
     }
 
-    // Capturar evento NATIVO de instalación para Chrome, Android, Edge, Windows y Mac
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      console.log('PWA: Prompt nativo capturado con éxito');
       updatePWAUIVisibility();
     });
 
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       updatePWAUIVisibility();
-      if (typeof showToast === 'function') {
-        showToast("¡Aplicación instalada con éxito!");
-      }
+      showToast("¡Aplicación instalada con éxito!");
     });
 
-    if (window.matchMedia) {
-      window.matchMedia('(display-mode: standalone)').addEventListener('change', () => {
-        updatePWAUIVisibility();
-      });
-    }
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', () => {
+      updatePWAUIVisibility();
+    });
 
-    // AL HACER CLIC EN INSTALAR: Disparar la ventana NATIVA del navegador
     async function triggerPWAInstall() {
       if (isPWAInstalled()) {
-        if (typeof showToast === 'function') showToast("La aplicación ya está instalada.");
         updatePWAUIVisibility();
         return;
       }
 
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-      if (isIOS) {
-        // iOS no soporta prompts nativos por restricción de Apple -> Muestra guía
-        openInstallGuideModal();
-      } else if (deferredPrompt) {
-        // ANDROID / CHROME / PC / MAC: Disparar cuadro NATIVO de instalación
+      if (deferredPrompt) {
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         if (choiceResult.outcome === 'accepted') {
-          console.log('Usuario aceptó la instalación nativa PWA');
+          console.log('Usuario aceptó instalar PWA');
           deferredPrompt = null;
           updatePWAUIVisibility();
         }
       } else {
-        // Si por alguna razón Chrome aún no ha capturado el prompt, mostrar guía
         openInstallGuideModal();
       }
     }
 
     function openInstallGuideModal() {
-      const modalElement = document.getElementById('installGuideModal');
-      if (modalElement) {
-        modalElement.classList.remove('hidden');
-      }
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      }
+      document.getElementById('installGuideModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function closeInstallGuideModal() {
-      const modalElement = document.getElementById('installGuideModal');
-      if (modalElement) {
-        modalElement.classList.add('hidden');
-      }
+      document.getElementById('installGuideModal').classList.add('hidden');
     }
 
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      }
-      if (typeof initTheme === 'function') initTheme();
-      if (typeof populateFilterCategory === 'function') populateFilterCategory();
+      lucide.createIcons();
+      initTheme();
+      populateFilterCategory();
       updatePWAUIVisibility();
 
-      // Escuchador de Autenticación de Firebase
+      // Service Worker para PWA
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
+        `;
+        const blobSW = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blobSW);
+        
+        navigator.serviceWorker.register('./sw.js').catch(() => {
+          navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
+        });
+      }
+
+      // Escuchador de Autenticación
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          if (typeof isRegistering !== 'undefined' && isRegistering) return;
+          if (isRegistering) return;
           try {
             const userDoc = await db.collection('users').doc(user.uid).get();
             if (userDoc.exists) {
               currentUserData = { uid: user.uid, ...userDoc.data() };
-              if (typeof setupMainApp === 'function') setupMainApp();
+              setupMainApp();
             } else {
-              if (typeof isRegistering === 'undefined' || !isRegistering) {
-                if (typeof showToast === 'function') showToast("Cargando perfil de usuario...");
+              if (!isRegistering) {
+                showToast("Cargando perfil de usuario...");
               }
             }
           } catch (err) {
             console.error("Error obteniendo usuario:", err);
           }
         } else {
-          if (typeof showAuthScreen === 'function') showAuthScreen();
+          showAuthScreen();
         }
       });
     });
@@ -1231,34 +1152,27 @@
       const theme = localStorage.getItem('ahorro_theme') || 'dark';
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
-        const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
       } else {
         document.documentElement.classList.remove('dark');
-        const themeIcon = document.getElementById('themeIcon');
-        if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
       }
-      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      lucide.createIcons();
     }
 
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('ahorro_theme', isDark ? 'dark' : 'light');
-      const themeIcon = document.getElementById('themeIcon');
-      if (themeIcon) themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
-      if (typeof memberChartInstance !== 'undefined' && memberChartInstance && typeof renderMemberChart === 'function') {
-        renderMemberChart();
-      }
+      document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+      if (memberChartInstance) renderMemberChart();
     }
 
     // AUTENTICACIÓN UI
     function showAuthScreen() {
-      const authScreen = document.getElementById('authScreen');
-      const mainApp = document.getElementById('mainApp');
-      if (authScreen) authScreen.classList.remove('hidden');
-      if (mainApp) mainApp.classList.add('hidden');
-      if (typeof cleanSubscriptions === 'function') cleanSubscriptions();
+      document.getElementById('authScreen').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      cleanSubscriptions();
     }
 
     function toggleAuthMode(mode) {
@@ -1271,42 +1185,6 @@
       const fieldFamilyName = document.getElementById('fieldFamilyName');
       const authSubmitBtn = document.getElementById('authSubmitBtn');
       const authError = document.getElementById('authError');
-
-      if (authError) authError.classList.add('hidden');
-
-      if (mode === 'login') {
-        if (btnLogin) {
-          btnLogin.classList.add('bg-terracotta', 'text-white', 'shadow-sm');
-          btnLogin.classList.remove('text-slate-400');
-        }
-        if (btnRegister) {
-          btnRegister.classList.remove('bg-terracotta', 'text-white', 'shadow-sm');
-          btnRegister.classList.add('text-slate-400');
-        }
-        if (fieldDisplayName) fieldDisplayName.classList.add('hidden');
-        if (fieldRegisterOptions) fieldRegisterOptions.classList.add('hidden');
-        if (fieldGroupCode) fieldGroupCode.classList.add('hidden');
-        if (fieldFamilyName) fieldFamilyName.classList.add('hidden');
-        if (authSubmitBtn) authSubmitBtn.textContent = 'Iniciar Sesión';
-      } else {
-        if (btnRegister) {
-          btnRegister.classList.add('bg-terracotta', 'text-white', 'shadow-sm');
-          btnRegister.classList.remove('text-slate-400');
-        }
-        if (btnLogin) {
-          btnLogin.classList.remove('bg-terracotta', 'text-white', 'shadow-sm');
-          btnLogin.classList.add('text-slate-400');
-        }
-        if (fieldDisplayName) fieldDisplayName.classList.remove('hidden');
-        if (fieldRegisterOptions) fieldRegisterOptions.classList.remove('hidden');
-        if (authSubmitBtn) authSubmitBtn.textContent = 'Crear Cuenta';
-
-        if (typeof toggleRegisterOption === 'function') {
-          const selectedOption = document.querySelector('input[name="registerType"]:checked')?.value || 'join';
-          toggleRegisterOption(selectedOption);
-        }
-      }
-    }
 
       authError.classList.add('hidden');
 
