@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Ahorro Familiar</title>
   
-  <!-- Configuración PWA -->
+  <!-- Configuración PWA y Forzar nuevo logo -->
   <meta name="theme-color" content="#E76F51" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="AhorroFam" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon.svg" />
 
-  <!-- Scripts externos (Lucide, Chart.js, Firebase) -->
+  <!-- Scripts externos -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -46,91 +46,44 @@
       min-height: 100vh;
     }
 
-    /* Ocultar marca de agua de Netlify */
+    /* Ocultar Netlify */
     iframe[src*="netlify"], a[href*="netlify.com"], [class*="netlify-badge"] {
       display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
 
     .hidden { display: none !important; }
 
-    /* Pantallas */
-    .screen {
-      display: none;
-      width: 100%;
-      min-height: 100vh;
-    }
+    .screen { display: none; width: 100%; min-height: 100vh; }
     .screen.active { display: block; }
     
     #auth-screen.active, #onboarding-screen.active, #pending-screen.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px 16px;
+      display: flex; align-items: center; justify-content: center; padding: 20px 16px;
     }
 
-    /* Tarjeta de Auth (Estilo de tus capturas) */
     .auth-card {
-      width: 100%;
-      max-width: 400px;
-      background: var(--card);
-      border-radius: 24px;
-      padding: 32px 24px 24px;
-      box-shadow: var(--sombra);
-      border: 1px solid rgba(231,111,81,0.1);
-      margin: auto;
+      width: 100%; max-width: 400px; background: var(--card); border-radius: 24px;
+      padding: 32px 24px 24px; box-shadow: var(--sombra);
+      border: 1px solid rgba(231,111,81,0.1); margin: auto;
     }
 
-    .auth-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
+    .auth-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; }
     .auth-logo .logo-icon {
-      width: 44px; height: 44px;
-      border-radius: 14px;
+      width: 44px; height: 44px; border-radius: 14px;
       background: linear-gradient(135deg, #E76F51, #F4A261);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
+      display: flex; align-items: center; justify-content: center; color: #fff;
       box-shadow: 0 6px 16px rgba(231,111,81,0.3);
     }
-    .auth-logo h1 {
-      font-size: 1.5rem;
-      color: var(--terracota);
-      font-weight: 800;
-    }
-    .auth-sub {
-      text-align: center;
-      color: var(--suave);
-      font-size: 0.92rem;
-      margin-bottom: 24px;
-    }
+    .auth-logo h1 { font-size: 1.5rem; color: var(--terracota); font-weight: 800; }
+    .auth-sub { text-align: center; color: var(--suave); font-size: 0.92rem; margin-bottom: 24px; }
 
-    /* Formularios e Inputs */
     .form-group { margin-bottom: 16px; }
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--texto);
-      margin-bottom: 6px;
-    }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--texto); margin-bottom: 6px; }
     .form-control {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1.5px solid var(--borde);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: #F8F6F2;
-      color: var(--texto);
-      outline: none;
-      transition: border-color .2s, background .2s;
+      width: 100%; padding: 13px 14px; border: 1.5px solid var(--borde);
+      border-radius: 12px; font-size: 1rem; background: #F8F6F2; color: var(--texto);
+      outline: none; transition: border-color .2s, background .2s;
     }
-    .form-control:focus {
-      border-color: var(--terracota);
-      background: #fff;
-    }
+    .form-control:focus { border-color: var(--terracota); background: #fff; }
 
     .password-wrap { position: relative; }
     .password-wrap .form-control { padding-right: 46px; }
@@ -140,23 +93,15 @@
       display: flex; padding: 6px;
     }
 
-    .check-row {
-      display: flex; align-items: center; gap: 8px;
-      margin: 12px 0 20px;
-      font-size: 0.85rem; color: var(--suave);
-    }
+    .check-row { display: flex; align-items: center; gap: 8px; margin: 12px 0 20px; font-size: 0.85rem; color: var(--suave); }
     .check-row input { width: 18px; height: 18px; accent-color: var(--terracota); }
 
-    /* Botones */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       border: none; cursor: pointer; font-weight: 700; border-radius: 12px;
       padding: 14px 18px; font-size: 1rem; transition: all .15s ease;
     }
-    .btn-primary {
-      background: var(--terracota); color: #fff; width: 100%;
-      box-shadow: 0 8px 20px rgba(231,111,81,0.28);
-    }
+    .btn-primary { background: var(--terracota); color: #fff; width: 100%; box-shadow: 0 8px 20px rgba(231,111,81,0.28); }
     .btn-primary:hover { background: var(--terracota-dark); }
     .btn-primary:disabled { opacity: .65; cursor: not-allowed; }
     .btn-secondary { background: var(--verde); color: #fff; width: 100%; }
@@ -164,129 +109,71 @@
     .btn-danger { background: #FEE2E2; color: var(--rojo); }
     .btn-icon { padding: 8px; border-radius: 10px; }
 
-    .auth-switch {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 0.9rem;
-      color: var(--suave);
-    }
-    .auth-switch a {
-      color: var(--terracota);
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .auth-error {
-      text-align: center;
-      color: var(--rojo);
-      font-size: 0.88rem;
-      margin-top: 12px;
-      font-weight: 600;
-    }
+    .auth-switch { text-align: center; margin-top: 18px; font-size: 0.9rem; color: var(--suave); }
+    .auth-switch a { color: var(--terracota); font-weight: 700; text-decoration: none; cursor: pointer; }
+    .auth-error { text-align: center; color: var(--rojo); font-size: 0.88rem; margin-top: 12px; font-weight: 600; }
 
-    /* Dashboard Layout */
     .app-header {
-      position: sticky; top: 0; z-index: 50;
-      background: #fff; border-bottom: 1px solid var(--borde);
+      position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--borde);
       padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
     }
-    .brand {
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 800; color: var(--terracota); font-size: 1.1rem;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--terracota); font-size: 1.1rem; }
     .brand .mini-logo {
-      width: 34px; height: 34px; border-radius: 10px;
-      background: linear-gradient(135deg, #E76F51, #F4A261);
+      width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #E76F51, #F4A261);
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
     .avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--arena); color: #fff; font-weight: 800;
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      width: 40px; height: 40px; border-radius: 50%; background: var(--arena); color: #fff;
+      font-weight: 800; display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
 
-    .main-grid {
-      max-width: 1100px; margin: 0 auto;
-      display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 20px 16px 90px;
-    }
-    @media (max-width: 768px) {
-      .main-grid { grid-template-columns: 1fr; }
-      .desktop-nav { display: none; }
-    }
+    .main-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 20px 16px 90px; }
+    @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } .desktop-nav { display: none; } }
 
-    .card {
-      background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
-      padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.03); margin-bottom: 16px;
-    }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 14px; border-radius: 12px; cursor: pointer;
-      color: var(--suave); font-weight: 600; margin-bottom: 4px;
-    }
+    .card { background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.03); margin-bottom: 16px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; cursor: pointer; color: var(--suave); font-weight: 600; margin-bottom: 4px; }
     .nav-item.active, .nav-item:hover { background: #F8EDE8; color: var(--terracota); }
 
     .mobile-nav {
       display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
       background: #fff; border-top: 1px solid var(--borde);
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-      justify-content: space-around;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); justify-content: space-around;
     }
     @media (max-width: 768px) { .mobile-nav { display: flex; } }
-    .mobile-nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      font-size: 0.72rem; color: var(--suave); cursor: pointer; font-weight: 600;
-    }
+    .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.72rem; color: var(--suave); cursor: pointer; font-weight: 600; }
     .mobile-nav-item.active { color: var(--terracota); }
 
-    .metrics {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px;
-    }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .metric { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 14px; }
     .metric .t { font-size: 0.8rem; color: var(--suave); margin-bottom: 4px; }
     .metric .v { font-size: 1.35rem; font-weight: 800; }
     .income { color: var(--verde); } .expense { color: var(--rojo); } .balance { color: var(--terracota); }
 
-    .movement-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 0; border-bottom: 1px solid var(--borde); gap: 10px;
-    }
+    .movement-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borde); gap: 10px; }
     .movement-item:last-child { border-bottom: none; }
-    .m-icon {
-      width: 40px; height: 40px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .m-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.45);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200; padding: 16px;
-    }
-    .modal {
-      background: #fff; width: 100%; max-width: 480px; border-radius: 20px;
-      padding: 24px; max-height: 90vh; overflow-y: auto;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+    .modal { background: #fff; width: 100%; max-width: 480px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: #2B2D42; color: #fff; padding: 12px 20px; border-radius: 12px;
-      z-index: 300; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,.2);
-      max-width: 90vw; text-align: center;
+      z-index: 300; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,.2); max-width: 90vw; text-align: center;
     }
 
     .pwa-banner {
-      background: linear-gradient(135deg, #F4A261, #E76F51); color: #fff;
-      border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between;
-      align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.9rem; font-weight: 600;
+      background: linear-gradient(135deg, #F4A261, #E76F51); color: #fff; border-radius: 14px;
+      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.9rem; font-weight: 600;
     }
     .receipt-preview { max-width: 100%; max-height: 140px; border-radius: 10px; margin-top: 8px; object-fit: cover; }
   </style>
 </head>
 <body>
 
-  <!-- Toast Global -->
   <div id="toast" class="toast hidden"></div>
 
-  <!-- ========== PANTALLA AUTH (LOGIN / REGISTRO) ========== -->
+  <!-- AUTH SCREEN -->
   <div id="auth-screen" class="screen active">
     <div class="auth-card">
       <div class="auth-logo">
@@ -294,7 +181,6 @@
         <h1>Ahorro Familiar</h1>
       </div>
 
-      <!-- PANEL INICIAR SESIÓN -->
       <div id="panel-login">
         <p class="auth-sub">Inicia sesión en tu cuenta</p>
         <form id="form-login" onsubmit="return handleLogin(event)">
@@ -313,7 +199,7 @@
           </div>
           <label class="check-row">
             <input type="checkbox" id="login-remember" checked />
-            Recordarme en este dispositivo (Face ID / Huella)
+            Recordarme en este dispositivo
           </label>
           <button class="btn btn-primary" id="btn-login" type="submit">Ingresar</button>
         </form>
@@ -321,7 +207,6 @@
         <div id="login-error" class="auth-error"></div>
       </div>
 
-      <!-- PANEL REGISTRO -->
       <div id="panel-register" class="hidden">
         <p class="auth-sub">Crea tu cuenta familiar</p>
         <form id="form-register" onsubmit="return handleRegister(event)">
@@ -344,7 +229,7 @@
           </div>
           <label class="check-row">
             <input type="checkbox" id="reg-remember" checked />
-            Recordarme en este dispositivo (Face ID / Huella)
+            Recordarme en este dispositivo
           </label>
           <button class="btn btn-primary" id="btn-register" type="submit">Crear cuenta</button>
         </form>
@@ -354,7 +239,7 @@
     </div>
   </div>
 
-  <!-- ========== PANTALLA ONBOARDING (CREAR / UNIRSE) ========== -->
+  <!-- ONBOARDING SCREEN -->
   <div id="onboarding-screen" class="screen">
     <div style="width:100%; max-width:440px; margin:auto;">
       <div class="card" style="text-align:center;">
@@ -364,20 +249,18 @@
         <h2 style="margin-bottom:6px;">Tu hogar financiero</h2>
         <p style="color:var(--suave); margin-bottom:20px; font-size:.92rem;">Crea un nuevo grupo familiar o únete con un código.</p>
 
-        <!-- Crear Familia -->
         <div class="card" style="text-align:left; background:#FFF8F3; border:1.5px dashed #E76F51;">
           <strong style="color:var(--terracota); font-size:1.05rem;">Crear nueva familia</strong>
-          <p style="font-size:.82rem; color:var(--suave); margin:6px 0 12px;">Serás administrador y podrás invitar a otros miembros.</p>
+          <p style="font-size:.82rem; color:var(--suave); margin:6px 0 12px;">Serás administrador y podrás invitar a otros.</p>
           <input id="new-family-name" class="form-control" placeholder="Ej: Familia Carvajal" style="margin-bottom:12px;" />
           <button class="btn btn-primary" onclick="handleCreateFamily()">Crear grupo</button>
         </div>
 
-        <!-- Unirse a Familia -->
         <div class="card" style="text-align:left; background:#F1FAF8; border:1.5px dashed #2A9D8F; margin-bottom:0;">
           <strong style="color:var(--verde); font-size:1.05rem;">Unirse con código</strong>
           <p style="font-size:.82rem; color:var(--suave); margin:6px 0 12px;">Ingresa el código proporcionado por tu administrador.</p>
           <input id="join-family-code" class="form-control" placeholder="Ej: VIC-6050" style="margin-bottom:12px; text-transform:uppercase;" />
-          <button class="btn btn-secondary" onclick="handleJoinFamily()">Unirme a la familia</button>
+          <button class="btn btn-secondary" onclick="handleJoinFamily()">Enviar solicitud de ingreso</button>
         </div>
 
         <button class="btn btn-outline" style="width:100%; margin-top:16px;" onclick="handleLogout()">Cerrar sesión</button>
@@ -385,7 +268,7 @@
     </div>
   </div>
 
-  <!-- ========== PANTALLA PENDIENTE DE APROBACIÓN ========== -->
+  <!-- PENDING SCREEN -->
   <div id="pending-screen" class="screen">
     <div style="width:100%; max-width:420px; margin:auto;">
       <div class="card" style="text-align:center;">
@@ -398,7 +281,7 @@
     </div>
   </div>
 
-  <!-- ========== APP PRINCIPAL ========== -->
+  <!-- MAIN APP -->
   <div id="app-screen" class="screen">
     <header class="app-header">
       <div class="brand">
@@ -414,35 +297,23 @@
     </header>
 
     <div class="main-grid">
-      <!-- Navegación Desktop -->
       <nav class="desktop-nav">
         <div class="card" style="padding:10px;">
-          <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)">
-            <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Panel
-          </div>
-          <div class="nav-item" data-section="movements" onclick="switchSection('movements', this)">
-            <i data-lucide="arrow-left-right" style="width:18px;height:18px;"></i> Movimientos
-          </div>
-          <div class="nav-item" data-section="analytics" onclick="switchSection('analytics', this)">
-            <i data-lucide="pie-chart" style="width:18px;height:18px;"></i> Estadísticas
-          </div>
-          <div class="nav-item" data-section="family" onclick="switchSection('family', this)">
-            <i data-lucide="users" style="width:18px;height:18px;"></i> Familia
-          </div>
-          <div class="nav-item" data-section="profile" onclick="switchSection('profile', this)">
-            <i data-lucide="user" style="width:18px;height:18px;"></i> Perfil
-          </div>
+          <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)"><i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Panel</div>
+          <div class="nav-item" data-section="movements" onclick="switchSection('movements', this)"><i data-lucide="arrow-left-right" style="width:18px;height:18px;"></i> Movimientos</div>
+          <div class="nav-item" data-section="analytics" onclick="switchSection('analytics', this)"><i data-lucide="pie-chart" style="width:18px;height:18px;"></i> Estadísticas</div>
+          <div class="nav-item" data-section="family" onclick="switchSection('family', this)"><i data-lucide="users" style="width:18px;height:18px;"></i> Familia</div>
+          <div class="nav-item" data-section="profile" onclick="switchSection('profile', this)"><i data-lucide="user" style="width:18px;height:18px;"></i> Perfil</div>
         </div>
       </nav>
 
       <main>
-        <!-- Banner PWA -->
         <div id="pwa-install-container" class="pwa-banner hidden">
           <span>Instala Ahorro Familiar en tu dispositivo</span>
           <button id="btn-pwa-install" class="btn" style="background:#fff; color:var(--terracota); padding:6px 12px; font-size:.82rem;">Instalar</button>
         </div>
 
-        <!-- SECCIÓN: DASHBOARD -->
+        <!-- Dashboard -->
         <section id="section-dashboard">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <h2>Resumen del mes</h2>
@@ -467,7 +338,7 @@
           </div>
         </section>
 
-        <!-- SECCIÓN: MOVIMIENTOS -->
+        <!-- Movements -->
         <section id="section-movements" class="hidden">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <h2>Historial de Movimientos</h2>
@@ -489,7 +360,7 @@
           </div>
         </section>
 
-        <!-- SECCIÓN: ESTADÍSTICAS -->
+        <!-- Analytics -->
         <section id="section-analytics" class="hidden">
           <h2 style="margin-bottom:14px;">Estadísticas</h2>
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;">
@@ -504,19 +375,26 @@
           </div>
         </section>
 
-        <!-- SECCIÓN: FAMILIA -->
+        <!-- Family -->
         <section id="section-family" class="hidden">
           <h2 style="margin-bottom:14px;">Gestión Familiar</h2>
           <div class="card">
-            <div style="margin-bottom:6px;"><strong>Familia:</strong> <span id="family-info-name">—</span></div>
+            <div style="margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+              <strong>Familia:</strong> <span id="family-info-name">—</span>
+              <button id="btn-rename-family" class="btn btn-outline btn-icon hidden" style="padding:4px;" onclick="handleRenameFamily()" title="Editar nombre de la familia">
+                <i data-lucide="pencil" style="width:14px;height:14px;"></i>
+              </button>
+            </div>
             <div><strong>Código de Invitación:</strong> <span id="family-info-code" style="font-family:monospace; background:#F8EDE8; padding:3px 8px; border-radius:8px; font-weight:bold;">—</span></div>
           </div>
+          
           <div id="admin-controls-container" class="hidden">
             <div class="card">
-              <h3 style="font-size:1rem; margin-bottom:10px;">Invitar por correo (Auto-aprobación)</h3>
+              <h3 style="font-size:1rem; margin-bottom:10px;">Pre-aprobar correo</h3>
+              <p style="font-size:0.8rem; color:var(--suave); margin-bottom:10px;">Al ingresar con este correo, el usuario pasará directamente sin requerir aprobación manual.</p>
               <div style="display:flex; gap:8px;">
                 <input id="invite-email-input" class="form-control" type="email" placeholder="correo@familiar.com" style="flex:1;" />
-                <button class="btn btn-secondary" style="width:auto;" onclick="handleSendInvite()">Invitar</button>
+                <button class="btn btn-secondary" style="width:auto;" onclick="handleSendInvite()">Añadir</button>
               </div>
             </div>
             <div class="card">
@@ -530,12 +408,12 @@
           </div>
         </section>
 
-        <!-- SECCIÓN: PERFIL -->
+        <!-- Profile -->
         <section id="section-profile" class="hidden">
           <h2 style="margin-bottom:14px;">Mi Perfil</h2>
           <div class="card" style="max-width:480px;">
             <div style="text-align:center; margin-bottom:16px;">
-              <div id="profile-avatar-preview" class="avatar" style="width:76px; height:72px; margin:0 auto 10px; font-size:1.5rem;">U</div>
+              <div id="profile-avatar-preview" class="avatar" style="width:76px; height:76px; margin:0 auto 10px; font-size:1.5rem;">U</div>
               <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)" />
               <button class="btn btn-outline" style="padding:6px 12px; font-size:.85rem;" onclick="document.getElementById('profile-photo-input').click()">Cambiar fotografía</button>
             </div>
@@ -548,12 +426,17 @@
               <input id="profile-email-input" class="form-control" disabled />
             </div>
             <button class="btn btn-primary" onclick="handleSaveProfile()">Guardar Cambios</button>
+
+            <!-- Botón Eliminar Cuenta -->
+            <hr style="border:none; border-top:1px solid var(--borde); margin:24px 0;">
+            <p style="font-size:0.85rem; color:var(--suave); margin-bottom:12px; text-align:center;">Zona de peligro</p>
+            <button class="btn btn-danger" style="width:100%;" onclick="handleDeleteAccount()">Eliminar mi cuenta definitivamente</button>
           </div>
         </section>
       </main>
     </div>
 
-    <!-- Navegación Móvil Inferior -->
+    <!-- Mobile Nav -->
     <nav class="mobile-nav">
       <div class="mobile-nav-item active" onclick="switchSection('dashboard', this)"><i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i><span>Panel</span></div>
       <div class="mobile-nav-item" onclick="switchSection('movements', this)"><i data-lucide="arrow-left-right" style="width:20px;height:20px;"></i><span>Movs</span></div>
@@ -563,7 +446,7 @@
     </nav>
   </div>
 
-  <!-- MODAL: CREAR / EDITAR MOVIMIENTO -->
+  <!-- MODAL -->
   <div id="modal-movement" class="modal-overlay hidden">
     <div class="modal">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -596,7 +479,7 @@
           <input id="mov-note" class="form-control" type="text" placeholder="Ej: Compras del mercado" />
         </div>
         <div class="form-group">
-          <label>Foto de Recibo / Comprobante (Opcional)</label>
+          <label>Foto de Recibo (Opcional)</label>
           <input id="mov-receipt-input" class="form-control" type="file" accept="image/*" onchange="previewReceiptImage(event)" />
           <img id="mov-receipt-preview" class="receipt-preview hidden" alt="Recibo" />
         </div>
@@ -609,7 +492,7 @@
   </div>
 
 <script>
-  // 1. CONFIGURACIÓN Y CONEXIÓN FIREBASE
+  // CONFIGURACIÓN FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
     authDomain: "mi-ahorro-40269.firebaseapp.com",
@@ -621,15 +504,11 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Estado Global
   let currentUserData = null;
   let currentFamilyData = null;
   let movementsData = [];
   let currentReceiptBase64 = "";
-  let userUnsub = null;
-  let movUnsub = null;
-  let famUnsub = null;
-  let membersUnsub = null;
+  let userUnsub = null, movUnsub = null, famUnsub = null, membersUnsub = null;
 
   const CATEGORIES = {
     gasto: ["Alimentación", "Vivienda", "Transporte", "Servicios", "Salud", "Educación", "Entretenimiento", "Otros"],
@@ -644,11 +523,9 @@
     setupPWA();
   });
 
-  // 2. NAVEGACIÓN Y NOTIFICACIONES
   function showToast(msg) {
     const t = document.getElementById("toast");
-    t.textContent = msg;
-    t.classList.remove("hidden");
+    t.textContent = msg; t.classList.remove("hidden");
     clearTimeout(showToast._timer);
     showToast._timer = setTimeout(() => t.classList.add("hidden"), 3500);
   }
@@ -668,15 +545,13 @@
   function showLogin() {
     document.getElementById("panel-login").classList.remove("hidden");
     document.getElementById("panel-register").classList.add("hidden");
-    setAuthError("login", ""); setAuthError("register", "");
-    lucide.createIcons();
+    setAuthError("login", ""); setAuthError("register", ""); lucide.createIcons();
   }
 
   function showRegister() {
     document.getElementById("panel-register").classList.remove("hidden");
     document.getElementById("panel-login").classList.add("hidden");
-    setAuthError("login", ""); setAuthError("register", "");
-    lucide.createIcons();
+    setAuthError("login", ""); setAuthError("register", ""); lucide.createIcons();
   }
 
   function goToLoginWithCredentials(email, password) {
@@ -693,66 +568,40 @@
     lucide.createIcons();
   }
 
-  function normalizeEmail(v) {
-    return String(v || "").trim().toLowerCase();
-  }
+  function normalizeEmail(v) { return String(v || "").trim().toLowerCase(); }
 
   function authErrorMessage(err) {
     const c = err && err.code;
-    if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found") {
-      return "Correo o contraseña incorrectos.";
-    }
+    if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found") return "Correo o contraseña incorrectos.";
     if (c === "auth/email-already-in-use") return "Este correo ya está registrado.";
     if (c === "auth/weak-password") return "La contraseña debe tener al menos 6 caracteres.";
     return (err && err.message) || "No se pudo iniciar sesión.";
   }
 
-  // 3. AUTENTICACIÓN Y ENRUTAMIENTO FLUIDO (SIN CONGELAMIENTOS)
   auth.onAuthStateChanged((user) => {
     if (!user) {
-      cleanupListeners();
-      currentUserData = null;
-      showScreen("auth");
-      return;
+      cleanupListeners(); currentUserData = null; showScreen("auth"); return;
     }
-
-    // Escuchar datos del usuario en tiempo real en Firestore
     if (userUnsub) userUnsub();
     userUnsub = db.collection("users").doc(user.uid).onSnapshot(async (snap) => {
       if (!snap.exists) {
-        // Si el usuario existe en Auth pero no en Firestore, creamos su perfil básico
         await db.collection("users").doc(user.uid).set({
           displayName: user.displayName || user.email.split('@')[0],
           email: normalizeEmail(user.email),
-          familyId: null,
-          role: null,
-          status: null,
-          photoBase64: "",
+          familyId: null, role: null, status: null, photoBase64: "",
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
         return;
       }
-
-      currentUserData = snap.data();
-      currentUserData.uid = user.uid;
+      currentUserData = snap.data(); currentUserData.uid = user.uid;
       updateUserProfileUI();
 
-      // Enrutamiento directo según su estado de familia
-      if (!currentUserData.familyId) {
-        showScreen("onboarding");
-      } else if (currentUserData.status === "pending") {
-        showScreen("pending");
-      } else if (currentUserData.status === "approved") {
-        showScreen("app");
-        switchSection("dashboard");
-        startFamilyListeners(currentUserData.familyId);
-      } else {
-        showScreen("onboarding");
-      }
-    }, (err) => {
-      console.error("User Snapshot Error:", err);
-      showToast("Error de conexión");
-    });
+      if (!currentUserData.familyId) showScreen("onboarding");
+      else if (currentUserData.status === "pending") showScreen("pending");
+      else if (currentUserData.status === "approved") {
+        showScreen("app"); switchSection("dashboard"); startFamilyListeners(currentUserData.familyId);
+      } else showScreen("onboarding");
+    }, (err) => { console.error("User Snapshot Error:", err); showToast("Error de conexión"); });
   });
 
   function cleanupListeners() {
@@ -763,75 +612,41 @@
   }
 
   async function handleLogin(e) {
-    e.preventDefault();
-    setAuthError("login", "");
+    e.preventDefault(); setAuthError("login", "");
     const email = normalizeEmail(document.getElementById("login-email").value);
     const password = document.getElementById("login-password").value;
     const remember = document.getElementById("login-remember").checked;
     const btn = document.getElementById("btn-login");
 
-    if (!email || !password) {
-      setAuthError("login", "Ingresa tu correo y contraseña.");
-      return false;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Ingresando...";
-
+    if (!email || !password) return setAuthError("login", "Ingresa tu correo y contraseña.");
+    btn.disabled = true; btn.textContent = "Ingresando...";
     try {
-      const persistence = remember
-        ? firebase.auth.Auth.Persistence.LOCAL
-        : firebase.auth.Auth.Persistence.SESSION;
-      await auth.setPersistence(persistence);
+      await auth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
       await auth.signInWithEmailAndPassword(email, password);
       showToast("¡Bienvenido/a!");
     } catch (err) {
-      console.error(err);
-      setAuthError("login", authErrorMessage(err));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Ingresar";
-    }
+      console.error(err); setAuthError("login", authErrorMessage(err));
+    } finally { btn.disabled = false; btn.textContent = "Ingresar"; }
     return false;
   }
 
   async function handleRegister(e) {
-    e.preventDefault();
-    setAuthError("register", "");
+    e.preventDefault(); setAuthError("register", "");
     const name = document.getElementById("reg-name").value.trim();
     const email = normalizeEmail(document.getElementById("reg-email").value);
     const password = document.getElementById("reg-password").value;
     const remember = document.getElementById("reg-remember").checked;
     const btn = document.getElementById("btn-register");
 
-    if (password.length < 6) {
-      setAuthError("register", "La contraseña debe tener al menos 6 caracteres.");
-      return false;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Creando cuenta...";
-
+    if (password.length < 6) return setAuthError("register", "La contraseña debe tener al menos 6 caracteres.");
+    btn.disabled = true; btn.textContent = "Creando cuenta...";
     try {
-      const persistence = remember
-        ? firebase.auth.Auth.Persistence.LOCAL
-        : firebase.auth.Auth.Persistence.SESSION;
-      await auth.setPersistence(persistence);
-
+      await auth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
       const cred = await auth.createUserWithEmailAndPassword(email, password);
       await cred.user.updateProfile({ displayName: name });
-
-      // Guardar en Firestore (NUNCA contraseña)
       await db.collection("users").doc(cred.user.uid).set({
-        displayName: name,
-        email: email,
-        familyId: null,
-        role: null,
-        status: null,
-        photoBase64: "",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        displayName: name, email: email, familyId: null, role: null, status: null, photoBase64: "", createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
-
       showToast("¡Cuenta creada exitosamente!");
     } catch (err) {
       console.error(err);
@@ -839,24 +654,15 @@
         goToLoginWithCredentials(email, password);
         setAuthError("login", "Este correo ya está registrado. Presiona Ingresar.");
         showToast("Correo ya registrado. Inicia sesión.");
-      } else {
-        setAuthError("register", authErrorMessage(err));
-      }
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Crear cuenta";
-    }
+      } else setAuthError("register", authErrorMessage(err));
+    } finally { btn.disabled = false; btn.textContent = "Crear cuenta"; }
     return false;
   }
 
   async function handleLogout() {
-    cleanupListeners();
-    await auth.signOut();
-    showLogin();
-    showToast("Sesión cerrada");
+    cleanupListeners(); await auth.signOut(); showLogin(); showToast("Sesión cerrada");
   }
 
-  // 4. GESTIÓN DE FAMILIA (CREAR Y UNIRSE)
   function generateFamilyCode(name) {
     const prefix = (String(name).replace(/[^a-zA-Z]/g, "").substring(0, 3) || "FAM").toUpperCase();
     return `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -865,39 +671,24 @@
   async function handleCreateFamily() {
     const familyName = document.getElementById("new-family-name").value.trim();
     if (!familyName) return showToast("Escribe un nombre para la familia");
-    const user = auth.currentUser;
-    if (!user) return showToast("Sesión no válida");
-
+    const user = auth.currentUser; if (!user) return showToast("Sesión no válida");
     try {
       const code = generateFamilyCode(familyName);
       const ref = await db.collection("families").add({
-        familyName: familyName,
-        code: code,
-        invitedEmails: [],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        familyName: familyName, code: code, invitedEmails: [], createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-
       await db.collection("users").doc(user.uid).set({
-        familyId: ref.id,
-        role: "admin",
-        status: "approved",
-        displayName: currentUserData?.displayName || user.displayName || "Usuario",
-        email: normalizeEmail(user.email)
+        familyId: ref.id, role: "admin", status: "approved",
+        displayName: currentUserData?.displayName || user.displayName || "Usuario", email: normalizeEmail(user.email)
       }, { merge: true });
-
       showToast("¡Familia creada con éxito!");
-    } catch (err) {
-      console.error("Create family error:", err);
-      showToast("Error al crear la familia");
-    }
+    } catch (err) { console.error(err); showToast("Error al crear la familia"); }
   }
 
   async function handleJoinFamily() {
     const code = document.getElementById("join-family-code").value.trim().toUpperCase();
     if (!code) return showToast("Ingresa el código de invitación");
-    const user = auth.currentUser;
-    if (!user) return showToast("Sesión no válida");
-
+    const user = auth.currentUser; if (!user) return showToast("Sesión no válida");
     try {
       const q = await db.collection("families").where("code", "==", code).limit(1).get();
       if (q.empty) return showToast("El código no existe");
@@ -907,29 +698,20 @@
       const email = normalizeEmail(user.email);
       const isInvited = (data.invitedEmails || []).map(normalizeEmail).includes(email);
 
+      // Ahora TODOS van a pendiente si ingresan por código (a menos que el admin los haya "Pre-aprobado")
       await db.collection("users").doc(user.uid).set({
-        familyId: familyDoc.id,
-        role: "member",
-        status: isInvited ? "approved" : "pending",
-        email: email
+        familyId: familyDoc.id, role: "member", status: isInvited ? "approved" : "pending", email: email
       }, { merge: true });
 
-      showToast(isInvited ? "Te has unido a la familia" : "Solicitud de ingreso enviada");
-    } catch (err) {
-      console.error("Join family error:", err);
-      showToast("Error al unirse al grupo");
-    }
+      showToast(isInvited ? "Bienvenido/a al grupo" : "Solicitud de ingreso enviada al administrador");
+    } catch (err) { console.error(err); showToast("Error al unirse al grupo"); }
   }
 
   function checkStatusManual() {
-    if (currentUserData && currentUserData.status === "approved") {
-      showScreen("app");
-    } else {
-      showToast("Aún en espera de aprobación por el administrador");
-    }
+    if (currentUserData && currentUserData.status === "approved") showScreen("app");
+    else showToast("Aún en espera de aprobación por el administrador");
   }
 
-  // 5. ESCUCHA REALTIME FAMILIA Y MOVIMIENTOS
   function startFamilyListeners(familyId) {
     if (famUnsub) famUnsub();
     famUnsub = db.collection("families").doc(familyId).onSnapshot((doc) => {
@@ -942,15 +724,13 @@
 
     if (membersUnsub) membersUnsub();
     membersUnsub = db.collection("users").where("familyId", "==", familyId).onSnapshot((snap) => {
-      const approved = [];
-      const pending = [];
+      const approved = []; const pending = [];
       snap.forEach((d) => {
         const u = { ...d.data(), uid: d.id };
         if (u.status === "approved") approved.push(u);
         else if (u.status === "pending") pending.push(u);
       });
-      renderFamilyMembers(approved);
-      renderPendingUsers(pending);
+      renderFamilyMembers(approved); renderPendingUsers(pending);
     });
 
     if (movUnsub) movUnsub();
@@ -958,14 +738,10 @@
       movementsData = [];
       snap.forEach((d) => movementsData.push({ ...d.data(), id: d.id }));
       movementsData.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
-      updateDashboardMetrics();
-      renderRecentMovements();
-      renderFullMovementsList(movementsData);
-      renderCharts();
-    }, (err) => console.error("Movements Listener Error:", err));
+      updateDashboardMetrics(); renderRecentMovements(); renderFullMovementsList(movementsData); renderCharts();
+    });
   }
 
-  // 6. REGISTRO Y EDICIÓN DE MOVIMIENTOS
   function updateCategoriesDropdown() {
     const type = document.getElementById("mov-type").value;
     const sel = document.getElementById("mov-category");
@@ -973,11 +749,9 @@
   }
 
   function openMovementModal(id = null) {
-    document.getElementById("form-movement").reset();
-    currentReceiptBase64 = "";
+    document.getElementById("form-movement").reset(); currentReceiptBase64 = "";
     const prev = document.getElementById("mov-receipt-preview");
-    prev.classList.add("hidden");
-    prev.removeAttribute("src");
+    prev.classList.add("hidden"); prev.removeAttribute("src");
     document.getElementById("mov-date").valueAsDate = new Date();
     document.getElementById("mov-id").value = "";
     document.getElementById("modal-movement-title").textContent = "Nuevo Movimiento";
@@ -986,47 +760,30 @@
       const m = movementsData.find((x) => x.id === id);
       if (m) {
         document.getElementById("modal-movement-title").textContent = "Editar Movimiento";
-        document.getElementById("mov-id").value = m.id;
-        document.getElementById("mov-type").value = m.type;
+        document.getElementById("mov-id").value = m.id; document.getElementById("mov-type").value = m.type;
         updateCategoriesDropdown();
-        document.getElementById("mov-amount").value = m.amount;
-        document.getElementById("mov-category").value = m.category;
-        document.getElementById("mov-date").value = m.date;
-        document.getElementById("mov-note").value = m.note || "";
-        if (m.receipt) {
-          currentReceiptBase64 = m.receipt;
-          prev.src = m.receipt;
-          prev.classList.remove("hidden");
-        }
+        document.getElementById("mov-amount").value = m.amount; document.getElementById("mov-category").value = m.category;
+        document.getElementById("mov-date").value = m.date; document.getElementById("mov-note").value = m.note || "";
+        if (m.receipt) { currentReceiptBase64 = m.receipt; prev.src = m.receipt; prev.classList.remove("hidden"); }
       }
-    } else {
-      updateCategoriesDropdown();
-    }
-    document.getElementById("modal-movement").classList.remove("hidden");
-    lucide.createIcons();
+    } else updateCategoriesDropdown();
+    document.getElementById("modal-movement").classList.remove("hidden"); lucide.createIcons();
   }
 
-  function closeMovementModal() {
-    document.getElementById("modal-movement").classList.add("hidden");
-  }
+  function closeMovementModal() { document.getElementById("modal-movement").classList.add("hidden"); }
 
   function previewReceiptImage(e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
+    const file = e.target.files && e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const maxW = 400;
-        const scale = maxW / img.width;
-        canvas.width = maxW;
-        canvas.height = Math.max(1, Math.round(img.height * scale));
+        const scale = 400 / img.width; canvas.width = 400; canvas.height = Math.max(1, Math.round(img.height * scale));
         canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
         currentReceiptBase64 = canvas.toDataURL("image/jpeg", 0.38);
         const prev = document.getElementById("mov-receipt-preview");
-        prev.src = currentReceiptBase64;
-        prev.classList.remove("hidden");
+        prev.src = currentReceiptBase64; prev.classList.remove("hidden");
       };
       img.src = ev.target.result;
     };
@@ -1034,49 +791,29 @@
   }
 
   async function handleSaveMovement(e) {
-    e.preventDefault();
-    if (!currentUserData?.familyId) return false;
+    e.preventDefault(); if (!currentUserData?.familyId) return false;
     const id = document.getElementById("mov-id").value;
     const payload = {
-      familyId: currentUserData.familyId,
-      type: document.getElementById("mov-type").value,
-      amount: parseFloat(document.getElementById("mov-amount").value),
-      category: document.getElementById("mov-category").value,
-      date: document.getElementById("mov-date").value,
-      note: document.getElementById("mov-note").value.trim(),
-      receipt: currentReceiptBase64 || "",
-      userId: currentUserData.uid,
-      userName: currentUserData.displayName || "Familiar",
+      familyId: currentUserData.familyId, type: document.getElementById("mov-type").value,
+      amount: parseFloat(document.getElementById("mov-amount").value), category: document.getElementById("mov-category").value,
+      date: document.getElementById("mov-date").value, note: document.getElementById("mov-note").value.trim(),
+      receipt: currentReceiptBase64 || "", userId: currentUserData.uid, userName: currentUserData.displayName || "Familiar",
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-
     try {
-      if (id) {
-        await db.collection("movements").doc(id).update(payload);
-      } else {
-        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-        await db.collection("movements").add(payload);
-      }
-      closeMovementModal();
-      showToast("Movimiento guardado");
-    } catch (err) {
-      console.error(err);
-      showToast("Error al guardar el movimiento");
-    }
+      if (id) await db.collection("movements").doc(id).update(payload);
+      else { payload.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection("movements").add(payload); }
+      closeMovementModal(); showToast("Movimiento guardado");
+    } catch (err) { console.error(err); showToast("Error al guardar el movimiento"); }
     return false;
   }
 
   async function deleteMovement(id) {
     if (!confirm("¿Deseas eliminar este movimiento?")) return;
-    try {
-      await db.collection("movements").doc(id).delete();
-      showToast("Movimiento eliminado");
-    } catch (_) {
-      showToast("No se pudo eliminar");
-    }
+    try { await db.collection("movements").doc(id).delete(); showToast("Movimiento eliminado"); } 
+    catch (_) { showToast("No se pudo eliminar"); }
   }
 
-  // 7. RENDERIZADO DEL DASHBOARD
   function money(n) { return `$${Number(n || 0).toFixed(2)}`; }
 
   function updateDashboardMetrics() {
@@ -1087,27 +824,20 @@
       if (m.type === "ingreso") income += Number(m.amount) || 0;
       if (m.type === "gasto") expenses += Number(m.amount) || 0;
     });
-
     document.getElementById("metric-income").textContent = money(income);
     document.getElementById("metric-expenses").textContent = money(expenses);
     const bal = income - expenses;
-    const el = document.getElementById("metric-balance");
-    el.textContent = money(bal);
+    const el = document.getElementById("metric-balance"); el.textContent = money(bal);
     el.style.color = bal >= 0 ? "var(--verde)" : "var(--rojo)";
   }
 
   function createMovementHTML(m, actions = false) {
-    const inc = m.type === "ingreso";
-    const color = inc ? "var(--verde)" : "var(--rojo)";
-    const bg = inc ? "#E6F4F1" : "#FDE8E8";
-    const icon = inc ? "arrow-up-right" : "arrow-down-left";
-
+    const inc = m.type === "ingreso"; const color = inc ? "var(--verde)" : "var(--rojo)";
+    const bg = inc ? "#E6F4F1" : "#FDE8E8"; const icon = inc ? "arrow-up-right" : "arrow-down-left";
     return `
       <div class="movement-item">
         <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-          <div class="m-icon" style="background:${bg}; color:${color};">
-            <i data-lucide="${icon}" style="width:18px;height:18px;"></i>
-          </div>
+          <div class="m-icon" style="background:${bg}; color:${color};"><i data-lucide="${icon}" style="width:18px;height:18px;"></i></div>
           <div style="min-width:0;">
             <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
               ${m.category}${m.note ? ` <span style="color:var(--suave); font-weight:normal; font-size:.82rem;">(${m.note})</span>` : ""}
@@ -1129,10 +859,7 @@
     `;
   }
 
-  function viewReceipt(base64) {
-    const w = window.open("");
-    if (w) w.document.write(`<img src="${base64}" style="max-width:100%; height:auto;" />`);
-  }
+  function viewReceipt(base64) { const w = window.open(""); if (w) w.document.write(`<img src="${base64}" style="max-width:100%; height:auto;" />`); }
 
   function renderRecentMovements() {
     const el = document.getElementById("recent-movements-list");
@@ -1148,63 +875,50 @@
   }
 
   function applyMovementsFilter() {
-    const s = document.getElementById("filter-search").value.toLowerCase();
-    const t = document.getElementById("filter-type").value;
+    const s = document.getElementById("filter-search").value.toLowerCase(); const t = document.getElementById("filter-type").value;
     const filtered = movementsData.filter((m) => {
       const okSearch = !s || (m.note || "").toLowerCase().includes(s) || (m.category || "").toLowerCase().includes(s);
-      const okType = t === "ALL" || m.type === t;
-      return okSearch && okType;
+      const okType = t === "ALL" || m.type === t; return okSearch && okType;
     });
     renderFullMovementsList(filtered);
   }
 
-  // 8. GRÁFICOS (CHART.JS)
   let chartBar, chartDonut, chartLine;
   function renderCharts() {
-    let inc = 0, exp = 0;
-    const cat = {};
+    let inc = 0, exp = 0; const cat = {};
     movementsData.forEach((m) => {
       const a = Number(m.amount) || 0;
       if (m.type === "ingreso") inc += a;
-      if (m.type === "gasto") {
-        exp += a;
-        cat[m.category] = (cat[m.category] || 0) + a;
-      }
+      if (m.type === "gasto") { exp += a; cat[m.category] = (cat[m.category] || 0) + a; }
     });
 
+    if (chartBar) chartBar.destroy(); if (chartDonut) chartDonut.destroy(); if (chartLine) chartLine.destroy();
+
     const barCtx = document.getElementById("chart-quick-bar");
-    const donCtx = document.getElementById("chart-doughnut-categories");
-    const lineCtx = document.getElementById("chart-line-savings");
-
-    if (chartBar) chartBar.destroy();
-    if (chartDonut) chartDonut.destroy();
-    if (chartLine) chartLine.destroy();
-
     if (barCtx) chartBar = new Chart(barCtx, {
-      type: "bar",
-      data: { labels: ["Ingresos", "Gastos"], datasets: [{ data: [inc, exp], backgroundColor: ["#2A9D8F", "#E63946"], borderRadius: 8 }] },
+      type: "bar", data: { labels: ["Ingresos", "Gastos"], datasets: [{ data: [inc, exp], backgroundColor: ["#2A9D8F", "#E63946"], borderRadius: 8 }] },
       options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
+    const donCtx = document.getElementById("chart-doughnut-categories");
     if (donCtx) chartDonut = new Chart(donCtx, {
-      type: "doughnut",
-      data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), backgroundColor: ["#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653", "#9B5DE5"] }] },
+      type: "doughnut", data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), backgroundColor: ["#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653", "#9B5DE5"] }] },
       options: { plugins: { legend: { position: "bottom" } } }
     });
 
+    const lineCtx = document.getElementById("chart-line-savings");
     if (lineCtx) chartLine = new Chart(lineCtx, {
-      type: "line",
-      data: { labels: ["Inicio", "Actual"], datasets: [{ label: "Balance", data: [0, inc - exp], borderColor: "#E76F51", backgroundColor: "rgba(231,111,81,.15)", fill: true, tension: 0.3 }] },
+      type: "line", data: { labels: ["Inicio", "Actual"], datasets: [{ label: "Balance", data: [0, inc - exp], borderColor: "#E76F51", backgroundColor: "rgba(231,111,81,.15)", fill: true, tension: 0.3 }] },
       options: { plugins: { legend: { display: false } } }
     });
   }
 
-  // 9. ADMINISTRACIÓN DE FAMILIA
   function renderFamilyMembers(members) {
     const isAdmin = currentUserData?.role === "admin";
     document.getElementById("admin-controls-container").classList.toggle("hidden", !isAdmin);
+    document.getElementById("btn-rename-family").classList.toggle("hidden", !isAdmin);
+    
     const list = document.getElementById("family-members-list");
-
     list.innerHTML = members.map((m) => {
       const initial = (m.displayName || "U").charAt(0).toUpperCase();
       const av = m.photoBase64 ? `<img src="${m.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />` : initial;
@@ -1231,10 +945,7 @@
 
   function renderPendingUsers(pending) {
     const el = document.getElementById("pending-users-list");
-    if (!pending.length) {
-      el.innerHTML = `<p style="color:var(--suave); font-size:.9rem;">No hay solicitudes pendientes.</p>`;
-      return;
-    }
+    if (!pending.length) { el.innerHTML = `<p style="color:var(--suave); font-size:.9rem;">No hay solicitudes pendientes.</p>`; return; }
     el.innerHTML = pending.map((p) => `
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--borde);">
         <div><div style="font-weight:700;">${p.displayName || "Usuario"}</div><div style="font-size:.75rem; color:var(--suave);">${p.email || ""}</div></div>
@@ -1246,68 +957,53 @@
     `).join("");
   }
 
+  async function handleRenameFamily() {
+    const currentName = currentFamilyData?.familyName || "";
+    const newName = prompt("Ingresa el nuevo nombre para la familia:", currentName);
+    if (newName !== null && newName.trim() !== "" && newName !== currentName) {
+      try {
+        await db.collection("families").doc(currentUserData.familyId).update({ familyName: newName.trim() });
+        showToast("Nombre de la familia actualizado");
+      } catch (error) { showToast("Error al actualizar el nombre"); }
+    }
+  }
+
   async function handleSendInvite() {
     const email = normalizeEmail(document.getElementById("invite-email-input").value);
     if (!email) return showToast("Ingresa un correo válido");
     try {
-      await db.collection("families").doc(currentUserData.familyId).update({
-        invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
-      });
-      document.getElementById("invite-email-input").value = "";
-      showToast("Invitación agregada");
-    } catch (_) {
-      showToast("Error al invitar");
-    }
+      await db.collection("families").doc(currentUserData.familyId).update({ invitedEmails: firebase.firestore.FieldValue.arrayUnion(email) });
+      document.getElementById("invite-email-input").value = ""; showToast("Correo pre-aprobado añadido");
+    } catch (_) { showToast("Error al procesar"); }
   }
 
-  async function approveMember(uid) {
-    await db.collection("users").doc(uid).update({ status: "approved" });
-    showToast("Miembro aprobado");
-  }
-
-  async function rejectMember(uid) {
-    await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
-    showToast("Solicitud rechazada");
-  }
-
-  async function promoteToAdmin(uid) {
-    await db.collection("users").doc(uid).update({ role: "admin" });
-    showToast("Promovido a Administrador");
-  }
-
+  async function approveMember(uid) { await db.collection("users").doc(uid).update({ status: "approved" }); showToast("Miembro aprobado"); }
+  async function rejectMember(uid) { await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true }); showToast("Solicitud rechazada"); }
+  async function promoteToAdmin(uid) { await db.collection("users").doc(uid).update({ role: "admin" }); showToast("Promovido a Administrador"); }
   async function removeFamilyMember(uid) {
     if (!confirm("¿Expulsar a este miembro de la familia?")) return;
-    await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
-    showToast("Miembro expulsado");
+    await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true }); showToast("Miembro expulsado");
   }
 
-  // 10. GESTIÓN DE PERFIL DE USUARIO
   function updateUserProfileUI() {
     if (!currentUserData) return;
-    const name = currentUserData.displayName || "Usuario";
-    const initial = name.charAt(0).toUpperCase();
-    const av = document.getElementById("user-avatar");
-    const pv = document.getElementById("profile-avatar-preview");
+    const name = currentUserData.displayName || "Usuario"; const initial = name.charAt(0).toUpperCase();
+    const av = document.getElementById("user-avatar"); const pv = document.getElementById("profile-avatar-preview");
     const html = currentUserData.photoBase64 ? `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />` : initial;
-    av.innerHTML = html;
-    pv.innerHTML = html;
-    document.getElementById("profile-name-input").value = name;
-    document.getElementById("profile-email-input").value = currentUserData.email || "";
+    av.innerHTML = html; pv.innerHTML = html;
+    document.getElementById("profile-name-input").value = name; document.getElementById("profile-email-input").value = currentUserData.email || "";
   }
 
   function handleProfilePhotoUpload(e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file || !auth.currentUser) return;
+    const file = e.target.files && e.target.files[0]; if (!file || !auth.currentUser) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       const img = new Image();
       img.onload = async () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 120; canvas.height = 120;
+        const canvas = document.createElement("canvas"); canvas.width = 120; canvas.height = 120;
         canvas.getContext("2d").drawImage(img, 0, 0, 120, 120);
         const base64 = canvas.toDataURL("image/jpeg", 0.5);
-        await db.collection("users").doc(auth.currentUser.uid).set({ photoBase64: base64 }, { merge: true });
-        showToast("Foto de perfil actualizada");
+        await db.collection("users").doc(auth.currentUser.uid).set({ photoBase64: base64 }, { merge: true }); showToast("Foto de perfil actualizada");
       };
       img.src = ev.target.result;
     };
@@ -1315,54 +1011,63 @@
   }
 
   async function handleSaveProfile() {
-    const name = document.getElementById("profile-name-input").value.trim();
-    if (!name || !auth.currentUser) return;
+    const name = document.getElementById("profile-name-input").value.trim(); if (!name || !auth.currentUser) return;
     await db.collection("users").doc(auth.currentUser.uid).set({ displayName: name }, { merge: true });
-    try { await auth.currentUser.updateProfile({ displayName: name }); } catch (_) {}
-    showToast("Perfil guardado");
+    try { await auth.currentUser.updateProfile({ displayName: name }); } catch (_) {} showToast("Perfil guardado");
   }
 
-  // 11. EXPORTAR DATOS
+  async function handleDeleteAccount() {
+    if (!confirm("⚠️ ¿Estás completamente seguro de que deseas ELIMINAR tu cuenta?\nSe perderá tu perfil, acceso a la familia y tus registros. Esta acción es irreversible.")) return;
+    if (!confirm("Última advertencia:\n¿Eliminar cuenta definitivamente?")) return;
+
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+      // Borrar de Firestore
+      await db.collection("users").doc(user.uid).delete();
+      // Borrar de Auth
+      await user.delete();
+      
+      showToast("Tu cuenta ha sido eliminada permanentemente.");
+      cleanupListeners();
+      showScreen("auth");
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'auth/requires-recent-login') {
+        showToast("Por seguridad, debes cerrar sesión e iniciarla de nuevo antes de eliminar tu cuenta.");
+      } else {
+        showToast("Hubo un error al eliminar tu cuenta.");
+      }
+    }
+  }
+
   function exportData(format) {
     if (!movementsData.length) return showToast("No hay movimientos para exportar");
     const headers = ["Fecha", "Tipo", "Categoria", "Monto", "Nota", "Usuario"];
     const rows = movementsData.map((m) => [m.date, m.type, m.category, m.amount, `"${(m.note || "").replace(/"/g, '""')}"`, m.userName || ""]);
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `ahorro_familiar_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `ahorro_familiar_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
   }
 
-  // 12. PANTALLAS Y NAVEGACIÓN DE SECCIONES
   function switchSection(id, el = null) {
     document.querySelectorAll("main > section").forEach((s) => s.classList.add("hidden"));
-    const sec = document.getElementById("section-" + id);
-    if (sec) sec.classList.remove("hidden");
-
+    const sec = document.getElementById("section-" + id); if (sec) sec.classList.remove("hidden");
     document.querySelectorAll(".nav-item, .mobile-nav-item").forEach((n) => n.classList.remove("active"));
     if (el) el.classList.add("active");
     document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach((n) => n.classList.add("active"));
     lucide.createIcons();
   }
 
-  // 13. PWA INSTALACIÓN
   let deferredPrompt = null;
   function setupPWA() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    }
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
     window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById("pwa-install-container").classList.remove("hidden");
+      e.preventDefault(); deferredPrompt = e; document.getElementById("pwa-install-container").classList.remove("hidden");
     });
     document.getElementById("btn-pwa-install")?.addEventListener("click", async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
+      if (!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null;
       document.getElementById("pwa-install-container").classList.add("hidden");
     });
   }
