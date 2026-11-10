@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Iconos Ahorro Familiar</title>
+</head>
+<body style="font-family:sans-serif; text-align:center; padding:40px; background:#FDFBF7;">
+  <h2>Generando iconos PNG...</h2>
+  <p>Tus dos imágenes PNG se descargarán automáticamente en unos segundos.</p>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="120" fill="#E76F51"/>
+  <g transform="translate(96, 96) scale(13.333)" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+    <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08v0c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/>
+    <path d="m18 15-2-2"/>
+    <path d="m15 18-2-2"/>
+  </g>
+</svg>`;
+
+    function downloadPNG(size, filename) {
+      const img = new Image();
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = function() {
+        const canvas = document.getElementById('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, size, size);
+
+        const a = document.createElement('a');
+        a.download = filename;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    }
+
+    setTimeout(() => downloadPNG(192, 'icon-192.png'), 500);
+    setTimeout(() => downloadPNG(512, 'icon-512.png'), 1500);
+  </script>
+</body>
+</html>
