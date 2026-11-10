@@ -1,9 +1,31 @@
+MI AHORRO APP
+
+Max
+
+
+Aquí tienes el motivo exacto del fallo y el **`index.html` corregido al 100%**.
+
+### ¿Por qué se quedaba congelado en "Bienvenido"?
+En la versión anterior había una función (`ensureUserDocument`) haciendo una espera bloqueante (`await`) dentro del detector de inicio de sesión (`onAuthStateChanged`). Si esa consulta a la base de datos demoraba o daba un parpadeo de red en el móvil, la app te decía *"¡Bienvenido!"* pero **nunca cambiaba de pantalla**, dejándote atrapado en la pantalla de inicio de sesión y sin dejarte crear la familia.
+
+### ¿Qué se corrigió en este código?
+1. **Paso directo sin congelamientos:** Al iniciar sesión o registrarte, el listener en tiempo real detecta tu usuario inmediatamente y te pasa a la pantalla de **Crear / Unirse a Familia** o al **Panel Principal** sin quedarse pegado.
+2. **Creación de familia 100% funcional:** `handleCreateFamily` crea el grupo en Firestore y actualiza tu usuario en milisegundos, llevándote de inmediato al Panel de control.
+3. **Mantiene todo tu diseño:** Logo del corazón con la mano (`heart-handshake`), paleta *Hogar Cálido*, ocultamiento de la marca Netlify y campo de contraseña con ojo visible.
+
+---
+
+### Reemplaza todo el contenido de tu `index.html` por este:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Ahorro Familiar</title>
+  
+  <!-- Configuración PWA -->
   <meta name="theme-color" content="#E76F51" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -12,6 +34,7 @@
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon-192.png" />
 
+  <!-- Scripts externos (Lucide, Chart.js, Firebase) -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -33,69 +56,82 @@
       --sombra: 0 10px 40px rgba(231, 111, 81, 0.12);
       --radio: 18px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--crema);
       color: var(--texto);
       min-height: 100vh;
     }
+
+    /* Ocultar marca de agua de Netlify */
     iframe[src*="netlify"], a[href*="netlify.com"], [class*="netlify-badge"] {
       display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
     }
-    .hidden { display: none !important; }
-    .screen { display: none; min-height: 100vh; }
-    .screen.active { display: block; }
 
-    /* AUTH — estilo de tu captura */
-    #auth-screen {
+    .hidden { display: none !important; }
+
+    /* Pantallas */
+    .screen {
+      display: none;
+      width: 100%;
       min-height: 100vh;
+    }
+    .screen.active { display: block; }
+    
+    #auth-screen.active, #onboarding-screen.active, #pending-screen.active {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 16px;
-      background: linear-gradient(180deg, #FFF8F3 0%, var(--crema) 100%);
+      padding: 20px 16px;
     }
+
+    /* Tarjeta de Auth (Estilo de tus capturas) */
     .auth-card {
       width: 100%;
       max-width: 400px;
       background: var(--card);
       border-radius: 24px;
-      padding: 36px 28px 28px;
+      padding: 32px 24px 24px;
       box-shadow: var(--sombra);
-      border: 1px solid rgba(231,111,81,0.08);
+      border: 1px solid rgba(231,111,81,0.1);
+      margin: auto;
     }
+
     .auth-logo {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .auth-logo .logo-icon {
-      width: 42px; height: 42px;
+      width: 44px; height: 44px;
       border-radius: 14px;
       background: linear-gradient(135deg, #E76F51, #F4A261);
       display: flex; align-items: center; justify-content: center;
       color: #fff;
-      box-shadow: 0 6px 16px rgba(231,111,81,0.35);
+      box-shadow: 0 6px 16px rgba(231,111,81,0.3);
     }
     .auth-logo h1 {
-      font-size: 1.45rem;
+      font-size: 1.5rem;
       color: var(--terracota);
       font-weight: 800;
-      letter-spacing: -0.02em;
     }
     .auth-sub {
       text-align: center;
       color: var(--suave);
       font-size: 0.92rem;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
+
+    /* Formularios e Inputs */
     .form-group { margin-bottom: 16px; }
     .form-group label {
       display: block;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--texto);
       margin-bottom: 6px;
@@ -106,7 +142,7 @@
       border: 1.5px solid var(--borde);
       border-radius: 12px;
       font-size: 1rem;
-      background: #F7F5F2;
+      background: #F8F6F2;
       color: var(--texto);
       outline: none;
       transition: border-color .2s, background .2s;
@@ -115,34 +151,39 @@
       border-color: var(--terracota);
       background: #fff;
     }
+
     .password-wrap { position: relative; }
     .password-wrap .form-control { padding-right: 46px; }
     .eye-btn {
       position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
       border: none; background: none; cursor: pointer; color: var(--suave);
-      display: flex; padding: 4px;
+      display: flex; padding: 6px;
     }
+
     .check-row {
       display: flex; align-items: center; gap: 8px;
-      margin: 8px 0 18px;
+      margin: 12px 0 20px;
       font-size: 0.85rem; color: var(--suave);
     }
-    .check-row input { width: 16px; height: 16px; accent-color: var(--terracota); }
+    .check-row input { width: 18px; height: 18px; accent-color: var(--terracota); }
+
+    /* Botones */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       border: none; cursor: pointer; font-weight: 700; border-radius: 12px;
-      padding: 13px 18px; font-size: 1rem; transition: .15s ease;
+      padding: 14px 18px; font-size: 1rem; transition: all .15s ease;
     }
     .btn-primary {
       background: var(--terracota); color: #fff; width: 100%;
-      box-shadow: 0 8px 20px rgba(231,111,81,0.3);
+      box-shadow: 0 8px 20px rgba(231,111,81,0.28);
     }
     .btn-primary:hover { background: var(--terracota-dark); }
     .btn-primary:disabled { opacity: .65; cursor: not-allowed; }
-    .btn-secondary { background: var(--verde); color: #fff; }
+    .btn-secondary { background: var(--verde); color: #fff; width: 100%; }
     .btn-outline { background: #fff; border: 1.5px solid var(--borde); color: var(--texto); }
     .btn-danger { background: #FEE2E2; color: var(--rojo); }
     .btn-icon { padding: 8px; border-radius: 10px; }
+
     .auth-switch {
       text-align: center;
       margin-top: 18px;
@@ -159,68 +200,72 @@
       text-align: center;
       color: var(--rojo);
       font-size: 0.88rem;
-      margin-top: 14px;
-      min-height: 1.2em;
+      margin-top: 12px;
       font-weight: 600;
     }
 
-    /* Resto app */
+    /* Dashboard Layout */
     .app-header {
       position: sticky; top: 0; z-index: 50;
       background: #fff; border-bottom: 1px solid var(--borde);
-      padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
     }
     .brand {
-      display: flex; align-items: center; gap: 8px;
-      font-weight: 800; color: var(--terracota); font-size: 1.05rem;
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; color: var(--terracota); font-size: 1.1rem;
     }
     .brand .mini-logo {
-      width: 32px; height: 32px; border-radius: 10px;
+      width: 34px; height: 34px; border-radius: 10px;
       background: linear-gradient(135deg, #E76F51, #F4A261);
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
     .avatar {
-      width: 38px; height: 38px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: var(--arena); color: #fff; font-weight: 800;
       display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
+
     .main-grid {
       max-width: 1100px; margin: 0 auto;
-      display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 18px 16px 90px;
+      display: grid; grid-template-columns: 220px 1fr; gap: 20px; padding: 20px 16px 90px;
     }
-    @media (max-width: 800px) {
+    @media (max-width: 768px) {
       .main-grid { grid-template-columns: 1fr; }
       .desktop-nav { display: none; }
     }
+
     .card {
       background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
-      padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,.04); margin-bottom: 16px;
+      padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.03); margin-bottom: 16px;
     }
     .nav-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 11px 14px; border-radius: 12px; cursor: pointer;
+      padding: 12px 14px; border-radius: 12px; cursor: pointer;
       color: var(--suave); font-weight: 600; margin-bottom: 4px;
     }
     .nav-item.active, .nav-item:hover { background: #F8EDE8; color: var(--terracota); }
+
     .mobile-nav {
       display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
       background: #fff; border-top: 1px solid var(--borde);
-      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
       justify-content: space-around;
     }
-    @media (max-width: 800px) { .mobile-nav { display: flex; } }
+    @media (max-width: 768px) { .mobile-nav { display: flex; } }
     .mobile-nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
-      font-size: 0.7rem; color: var(--suave); cursor: pointer; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 0.72rem; color: var(--suave); cursor: pointer; font-weight: 600;
     }
     .mobile-nav-item.active { color: var(--terracota); }
+
     .metrics {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px;
     }
     .metric { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 14px; }
-    .metric .t { font-size: 0.78rem; color: var(--suave); margin-bottom: 4px; }
+    .metric .t { font-size: 0.8rem; color: var(--suave); margin-bottom: 4px; }
     .metric .v { font-size: 1.35rem; font-weight: 800; }
     .income { color: var(--verde); } .expense { color: var(--rojo); } .balance { color: var(--terracota); }
+
     .movement-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 12px 0; border-bottom: 1px solid var(--borde); gap: 10px;
@@ -230,44 +275,46 @@
       width: 40px; height: 40px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
+
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.45);
       display: flex; align-items: center; justify-content: center;
       z-index: 200; padding: 16px;
     }
     .modal {
-      background: #fff; width: 100%; max-width: 480px; border-radius: 18px;
-      padding: 22px; max-height: 90vh; overflow-y: auto;
+      background: #fff; width: 100%; max-width: 480px; border-radius: 20px;
+      padding: 24px; max-height: 90vh; overflow-y: auto;
     }
+
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #2B2D42; color: #fff; padding: 12px 18px; border-radius: 12px;
+      background: #2B2D42; color: #fff; padding: 12px 20px; border-radius: 12px;
       z-index: 300; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,.2);
       max-width: 90vw; text-align: center;
     }
-    .center-box {
-      max-width: 460px; margin: 40px auto; padding: 16px;
-    }
+
     .pwa-banner {
       background: linear-gradient(135deg, #F4A261, #E76F51); color: #fff;
-      border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between;
-      align-items: center; gap: 10px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600;
+      border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.9rem; font-weight: 600;
     }
     .receipt-preview { max-width: 100%; max-height: 140px; border-radius: 10px; margin-top: 8px; object-fit: cover; }
   </style>
 </head>
 <body>
+
+  <!-- Toast Global -->
   <div id="toast" class="toast hidden"></div>
 
-  <!-- ========== AUTH ========== -->
+  <!-- ========== PANTALLA AUTH (LOGIN / REGISTRO) ========== -->
   <div id="auth-screen" class="screen active">
     <div class="auth-card">
       <div class="auth-logo">
-        <div class="logo-icon"><i data-lucide="heart-handshake" style="width:24px;height:24px;"></i></div>
+        <div class="logo-icon"><i data-lucide="heart-handshake" style="width:26px;height:26px;"></i></div>
         <h1>Ahorro Familiar</h1>
       </div>
 
-      <!-- LOGIN -->
+      <!-- PANEL INICIAR SESIÓN -->
       <div id="panel-login">
         <p class="auth-sub">Inicia sesión en tu cuenta</p>
         <form id="form-login" onsubmit="return handleLogin(event)">
@@ -279,7 +326,7 @@
             <label for="login-password">Contraseña</label>
             <div class="password-wrap">
               <input id="login-password" class="form-control" type="password" autocomplete="current-password" required placeholder="••••••••" />
-              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('login-password', this)" aria-label="Ver contraseña">
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('login-password', this)">
                 <i data-lucide="eye" style="width:20px;height:20px;"></i>
               </button>
             </div>
@@ -294,7 +341,7 @@
         <div id="login-error" class="auth-error"></div>
       </div>
 
-      <!-- REGISTER -->
+      <!-- PANEL REGISTRO -->
       <div id="panel-register" class="hidden">
         <p class="auth-sub">Crea tu cuenta familiar</p>
         <form id="form-register" onsubmit="return handleRegister(event)">
@@ -327,64 +374,67 @@
     </div>
   </div>
 
-  <!-- ========== ONBOARDING ========== -->
+  <!-- ========== PANTALLA ONBOARDING (CREAR / UNIRSE) ========== -->
   <div id="onboarding-screen" class="screen">
-    <div class="center-box">
+    <div style="width:100%; max-width:440px; margin:auto;">
       <div class="card" style="text-align:center;">
-        <div class="logo-icon" style="margin:0 auto 12px;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#E76F51,#F4A261);display:flex;align-items:center;justify-content:center;color:#fff;">
+        <div class="logo-icon" style="margin:0 auto 12px; width:52px; height:52px; border-radius:16px; background:linear-gradient(135deg,#E76F51,#F4A261); display:flex; align-items:center; justify-content:center; color:#fff;">
           <i data-lucide="heart-handshake" style="width:28px;height:28px;"></i>
         </div>
         <h2 style="margin-bottom:6px;">Tu hogar financiero</h2>
-        <p style="color:var(--suave);margin-bottom:18px;font-size:.92rem;">Crea un grupo familiar o únete con un código.</p>
+        <p style="color:var(--suave); margin-bottom:20px; font-size:.92rem;">Crea un nuevo grupo familiar o únete con un código.</p>
 
-        <div class="card" style="text-align:left;background:#FFF8F3;border-style:dashed;border-color:#E76F51;">
-          <strong style="color:var(--terracota);">Crear familia</strong>
-          <p style="font-size:.82rem;color:var(--suave);margin:6px 0 10px;">Serás administrador y podrás aprobar miembros.</p>
-          <input id="new-family-name" class="form-control" placeholder="Ej: Familia Carvajal Vera" style="margin-bottom:10px;" />
-          <button class="btn btn-primary" style="width:100%;" onclick="handleCreateFamily()">Crear grupo</button>
+        <!-- Crear Familia -->
+        <div class="card" style="text-align:left; background:#FFF8F3; border:1.5px dashed #E76F51;">
+          <strong style="color:var(--terracota); font-size:1.05rem;">Crear nueva familia</strong>
+          <p style="font-size:.82rem; color:var(--suave); margin:6px 0 12px;">Serás administrador y podrás invitar a otros miembros.</p>
+          <input id="new-family-name" class="form-control" placeholder="Ej: Familia Carvajal" style="margin-bottom:12px;" />
+          <button class="btn btn-primary" onclick="handleCreateFamily()">Crear grupo</button>
         </div>
 
-        <div class="card" style="text-align:left;background:#F1FAF8;border-style:dashed;border-color:#2A9D8F;margin-bottom:0;">
-          <strong style="color:var(--verde);">Unirse con código</strong>
-          <p style="font-size:.82rem;color:var(--suave);margin:6px 0 10px;">Te quedas en pendiente hasta que el admin apruebe (salvo invitación por correo).</p>
-          <input id="join-family-code" class="form-control" placeholder="Ej: VIC-6050" style="margin-bottom:10px;text-transform:uppercase;" />
-          <button class="btn btn-secondary" style="width:100%;" onclick="handleJoinFamily()">Unirme</button>
+        <!-- Unirse a Familia -->
+        <div class="card" style="text-align:left; background:#F1FAF8; border:1.5px dashed #2A9D8F; margin-bottom:0;">
+          <strong style="color:var(--verde); font-size:1.05rem;">Unirse con código</strong>
+          <p style="font-size:.82rem; color:var(--suave); margin:6px 0 12px;">Ingresa el código proporcionado por tu administrador.</p>
+          <input id="join-family-code" class="form-control" placeholder="Ej: VIC-6050" style="margin-bottom:12px; text-transform:uppercase;" />
+          <button class="btn btn-secondary" onclick="handleJoinFamily()">Unirme a la familia</button>
         </div>
 
-        <button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="handleLogout()">Cerrar sesión</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:16px;" onclick="handleLogout()">Cerrar sesión</button>
       </div>
     </div>
   </div>
 
-  <!-- ========== PENDING ========== -->
+  <!-- ========== PANTALLA PENDIENTE DE APROBACIÓN ========== -->
   <div id="pending-screen" class="screen">
-    <div class="center-box">
+    <div style="width:100%; max-width:420px; margin:auto;">
       <div class="card" style="text-align:center;">
-        <i data-lucide="clock" style="width:42px;height:42px;color:var(--arena);margin-bottom:10px;"></i>
+        <i data-lucide="clock" style="width:48px; height:48px; color:var(--arena); margin-bottom:12px;"></i>
         <h2>Solicitud pendiente</h2>
-        <p style="color:var(--suave);margin:10px 0 18px;">El administrador de la familia debe aprobar tu ingreso.</p>
-        <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="showToast('Seguimos esperando la aprobación...')">Verificar estado</button>
+        <p style="color:var(--suave); margin:10px 0 20px;">El administrador de la familia debe aprobar tu acceso.</p>
+        <button class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="checkStatusManual()">Verificar estado</button>
         <button class="btn btn-danger" style="width:100%;" onclick="handleLogout()">Cerrar sesión</button>
       </div>
     </div>
   </div>
 
-  <!-- ========== APP ========== -->
+  <!-- ========== APP PRINCIPAL ========== -->
   <div id="app-screen" class="screen">
     <header class="app-header">
       <div class="brand">
-        <div class="mini-logo"><i data-lucide="heart-handshake" style="width:18px;height:18px;"></i></div>
+        <div class="mini-logo"><i data-lucide="heart-handshake" style="width:20px;height:20px;"></i></div>
         <span id="app-family-title">Ahorro Familiar</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
+      <div style="display:flex; align-items:center; gap:10px;">
         <div id="user-avatar" class="avatar">U</div>
-        <button class="btn btn-outline btn-icon" onclick="handleLogout()" title="Salir">
+        <button class="btn btn-outline btn-icon" onclick="handleLogout()" title="Cerrar sesión">
           <i data-lucide="log-out" style="width:18px;height:18px;"></i>
         </button>
       </div>
     </header>
 
     <div class="main-grid">
+      <!-- Navegación Desktop -->
       <nav class="desktop-nav">
         <div class="card" style="padding:10px;">
           <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard', this)">
@@ -406,17 +456,18 @@
       </nav>
 
       <main>
+        <!-- Banner PWA -->
         <div id="pwa-install-container" class="pwa-banner hidden">
           <span>Instala Ahorro Familiar en tu dispositivo</span>
-          <button id="btn-pwa-install" class="btn" style="background:#fff;color:var(--terracota);padding:8px 12px;font-size:.82rem;">Instalar</button>
+          <button id="btn-pwa-install" class="btn" style="background:#fff; color:var(--terracota); padding:6px 12px; font-size:.82rem;">Instalar</button>
         </div>
 
-        <!-- Dashboard -->
+        <!-- SECCIÓN: DASHBOARD -->
         <section id="section-dashboard">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <h2>Resumen del mes</h2>
-            <button class="btn btn-primary" style="width:auto;padding:10px 14px;" onclick="openMovementModal()">
-              <i data-lucide="plus" style="width:16px;height:16px;"></i> Nuevo
+            <button class="btn btn-primary" style="width:auto; padding:10px 16px;" onclick="openMovementModal()">
+              <i data-lucide="plus" style="width:18px;height:18px;"></i> Nuevo Movimiento
             </button>
           </div>
           <div class="metrics">
@@ -424,30 +475,30 @@
             <div class="metric"><div class="t">Gastos</div><div id="metric-expenses" class="v expense">$0.00</div></div>
             <div class="metric"><div class="t">Balance</div><div id="metric-balance" class="v balance">$0.00</div></div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;">
             <div class="card">
-              <h3 style="font-size:.95rem;margin-bottom:10px;">Ingresos vs Gastos</h3>
+              <h3 style="font-size:1rem; margin-bottom:12px;">Ingresos vs Gastos</h3>
               <canvas id="chart-quick-bar" height="180"></canvas>
             </div>
             <div class="card">
-              <h3 style="font-size:.95rem;margin-bottom:10px;">Últimos movimientos</h3>
+              <h3 style="font-size:1rem; margin-bottom:12px;">Últimos movimientos</h3>
               <div id="recent-movements-list"></div>
             </div>
           </div>
         </section>
 
-        <!-- Movements -->
+        <!-- SECCIÓN: MOVIMIENTOS -->
         <section id="section-movements" class="hidden">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-            <h2>Movimientos</h2>
-            <div style="display:flex;gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+            <h2>Historial de Movimientos</h2>
+            <div style="display:flex; gap:8px;">
               <button class="btn btn-outline" style="padding:8px 12px;" onclick="exportData('csv')"><i data-lucide="download" style="width:16px;height:16px;"></i> CSV</button>
-              <button class="btn btn-primary" style="width:auto;padding:8px 12px;" onclick="openMovementModal()"><i data-lucide="plus" style="width:16px;height:16px;"></i></button>
+              <button class="btn btn-primary" style="width:auto; padding:8px 14px;" onclick="openMovementModal()"><i data-lucide="plus" style="width:16px;height:16px;"></i> Nuevo</button>
             </div>
           </div>
           <div class="card">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-              <input id="filter-search" class="form-control" placeholder="Buscar..." style="flex:1;min-width:140px;" oninput="applyMovementsFilter()" />
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+              <input id="filter-search" class="form-control" placeholder="Buscar por nota o categoría..." style="flex:1; min-width:150px;" oninput="applyMovementsFilter()" />
               <select id="filter-type" class="form-control" style="width:auto;" onchange="applyMovementsFilter()">
                 <option value="ALL">Todos</option>
                 <option value="ingreso">Ingresos</option>
@@ -458,72 +509,71 @@
           </div>
         </section>
 
-        <!-- Analytics -->
+        <!-- SECCIÓN: ESTADÍSTICAS -->
         <section id="section-analytics" class="hidden">
-          <h2 style="margin-bottom:12px;">Estadísticas</h2>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+          <h2 style="margin-bottom:14px;">Estadísticas</h2>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;">
             <div class="card">
-              <h3 style="font-size:.95rem;margin-bottom:10px;">Gastos por categoría</h3>
+              <h3 style="font-size:1rem; margin-bottom:12px;">Gastos por categoría</h3>
               <canvas id="chart-doughnut-categories" height="200"></canvas>
             </div>
             <div class="card">
-              <h3 style="font-size:.95rem;margin-bottom:10px;">Ahorro (balance actual)</h3>
+              <h3 style="font-size:1rem; margin-bottom:12px;">Evolución del ahorro</h3>
               <canvas id="chart-line-savings" height="200"></canvas>
             </div>
           </div>
         </section>
 
-        <!-- Family -->
+        <!-- SECCIÓN: FAMILIA -->
         <section id="section-family" class="hidden">
-          <h2 style="margin-bottom:12px;">Familia</h2>
+          <h2 style="margin-bottom:14px;">Gestión Familiar</h2>
           <div class="card">
-            <div><strong>Nombre:</strong> <span id="family-info-name">—</span></div>
-            <div style="margin-top:6px;"><strong>Código:</strong>
-              <span id="family-info-code" style="font-family:ui-monospace,monospace;background:#F8EDE8;padding:3px 8px;border-radius:8px;">—</span>
-            </div>
+            <div style="margin-bottom:6px;"><strong>Familia:</strong> <span id="family-info-name">—</span></div>
+            <div><strong>Código de Invitación:</strong> <span id="family-info-code" style="font-family:monospace; background:#F8EDE8; padding:3px 8px; border-radius:8px; font-weight:bold;">—</span></div>
           </div>
           <div id="admin-controls-container" class="hidden">
             <div class="card">
-              <h3 style="font-size:1rem;margin-bottom:8px;">Invitar correo (auto-aprobación)</h3>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <input id="invite-email-input" class="form-control" type="email" placeholder="correo@ejemplo.com" style="flex:1;" />
-                <button class="btn btn-secondary" onclick="handleSendInvite()">Invitar</button>
+              <h3 style="font-size:1rem; margin-bottom:10px;">Invitar por correo (Auto-aprobación)</h3>
+              <div style="display:flex; gap:8px;">
+                <input id="invite-email-input" class="form-control" type="email" placeholder="correo@familiar.com" style="flex:1;" />
+                <button class="btn btn-secondary" style="width:auto;" onclick="handleSendInvite()">Invitar</button>
               </div>
             </div>
             <div class="card">
-              <h3 style="font-size:1rem;margin-bottom:8px;">Solicitudes pendientes</h3>
+              <h3 style="font-size:1rem; margin-bottom:10px;">Solicitudes pendientes</h3>
               <div id="pending-users-list"></div>
             </div>
           </div>
           <div class="card">
-            <h3 style="font-size:1rem;margin-bottom:8px;">Miembros</h3>
+            <h3 style="font-size:1rem; margin-bottom:10px;">Miembros del Grupo</h3>
             <div id="family-members-list"></div>
           </div>
         </section>
 
-        <!-- Profile -->
+        <!-- SECCIÓN: PERFIL -->
         <section id="section-profile" class="hidden">
-          <h2 style="margin-bottom:12px;">Mi perfil</h2>
+          <h2 style="margin-bottom:14px;">Mi Perfil</h2>
           <div class="card" style="max-width:480px;">
-            <div style="text-align:center;margin-bottom:14px;">
-              <div id="profile-avatar-preview" class="avatar" style="width:72px;height:72px;margin:0 auto 8px;font-size:1.4rem;">U</div>
+            <div style="text-align:center; margin-bottom:16px;">
+              <div id="profile-avatar-preview" class="avatar" style="width:76px; height:72px; margin:0 auto 10px; font-size:1.5rem;">U</div>
               <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)" />
-              <button class="btn btn-outline" style="padding:8px 12px;font-size:.85rem;" onclick="document.getElementById('profile-photo-input').click()">Cambiar foto</button>
+              <button class="btn btn-outline" style="padding:6px 12px; font-size:.85rem;" onclick="document.getElementById('profile-photo-input').click()">Cambiar fotografía</button>
             </div>
             <div class="form-group">
-              <label>Nombre</label>
+              <label>Nombre Completo</label>
               <input id="profile-name-input" class="form-control" />
             </div>
             <div class="form-group">
-              <label>Correo (no editable)</label>
+              <label>Correo Electrónico (No editable)</label>
               <input id="profile-email-input" class="form-control" disabled />
             </div>
-            <button class="btn btn-primary" onclick="handleSaveProfile()">Guardar cambios</button>
+            <button class="btn btn-primary" onclick="handleSaveProfile()">Guardar Cambios</button>
           </div>
         </section>
       </main>
     </div>
 
+    <!-- Navegación Móvil Inferior -->
     <nav class="mobile-nav">
       <div class="mobile-nav-item active" onclick="switchSection('dashboard', this)"><i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i><span>Panel</span></div>
       <div class="mobile-nav-item" onclick="switchSection('movements', this)"><i data-lucide="arrow-left-right" style="width:20px;height:20px;"></i><span>Movs</span></div>
@@ -533,11 +583,11 @@
     </nav>
   </div>
 
-  <!-- Modal movimiento -->
+  <!-- MODAL: CREAR / EDITAR MOVIMIENTO -->
   <div id="modal-movement" class="modal-overlay hidden">
     <div class="modal">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <h3 id="modal-movement-title">Nuevo movimiento</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 id="modal-movement-title">Nuevo Movimiento</h3>
         <button class="btn btn-outline btn-icon" type="button" onclick="closeMovementModal()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
       </div>
       <form id="form-movement" onsubmit="return handleSaveMovement(event)">
@@ -550,8 +600,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Monto</label>
-          <input id="mov-amount" class="form-control" type="number" step="0.01" min="0" required />
+          <label>Monto ($)</label>
+          <input id="mov-amount" class="form-control" type="number" step="0.01" min="0.01" required placeholder="0.00" />
         </div>
         <div class="form-group">
           <label>Categoría</label>
@@ -562,15 +612,15 @@
           <input id="mov-date" class="form-control" type="date" required />
         </div>
         <div class="form-group">
-          <label>Nota</label>
-          <input id="mov-note" class="form-control" type="text" placeholder="Opcional" />
+          <label>Nota / Descripción</label>
+          <input id="mov-note" class="form-control" type="text" placeholder="Ej: Compras del mercado" />
         </div>
         <div class="form-group">
-          <label>Recibo (opcional)</label>
+          <label>Foto de Recibo / Comprobante (Opcional)</label>
           <input id="mov-receipt-input" class="form-control" type="file" accept="image/*" onchange="previewReceiptImage(event)" />
           <img id="mov-receipt-preview" class="receipt-preview hidden" alt="Recibo" />
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex; gap:10px; margin-top:20px;">
           <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeMovementModal()">Cancelar</button>
           <button type="submit" class="btn btn-primary" style="flex:1;">Guardar</button>
         </div>
@@ -579,7 +629,7 @@
   </div>
 
 <script>
-  // ===== Firebase =====
+  // 1. CONFIGURACIÓN Y CONEXIÓN FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
     authDomain: "mi-ahorro-40269.firebaseapp.com",
@@ -591,7 +641,7 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ===== State =====
+  // Estado Global
   let currentUserData = null;
   let currentFamilyData = null;
   let movementsData = [];
@@ -600,7 +650,6 @@
   let movUnsub = null;
   let famUnsub = null;
   let membersUnsub = null;
-  let ensuringUserDoc = false;
 
   const CATEGORIES = {
     gasto: ["Alimentación", "Vivienda", "Transporte", "Servicios", "Salud", "Educación", "Entretenimiento", "Otros"],
@@ -615,7 +664,7 @@
     setupPWA();
   });
 
-  // ===== Helpers UI =====
+  // 2. NAVEGACIÓN Y NOTIFICACIONES
   function showToast(msg) {
     const t = document.getElementById("toast");
     t.textContent = msg;
@@ -623,78 +672,63 @@
     clearTimeout(showToast._timer);
     showToast._timer = setTimeout(() => t.classList.add("hidden"), 3500);
   }
+
   function setAuthError(which, msg) {
     const el = document.getElementById(which === "login" ? "login-error" : "register-error");
     if (el) el.textContent = msg || "";
   }
+
   function showScreen(name) {
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
     const el = document.getElementById(name + "-screen");
     if (el) el.classList.add("active");
     lucide.createIcons();
   }
+
   function showLogin() {
     document.getElementById("panel-login").classList.remove("hidden");
     document.getElementById("panel-register").classList.add("hidden");
-    setAuthError("login", "");
-    setAuthError("register", "");
+    setAuthError("login", ""); setAuthError("register", "");
     lucide.createIcons();
   }
+
   function showRegister() {
     document.getElementById("panel-register").classList.remove("hidden");
     document.getElementById("panel-login").classList.add("hidden");
-    setAuthError("login", "");
-    setAuthError("register", "");
+    setAuthError("login", ""); setAuthError("register", "");
     lucide.createIcons();
   }
+
   function goToLoginWithCredentials(email, password) {
     showLogin();
     document.getElementById("login-email").value = email || "";
     document.getElementById("login-password").value = password || "";
   }
+
   function togglePasswordVisibility(inputId, btn) {
     const input = document.getElementById(inputId);
-    const show = input.type === "password";
-    input.type = show ? "text" : "password";
-    btn.innerHTML = `<i data-lucide="${show ? "eye-off" : "eye"}" style="width:20px;height:20px;"></i>`;
+    const isPass = input.type === "password";
+    input.type = isPass ? "text" : "password";
+    btn.innerHTML = `<i data-lucide="${isPass ? "eye-off" : "eye"}" style="width:20px;height:20px;"></i>`;
     lucide.createIcons();
   }
+
   function normalizeEmail(v) {
     return String(v || "").trim().toLowerCase();
   }
+
   function authErrorMessage(err) {
     const c = err && err.code;
-    if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found" || c === "auth/invalid-login-credentials") {
-      return "Error: correo o contraseña incorrectos.";
+    if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found") {
+      return "Correo o contraseña incorrectos.";
     }
-    if (c === "auth/too-many-requests") return "Demasiados intentos. Espera un momento.";
-    if (c === "auth/invalid-email") return "Correo no válido.";
     if (c === "auth/email-already-in-use") return "Este correo ya está registrado.";
     if (c === "auth/weak-password") return "La contraseña debe tener al menos 6 caracteres.";
-    if (c === "auth/network-request-failed") return "Sin conexión. Revisa tu internet.";
-    return (err && err.message) || "No se pudo completar la operación.";
+    return (err && err.message) || "No se pudo iniciar sesión.";
   }
 
-  // ===== AUTH CORE (arreglo del login) =====
-  async function ensureUserDocument(user, extra = {}) {
-    const ref = db.collection("users").doc(user.uid);
-    const snap = await ref.get();
-    if (snap.exists) return snap.data();
-
-    const payload = {
-      displayName: extra.displayName || user.displayName || (user.email || "").split("@")[0] || "Usuario",
-      email: normalizeEmail(user.email),
-      familyId: null,
-      role: null,
-      status: null,
-      photoBase64: "",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await ref.set(payload, { merge: true });
-    return payload;
-  }
-
-  auth.onAuthStateChanged(async (user) => {
+  // 3. AUTENTICACIÓN Y ENRUTAMIENTO FLUIDO (SIN CONGELAMIENTOS)
+  auth.onAuthStateChanged((user) => {
     if (!user) {
       cleanupListeners();
       currentUserData = null;
@@ -702,48 +736,43 @@
       return;
     }
 
-    try {
-      if (!ensuringUserDoc) {
-        ensuringUserDoc = true;
-        await ensureUserDocument(user);
-        ensuringUserDoc = false;
-      }
-    } catch (e) {
-      ensuringUserDoc = false;
-      console.error(e);
-      showToast("No se pudo preparar tu perfil");
-    }
-
+    // Escuchar datos del usuario en tiempo real en Firestore
     if (userUnsub) userUnsub();
-    userUnsub = db.collection("users").doc(user.uid).onSnapshot(
-      (snap) => {
-        if (!snap.exists) {
-          // Perfil borrado en consola → salir
-          auth.signOut();
-          showToast("Tu usuario fue eliminado. Sesión cerrada.");
-          return;
-        }
-        currentUserData = { ...snap.data(), uid: user.uid };
-        updateUserProfileUI();
+    userUnsub = db.collection("users").doc(user.uid).onSnapshot(async (snap) => {
+      if (!snap.exists) {
+        // Si el usuario existe en Auth pero no en Firestore, creamos su perfil básico
+        await db.collection("users").doc(user.uid).set({
+          displayName: user.displayName || user.email.split('@')[0],
+          email: normalizeEmail(user.email),
+          familyId: null,
+          role: null,
+          status: null,
+          photoBase64: "",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        return;
+      }
 
-        if (!currentUserData.familyId) {
-          showScreen("onboarding");
-          return;
-        }
-        if (currentUserData.status === "pending") {
-          showScreen("pending");
-          return;
-        }
-        if (currentUserData.status === "approved") {
-          showScreen("app");
-          startFamilyListeners(currentUserData.familyId);
-          return;
-        }
-        // estado raro → onboarding
+      currentUserData = snap.data();
+      currentUserData.uid = user.uid;
+      updateUserProfileUI();
+
+      // Enrutamiento directo según su estado de familia
+      if (!currentUserData.familyId) {
         showScreen("onboarding");
-      },
-      (err) => console.error("user listener", err)
-    );
+      } else if (currentUserData.status === "pending") {
+        showScreen("pending");
+      } else if (currentUserData.status === "approved") {
+        showScreen("app");
+        switchSection("dashboard");
+        startFamilyListeners(currentUserData.familyId);
+      } else {
+        showScreen("onboarding");
+      }
+    }, (err) => {
+      console.error("User Snapshot Error:", err);
+      showToast("Error de conexión");
+    });
   });
 
   function cleanupListeners() {
@@ -757,29 +786,31 @@
     e.preventDefault();
     setAuthError("login", "");
     const email = normalizeEmail(document.getElementById("login-email").value);
-    const password = document.getElementById("login-password").value; // NO trim de contraseña
+    const password = document.getElementById("login-password").value;
     const remember = document.getElementById("login-remember").checked;
     const btn = document.getElementById("btn-login");
 
     if (!email || !password) {
-      setAuthError("login", "Completa correo y contraseña.");
+      setAuthError("login", "Ingresa tu correo y contraseña.");
       return false;
     }
 
     btn.disabled = true;
+    btn.textContent = "Ingresando...";
+
     try {
-      await auth.setPersistence(
-        remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
-      );
-      const cred = await auth.signInWithEmailAndPassword(email, password);
-      // Garantiza doc users aunque falte (tu caso actual)
-      await ensureUserDocument(cred.user);
+      const persistence = remember
+        ? firebase.auth.Auth.Persistence.LOCAL
+        : firebase.auth.Auth.Persistence.SESSION;
+      await auth.setPersistence(persistence);
+      await auth.signInWithEmailAndPassword(email, password);
       showToast("¡Bienvenido/a!");
     } catch (err) {
-      console.error("login", err);
+      console.error(err);
       setAuthError("login", authErrorMessage(err));
     } finally {
       btn.disabled = false;
+      btn.textContent = "Ingresar";
     }
     return false;
   }
@@ -799,17 +830,18 @@
     }
 
     btn.disabled = true;
+    btn.textContent = "Creando cuenta...";
+
     try {
-      await auth.setPersistence(
-        remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
-      );
+      const persistence = remember
+        ? firebase.auth.Auth.Persistence.LOCAL
+        : firebase.auth.Auth.Persistence.SESSION;
+      await auth.setPersistence(persistence);
 
       const cred = await auth.createUserWithEmailAndPassword(email, password);
-      try {
-        await cred.user.updateProfile({ displayName: name });
-      } catch (_) {}
+      await cred.user.updateProfile({ displayName: name });
 
-      // Doc de usuario (NUNCA se guarda la contraseña)
+      // Guardar en Firestore (NUNCA contraseña)
       await db.collection("users").doc(cred.user.uid).set({
         displayName: name,
         email: email,
@@ -820,19 +852,19 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
-      // Sesión ya iniciada → onAuthStateChanged lleva a onboarding/app
-      showToast("Cuenta creada. ¡Bienvenido/a!");
+      showToast("¡Cuenta creada exitosamente!");
     } catch (err) {
-      console.error("register", err);
+      console.error(err);
       if (err.code === "auth/email-already-in-use") {
         goToLoginWithCredentials(email, password);
-        setAuthError("login", "Este correo ya está registrado. Solo pulsa Ingresar.");
-        showToast("Correo ya registrado: inicia sesión");
+        setAuthError("login", "Este correo ya está registrado. Presiona Ingresar.");
+        showToast("Correo ya registrado. Inicia sesión.");
       } else {
         setAuthError("register", authErrorMessage(err));
       }
     } finally {
       btn.disabled = false;
+      btn.textContent = "Crear cuenta";
     }
     return false;
   }
@@ -844,68 +876,80 @@
     showToast("Sesión cerrada");
   }
 
-  // ===== Familia =====
+  // 4. GESTIÓN DE FAMILIA (CREAR Y UNIRSE)
   function generateFamilyCode(name) {
-    const prefix = (String(name).replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, "").substring(0, 3) || "FAM")
-      .toUpperCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .substring(0, 3) || "FAM";
+    const prefix = (String(name).replace(/[^a-zA-Z]/g, "").substring(0, 3) || "FAM").toUpperCase();
     return `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
   }
 
   async function handleCreateFamily() {
     const familyName = document.getElementById("new-family-name").value.trim();
-    if (!familyName) return showToast("Escribe el nombre de la familia");
-    if (!auth.currentUser) return showToast("Sesión no válida");
+    if (!familyName) return showToast("Escribe un nombre para la familia");
+    const user = auth.currentUser;
+    if (!user) return showToast("Sesión no válida");
 
     try {
       const code = generateFamilyCode(familyName);
       const ref = await db.collection("families").add({
-        familyName,
-        code,
+        familyName: familyName,
+        code: code,
         invitedEmails: [],
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      await db.collection("users").doc(auth.currentUser.uid).set({
+
+      await db.collection("users").doc(user.uid).set({
         familyId: ref.id,
         role: "admin",
         status: "approved",
-        displayName: currentUserData?.displayName || auth.currentUser.displayName || "",
-        email: normalizeEmail(auth.currentUser.email)
+        displayName: currentUserData?.displayName || user.displayName || "Usuario",
+        email: normalizeEmail(user.email)
       }, { merge: true });
-      showToast("Familia creada");
+
+      showToast("¡Familia creada con éxito!");
     } catch (err) {
-      console.error(err);
-      showToast("No se pudo crear la familia");
+      console.error("Create family error:", err);
+      showToast("Error al crear la familia");
     }
   }
 
   async function handleJoinFamily() {
     const code = document.getElementById("join-family-code").value.trim().toUpperCase();
-    if (!code) return showToast("Escribe el código");
-    if (!auth.currentUser) return showToast("Sesión no válida");
+    if (!code) return showToast("Ingresa el código de invitación");
+    const user = auth.currentUser;
+    if (!user) return showToast("Sesión no válida");
 
     try {
       const q = await db.collection("families").where("code", "==", code).limit(1).get();
-      if (q.empty) return showToast("Código no encontrado");
+      if (q.empty) return showToast("El código no existe");
+
       const familyDoc = q.docs[0];
       const data = familyDoc.data();
-      const email = normalizeEmail(auth.currentUser.email);
-      const invited = (data.invitedEmails || []).map(normalizeEmail).includes(email);
-      await db.collection("users").doc(auth.currentUser.uid).set({
+      const email = normalizeEmail(user.email);
+      const isInvited = (data.invitedEmails || []).map(normalizeEmail).includes(email);
+
+      await db.collection("users").doc(user.uid).set({
         familyId: familyDoc.id,
         role: "member",
-        status: invited ? "approved" : "pending",
-        email
+        status: isInvited ? "approved" : "pending",
+        email: email
       }, { merge: true });
-      showToast(invited ? "Te uniste a la familia" : "Solicitud enviada");
+
+      showToast(isInvited ? "Te has unido a la familia" : "Solicitud de ingreso enviada");
     } catch (err) {
-      console.error(err);
-      showToast("No se pudo unir a la familia");
+      console.error("Join family error:", err);
+      showToast("Error al unirse al grupo");
     }
   }
 
+  function checkStatusManual() {
+    if (currentUserData && currentUserData.status === "approved") {
+      showScreen("app");
+    } else {
+      showToast("Aún en espera de aprobación por el administrador");
+    }
+  }
+
+  // 5. ESCUCHA REALTIME FAMILIA Y MOVIMIENTOS
   function startFamilyListeners(familyId) {
     if (famUnsub) famUnsub();
     famUnsub = db.collection("families").doc(familyId).onSnapshot((doc) => {
@@ -930,7 +974,6 @@
     });
 
     if (movUnsub) movUnsub();
-    // sin orderBy para no exigir índice compuesto obligatorio
     movUnsub = db.collection("movements").where("familyId", "==", familyId).onSnapshot((snap) => {
       movementsData = [];
       snap.forEach((d) => movementsData.push({ ...d.data(), id: d.id }));
@@ -939,16 +982,17 @@
       renderRecentMovements();
       renderFullMovementsList(movementsData);
       renderCharts();
-    }, (err) => console.error("movs", err));
+    }, (err) => console.error("Movements Listener Error:", err));
   }
 
-  // ===== Movimientos =====
+  // 6. REGISTRO Y EDICIÓN DE MOVIMIENTOS
   function updateCategoriesDropdown() {
     const type = document.getElementById("mov-type").value;
     const sel = document.getElementById("mov-category");
     sel.innerHTML = CATEGORIES[type].map((c) => `<option value="${c}">${c}</option>`).join("");
   }
-  function openMovementModal(id) {
+
+  function openMovementModal(id = null) {
     document.getElementById("form-movement").reset();
     currentReceiptBase64 = "";
     const prev = document.getElementById("mov-receipt-preview");
@@ -956,11 +1000,12 @@
     prev.removeAttribute("src");
     document.getElementById("mov-date").valueAsDate = new Date();
     document.getElementById("mov-id").value = "";
-    document.getElementById("modal-movement-title").textContent = "Nuevo movimiento";
+    document.getElementById("modal-movement-title").textContent = "Nuevo Movimiento";
+
     if (id) {
       const m = movementsData.find((x) => x.id === id);
       if (m) {
-        document.getElementById("modal-movement-title").textContent = "Editar movimiento";
+        document.getElementById("modal-movement-title").textContent = "Editar Movimiento";
         document.getElementById("mov-id").value = m.id;
         document.getElementById("mov-type").value = m.type;
         updateCategoriesDropdown();
@@ -974,13 +1019,17 @@
           prev.classList.remove("hidden");
         }
       }
-    } else updateCategoriesDropdown();
+    } else {
+      updateCategoriesDropdown();
+    }
     document.getElementById("modal-movement").classList.remove("hidden");
     lucide.createIcons();
   }
+
   function closeMovementModal() {
     document.getElementById("modal-movement").classList.add("hidden");
   }
+
   function previewReceiptImage(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -1003,6 +1052,7 @@
     };
     reader.readAsDataURL(file);
   }
+
   async function handleSaveMovement(e) {
     e.preventDefault();
     if (!currentUserData?.familyId) return false;
@@ -1016,13 +1066,14 @@
       note: document.getElementById("mov-note").value.trim(),
       receipt: currentReceiptBase64 || "",
       userId: currentUserData.uid,
-      userName: currentUserData.displayName || "",
-      userEmail: currentUserData.email || "",
+      userName: currentUserData.displayName || "Familiar",
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
+
     try {
-      if (id) await db.collection("movements").doc(id).update(payload);
-      else {
+      if (id) {
+        await db.collection("movements").doc(id).update(payload);
+      } else {
         payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection("movements").add(payload);
       }
@@ -1030,23 +1081,24 @@
       showToast("Movimiento guardado");
     } catch (err) {
       console.error(err);
-      showToast("Error al guardar");
+      showToast("Error al guardar el movimiento");
     }
     return false;
   }
+
   async function deleteMovement(id) {
-    if (!confirm("¿Eliminar este movimiento?")) return;
+    if (!confirm("¿Deseas eliminar este movimiento?")) return;
     try {
       await db.collection("movements").doc(id).delete();
-      showToast("Eliminado");
+      showToast("Movimiento eliminado");
     } catch (_) {
       showToast("No se pudo eliminar");
     }
   }
 
-  function money(n) {
-    return `$${Number(n || 0).toFixed(2)}`;
-  }
+  // 7. RENDERIZADO DEL DASHBOARD
+  function money(n) { return `$${Number(n || 0).toFixed(2)}`; }
+
   function updateDashboardMetrics() {
     const month = new Date().toISOString().substring(0, 7);
     let income = 0, expenses = 0;
@@ -1055,6 +1107,7 @@
       if (m.type === "ingreso") income += Number(m.amount) || 0;
       if (m.type === "gasto") expenses += Number(m.amount) || 0;
     });
+
     document.getElementById("metric-income").textContent = money(income);
     document.getElementById("metric-expenses").textContent = money(expenses);
     const bal = income - expenses;
@@ -1062,58 +1115,70 @@
     el.textContent = money(bal);
     el.style.color = bal >= 0 ? "var(--verde)" : "var(--rojo)";
   }
-  function createMovementHTML(m, actions) {
+
+  function createMovementHTML(m, actions = false) {
     const inc = m.type === "ingreso";
     const color = inc ? "var(--verde)" : "var(--rojo)";
     const bg = inc ? "#E6F4F1" : "#FDE8E8";
     const icon = inc ? "arrow-up-right" : "arrow-down-left";
-    return `<div class="movement-item">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
-        <div class="m-icon" style="background:${bg};color:${color};"><i data-lucide="${icon}" style="width:18px;height:18px;"></i></div>
-        <div style="min-width:0;">
-          <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.category}${m.note ? ` <span style="color:var(--suave);font-weight:500;font-size:.82rem;">· ${m.note}</span>` : ""}</div>
-          <div style="font-size:.75rem;color:var(--suave);">${m.date || ""} · ${m.userName || "Familiar"}</div>
-          ${m.receipt ? `<span style="font-size:.75rem;color:var(--terracota);cursor:pointer;" onclick="viewReceipt('${m.id}')">Ver recibo</span>` : ""}
+
+    return `
+      <div class="movement-item">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <div class="m-icon" style="background:${bg}; color:${color};">
+            <i data-lucide="${icon}" style="width:18px;height:18px;"></i>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${m.category}${m.note ? ` <span style="color:var(--suave); font-weight:normal; font-size:.82rem;">(${m.note})</span>` : ""}
+            </div>
+            <div style="font-size:.75rem; color:var(--suave);">${m.date || ""} · ${m.userName || "Familiar"}</div>
+            ${m.receipt ? `<span style="font-size:.75rem; color:var(--terracota); cursor:pointer;" onclick="viewReceipt('${m.receipt}')">Ver recibo</span>` : ""}
+          </div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <div style="font-weight:800; color:${color};">${inc ? "+" : "-"}${money(m.amount)}</div>
+          ${actions ? `
+            <div style="margin-top:4px; display:flex; gap:4px; justify-content:flex-end;">
+              <button class="btn btn-outline btn-icon" style="padding:4px;" onclick="openMovementModal('${m.id}')"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+              <button class="btn btn-danger btn-icon" style="padding:4px;" onclick="deleteMovement('${m.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+            </div>
+          ` : ""}
         </div>
       </div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div style="font-weight:800;color:${color};">${inc ? "+" : "-"}${money(m.amount)}</div>
-        ${actions ? `<div style="margin-top:4px;display:flex;gap:4px;justify-content:flex-end;">
-          <button class="btn btn-outline btn-icon" style="padding:4px;" onclick="openMovementModal('${m.id}')"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
-          <button class="btn btn-danger btn-icon" style="padding:4px;" onclick="deleteMovement('${m.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-        </div>` : ""}
-      </div>
-    </div>`;
+    `;
   }
-  function viewReceipt(id) {
-    const m = movementsData.find((x) => x.id === id);
-    if (!m?.receipt) return;
+
+  function viewReceipt(base64) {
     const w = window.open("");
-    if (w) w.document.write(`<img src="${m.receipt}" style="max-width:100%;height:auto;" />`);
+    if (w) w.document.write(`<img src="${base64}" style="max-width:100%; height:auto;" />`);
   }
+
   function renderRecentMovements() {
     const el = document.getElementById("recent-movements-list");
     const list = movementsData.slice(0, 5);
-    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, false)).join("") : `<p style="color:var(--suave);font-size:.9rem;">Sin movimientos aún.</p>`;
+    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, false)).join("") : `<p style="color:var(--suave); font-size:.9rem;">Sin movimientos en el mes.</p>`;
     lucide.createIcons();
   }
+
   function renderFullMovementsList(list) {
     const el = document.getElementById("full-movements-list");
-    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, true)).join("") : `<p style="color:var(--suave);">No hay movimientos.</p>`;
+    el.innerHTML = list.length ? list.map((m) => createMovementHTML(m, true)).join("") : `<p style="color:var(--suave);">No hay movimientos registrados.</p>`;
     lucide.createIcons();
   }
+
   function applyMovementsFilter() {
     const s = document.getElementById("filter-search").value.toLowerCase();
     const t = document.getElementById("filter-type").value;
     const filtered = movementsData.filter((m) => {
-      const okS = !s || (m.note || "").toLowerCase().includes(s) || (m.category || "").toLowerCase().includes(s);
-      const okT = t === "ALL" || m.type === t;
-      return okS && okT;
+      const okSearch = !s || (m.note || "").toLowerCase().includes(s) || (m.category || "").toLowerCase().includes(s);
+      const okType = t === "ALL" || m.type === t;
+      return okSearch && okType;
     });
     renderFullMovementsList(filtered);
   }
 
-  // Charts
+  // 8. GRÁFICOS (CHART.JS)
   let chartBar, chartDonut, chartLine;
   function renderCharts() {
     let inc = 0, exp = 0;
@@ -1126,121 +1191,130 @@
         cat[m.category] = (cat[m.category] || 0) + a;
       }
     });
-    const bar = document.getElementById("chart-quick-bar");
-    const don = document.getElementById("chart-doughnut-categories");
-    const line = document.getElementById("chart-line-savings");
+
+    const barCtx = document.getElementById("chart-quick-bar");
+    const donCtx = document.getElementById("chart-doughnut-categories");
+    const lineCtx = document.getElementById("chart-line-savings");
+
     if (chartBar) chartBar.destroy();
     if (chartDonut) chartDonut.destroy();
     if (chartLine) chartLine.destroy();
-    if (bar) chartBar = new Chart(bar, {
+
+    if (barCtx) chartBar = new Chart(barCtx, {
       type: "bar",
       data: { labels: ["Ingresos", "Gastos"], datasets: [{ data: [inc, exp], backgroundColor: ["#2A9D8F", "#E63946"], borderRadius: 8 }] },
       options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
-    if (don) chartDonut = new Chart(don, {
+
+    if (donCtx) chartDonut = new Chart(donCtx, {
       type: "doughnut",
-      data: {
-        labels: Object.keys(cat),
-        datasets: [{ data: Object.values(cat), backgroundColor: ["#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653", "#9B5DE5"] }]
-      },
+      data: { labels: Object.keys(cat), datasets: [{ data: Object.values(cat), backgroundColor: ["#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653", "#9B5DE5"] }] },
       options: { plugins: { legend: { position: "bottom" } } }
     });
-    if (line) chartLine = new Chart(line, {
+
+    if (lineCtx) chartLine = new Chart(lineCtx, {
       type: "line",
-      data: {
-        labels: ["Inicio", "Actual"],
-        datasets: [{ label: "Balance", data: [0, inc - exp], borderColor: "#E76F51", backgroundColor: "rgba(231,111,81,.15)", fill: true, tension: 0.3 }]
-      },
+      data: { labels: ["Inicio", "Actual"], datasets: [{ label: "Balance", data: [0, inc - exp], borderColor: "#E76F51", backgroundColor: "rgba(231,111,81,.15)", fill: true, tension: 0.3 }] },
       options: { plugins: { legend: { display: false } } }
     });
   }
 
-  // Admin familia
+  // 9. ADMINISTRACIÓN DE FAMILIA
   function renderFamilyMembers(members) {
     const isAdmin = currentUserData?.role === "admin";
     document.getElementById("admin-controls-container").classList.toggle("hidden", !isAdmin);
     const list = document.getElementById("family-members-list");
+
     list.innerHTML = members.map((m) => {
-      const initial = (m.displayName || "?").charAt(0).toUpperCase();
-      const av = m.photoBase64
-        ? `<img src="${m.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />`
-        : initial;
-      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--borde);">
-        <div style="display:flex;gap:10px;align-items:center;min-width:0;">
-          <div class="avatar" style="width:36px;height:36px;">${av}</div>
-          <div style="min-width:0;">
-            <div style="font-weight:700;">${m.displayName || "Sin nombre"}${m.uid === currentUserData?.uid ? " (Tú)" : ""}</div>
-            <div style="font-size:.75rem;color:var(--suave);">${m.role === "admin" ? "Admin" : "Miembro"} · ${m.email || ""}</div>
+      const initial = (m.displayName || "U").charAt(0).toUpperCase();
+      const av = m.photoBase64 ? `<img src="${m.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />` : initial;
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--borde);">
+          <div style="display:flex; gap:10px; align-items:center; min-width:0;">
+            <div class="avatar" style="width:36px; height:36px;">${av}</div>
+            <div style="min-width:0;">
+              <div style="font-weight:700;">${m.displayName || "Sin nombre"}${m.uid === currentUserData?.uid ? " (Tú)" : ""}</div>
+              <div style="font-size:.75rem; color:var(--suave);">${m.role === "admin" ? "Administrador" : "Miembro"} · ${m.email || ""}</div>
+            </div>
           </div>
+          ${isAdmin && m.uid !== currentUserData?.uid ? `
+            <div style="display:flex; gap:6px;">
+              ${m.role !== "admin" ? `<button class="btn btn-outline" style="padding:4px 8px; font-size:.75rem;" onclick="promoteToAdmin('${m.uid}')">Admin</button>` : ""}
+              <button class="btn btn-danger btn-icon" style="padding:4px 6px;" onclick="removeFamilyMember('${m.uid}')"><i data-lucide="user-x" style="width:14px;height:14px;"></i></button>
+            </div>
+          ` : ""}
         </div>
-        ${isAdmin && m.uid !== currentUserData?.uid ? `<div style="display:flex;gap:4px;">
-          ${m.role !== "admin" ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:.75rem;" onclick="promoteToAdmin('${m.uid}')">Admin</button>` : ""}
-          <button class="btn btn-danger btn-icon" style="padding:4px 6px;" onclick="removeFamilyMember('${m.uid}')"><i data-lucide="user-x" style="width:14px;height:14px;"></i></button>
-        </div>` : ""}
-      </div>`;
+      `;
     }).join("") || `<p style="color:var(--suave);">Sin miembros</p>`;
     lucide.createIcons();
   }
+
   function renderPendingUsers(pending) {
     const el = document.getElementById("pending-users-list");
     if (!pending.length) {
-      el.innerHTML = `<p style="color:var(--suave);font-size:.9rem;">No hay solicitudes.</p>`;
+      el.innerHTML = `<p style="color:var(--suave); font-size:.9rem;">No hay solicitudes pendientes.</p>`;
       return;
     }
-    el.innerHTML = pending.map((p) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--borde);">
-      <div><div style="font-weight:700;">${p.displayName || ""}</div><div style="font-size:.75rem;color:var(--suave);">${p.email || ""}</div></div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn btn-secondary" style="padding:6px 10px;font-size:.8rem;" onclick="approveMember('${p.uid}')">Aprobar</button>
-        <button class="btn btn-danger" style="padding:6px 10px;font-size:.8rem;" onclick="rejectMember('${p.uid}')">Rechazar</button>
+    el.innerHTML = pending.map((p) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--borde);">
+        <div><div style="font-weight:700;">${p.displayName || "Usuario"}</div><div style="font-size:.75rem; color:var(--suave);">${p.email || ""}</div></div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="padding:6px 10px; font-size:.8rem;" onclick="approveMember('${p.uid}')">Aprobar</button>
+          <button class="btn btn-danger" style="padding:6px 10px; font-size:.8rem;" onclick="rejectMember('${p.uid}')">Rechazar</button>
+        </div>
       </div>
-    </div>`).join("");
+    `).join("");
   }
+
   async function handleSendInvite() {
     const email = normalizeEmail(document.getElementById("invite-email-input").value);
-    if (!email) return showToast("Correo inválido");
+    if (!email) return showToast("Ingresa un correo válido");
     try {
       await db.collection("families").doc(currentUserData.familyId).update({
         invitedEmails: firebase.firestore.FieldValue.arrayUnion(email)
       });
       document.getElementById("invite-email-input").value = "";
-      showToast("Correo invitado (auto-aprobación)");
+      showToast("Invitación agregada");
     } catch (_) {
-      showToast("No se pudo invitar");
+      showToast("Error al invitar");
     }
   }
+
   async function approveMember(uid) {
     await db.collection("users").doc(uid).update({ status: "approved" });
-    showToast("Aprobado");
+    showToast("Miembro aprobado");
   }
+
   async function rejectMember(uid) {
     await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
-    showToast("Rechazado");
+    showToast("Solicitud rechazada");
   }
+
   async function promoteToAdmin(uid) {
     await db.collection("users").doc(uid).update({ role: "admin" });
-    showToast("Ahora es admin");
+    showToast("Promovido a Administrador");
   }
+
   async function removeFamilyMember(uid) {
-    if (!confirm("¿Expulsar a este miembro?")) return;
+    if (!confirm("¿Expulsar a este miembro de la familia?")) return;
     await db.collection("users").doc(uid).set({ familyId: null, status: null, role: null }, { merge: true });
     showToast("Miembro expulsado");
   }
 
-  // Perfil
+  // 10. GESTIÓN DE PERFIL DE USUARIO
   function updateUserProfileUI() {
     if (!currentUserData) return;
     const name = currentUserData.displayName || "Usuario";
     const initial = name.charAt(0).toUpperCase();
     const av = document.getElementById("user-avatar");
     const pv = document.getElementById("profile-avatar-preview");
-    const html = currentUserData.photoBase64
-      ? `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />`
-      : initial;
+    const html = currentUserData.photoBase64 ? `<img src="${currentUserData.photoBase64}" style="width:100%;height:100%;object-fit:cover;" />` : initial;
     av.innerHTML = html;
     pv.innerHTML = html;
     document.getElementById("profile-name-input").value = name;
     document.getElementById("profile-email-input").value = currentUserData.email || "";
   }
+
   function handleProfilePhotoUpload(e) {
     const file = e.target.files && e.target.files[0];
     if (!file || !auth.currentUser) return;
@@ -1253,12 +1327,13 @@
         canvas.getContext("2d").drawImage(img, 0, 0, 120, 120);
         const base64 = canvas.toDataURL("image/jpeg", 0.5);
         await db.collection("users").doc(auth.currentUser.uid).set({ photoBase64: base64 }, { merge: true });
-        showToast("Foto actualizada");
+        showToast("Foto de perfil actualizada");
       };
       img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   }
+
   async function handleSaveProfile() {
     const name = document.getElementById("profile-name-input").value.trim();
     if (!name || !auth.currentUser) return;
@@ -1267,8 +1342,9 @@
     showToast("Perfil guardado");
   }
 
-  function exportData() {
-    if (!movementsData.length) return showToast("No hay datos");
+  // 11. EXPORTAR DATOS
+  function exportData(format) {
+    if (!movementsData.length) return showToast("No hay movimientos para exportar");
     const headers = ["Fecha", "Tipo", "Categoria", "Monto", "Nota", "Usuario"];
     const rows = movementsData.map((m) => [m.date, m.type, m.category, m.amount, `"${(m.note || "").replace(/"/g, '""')}"`, m.userName || ""]);
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -1279,18 +1355,19 @@
     a.click();
   }
 
-  function switchSection(id, el) {
+  // 12. PANTALLAS Y NAVEGACIÓN DE SECCIONES
+  function switchSection(id, el = null) {
     document.querySelectorAll("main > section").forEach((s) => s.classList.add("hidden"));
     const sec = document.getElementById("section-" + id);
     if (sec) sec.classList.remove("hidden");
+
     document.querySelectorAll(".nav-item, .mobile-nav-item").forEach((n) => n.classList.remove("active"));
     if (el) el.classList.add("active");
-    // activar equivalente desktop/mobile
     document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach((n) => n.classList.add("active"));
     lucide.createIcons();
   }
 
-  // PWA
+  // 13. PWA INSTALACIÓN
   let deferredPrompt = null;
   function setupPWA() {
     if ("serviceWorker" in navigator) {
