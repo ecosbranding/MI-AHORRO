@@ -5,21 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Ahorro Familiar</title>
 
-  <!-- PWA & SEO -->
+  <!-- PWA Manifest & Meta Tag Setup -->
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta name="theme-color" content="#1e293b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
 
-  <!-- TailwindCSS -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          colors: { app: { dark: '#0f172a', card: '#1e293b', primary: '#E76F51', accent: '#f4a261' } }
+          colors: {
+            app: {
+              dark: '#0f172a',
+              card: '#1e293b',
+              primary: '#E76F51',
+              accent: '#f4a261'
+            }
+          }
         }
       }
     }
@@ -29,7 +36,7 @@
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
-  <!-- Firebase (v10 Compat) -->
+  <!-- Firebase Compat SDKs (v10.12.0) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -45,7 +52,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-app-dark text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden antialiased transition-colors duration-300">
 
-  <!-- Toast Container -->
+  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-20 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- AUTHENTICATION SCREEN -->
@@ -57,7 +64,7 @@
         <i data-lucide="heart-handshake" class="w-10 h-10 text-white"></i>
       </div>
       <h1 class="text-3xl font-bold mb-2 text-slate-800 dark:text-white">Bienvenido</h1>
-      <p class="text-slate-500 dark:text-slate-400 mb-8 text-center">Inicia sesión en tu Espacio Familiar</p>
+      <p class="text-slate-500 dark:text-slate-400 mb-8 text-center">Inicia sesión en tu Espacio Financiero</p>
       
       <div class="w-full space-y-4">
         <div>
@@ -84,7 +91,7 @@
       </div>
     </div>
 
-    <!-- Register Options -->
+    <!-- Registration Options -->
     <div id="registerOptions" class="hidden flex-col h-full items-center justify-center p-6 w-full max-w-md mx-auto">
       <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mb-6">
         <i data-lucide="users" class="w-10 h-10 text-white"></i>
@@ -198,8 +205,8 @@
       <!-- SECTION: RESUMEN -->
       <section id="secResumen" class="space-y-5">
         
-        <!-- Mini Banner de Instalación App en Inicio (oculto por defecto) -->
-        <div id="pwaInstallBanner" class="hidden mb-5 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
+        <!-- Recuadro pequeño "Instalar App" con logo de la App -->
+        <div id="pwaInstallBanner" class="hidden mb-4 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
               <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
@@ -255,8 +262,8 @@
             <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
             <input type="text" id="searchMovements" oninput="renderMovements()" placeholder="Buscar por nota, categoría, integrante..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#E76F51] text-sm">
           </div>
-          <div class="flex gap-2 text-sm text-slate-500 dark:text-slate-400 px-1">
-            <span>Mostrando filtrados:</span>
+          <div class="flex justify-between items-center text-sm text-slate-500 dark:text-slate-400 px-1">
+            <span>Balance filtrado:</span>
             <span id="filteredBalance" class="font-bold text-slate-800 dark:text-white">$0.00</span>
           </div>
         </div>
@@ -302,10 +309,10 @@
             <button onclick="copyCode()" class="text-slate-400 hover:text-[#E76F51]"><i data-lucide="download" class="w-5 h-5"></i></button>
           </div>
           
-          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG -->
+          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG Vector -->
           <button onclick="shareViaWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition-transform active:scale-95 text-base">
             <svg class="w-6 h-6 shrink-0 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.447-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414zM12.004 2.003c-5.512 0-9.991 4.478-9.991 9.991 0 1.762.459 3.477 1.332 4.99l-1.415 5.17 5.293-1.388c1.458.795 3.107 1.218 4.781 1.218 5.513 0 9.991-4.478 9.991-9.991 0-5.513-4.478-9.991-9.991-9.991zm0 18.234c-1.503 0-2.977-.403-4.265-1.167l-.306-.181-3.167.83.845-3.088-.198-.316c-.841-1.338-1.286-2.885-1.286-4.47 0-4.542 3.696-8.238 8.238-8.238 4.541 0 8.237 3.696 8.237 8.238 0 4.542-3.696 8.237-8.238 8.237z"/>
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
             </svg>
             <span>Invitar por WhatsApp</span>
           </button>
@@ -317,7 +324,7 @@
           
           <h3 class="font-bold mt-6 mb-4 dark:text-white">Presupuestos por Categoría (Gastos)</h3>
           <div id="budgetInputsList" class="space-y-3"></div>
-          <button onclick="saveBudgets()" class="w-full mt-4 bg-slate-800 dark:bg-slate-700 text-white py-2 rounded-xl text-sm font-bold">Guardar Presupuestos</button>
+          <button onclick="saveBudgets()" class="w-full mt-4 bg-slate-800 dark:bg-slate-700 text-white py-2.5 rounded-xl text-sm font-bold">Guardar Presupuestos</button>
         </div>
 
         <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
@@ -415,12 +422,27 @@
     </div>
   </div>
 
+  <!-- RECEIPT PREVIEW MODAL -->
+  <div id="receiptModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onclick="closeReceiptModal()">
+    <div class="relative max-w-lg w-full bg-transparent text-center" onclick="event.stopPropagation()">
+      <button onclick="closeReceiptModal()" class="absolute -top-12 right-0 text-white bg-slate-800/80 p-2 rounded-full"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <img id="receiptModalImg" src="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/20">
+    </div>
+  </div>
+
   <style>
     .nav-btn.active { color: #E76F51; }
     .nav-btn.active span { font-weight: 700; }
   </style>
 
   <script>
+    // --- PWA SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW reg error:', err));
+      });
+    }
+
     // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
@@ -438,7 +460,7 @@
     let currentFamilyData = null;
     let movementsData = [];
     let usersData = {};
-    let isRegistering = false; // Registration Safety Flag
+    let isRegistering = false;
 
     let unsubUser = null;
     let unsubFamily = null;
@@ -469,7 +491,7 @@
     }
     initTheme();
 
-    // --- PWA INSTALLATION ---
+    // --- PWA INSTALLATION EVENT HANDLER ---
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -477,21 +499,21 @@
       const btnHeader = document.getElementById('btnInstallPWAHeader');
       const btnProfile = document.getElementById('btnInstallPWAProfile');
       const banner = document.getElementById('pwaInstallBanner');
-      if(btnHeader) btnHeader.classList.remove('hidden');
-      if(btnProfile) btnProfile.classList.remove('hidden');
-      if(banner) banner.classList.remove('hidden');
+      if (btnHeader) btnHeader.classList.remove('hidden');
+      if (btnProfile) btnProfile.classList.remove('hidden');
+      if (banner) banner.classList.remove('hidden');
     });
 
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       const banner = document.getElementById('pwaInstallBanner');
-      if(banner) banner.classList.add('hidden');
+      if (banner) banner.classList.add('hidden');
       showToast("¡Aplicación instalada con éxito!");
     });
 
     async function triggerPWAInstall() {
       if (!deferredPrompt) {
-        showToast("Para instalar: Toca el menú del navegador y selecciona 'Añadir a la pantalla de inicio'.");
+        showToast("Para instalar: Toca el menú de tu navegador y selecciona 'Añadir a la pantalla de inicio'.");
         return;
       }
       deferredPrompt.prompt();
@@ -538,6 +560,14 @@
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    function viewReceipt(base64Img) {
+      document.getElementById('receiptModalImg').src = base64Img;
+      document.getElementById('receiptModal').classList.remove('hidden');
+    }
+    function closeReceiptModal() {
+      document.getElementById('receiptModal').classList.add('hidden');
     }
 
     // --- UI NAVIGATION ---
@@ -590,7 +620,7 @@
       try {
         await auth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
         await auth.signInWithEmailAndPassword(email, pass);
-      } catch (e) { showToast("Error al entrar: Verfica tus credenciales."); }
+      } catch (e) { showToast("Error al entrar: Verifica tus credenciales."); }
     }
 
     async function handleCreateSpace() {
@@ -650,7 +680,7 @@
         showToast("Cuenta eliminada.");
         cleanupListeners();
         showScreen('authScreen');
-      } catch (err) { showToast("Error: Inicia sesión nuevamente para eliminar tu cuenta."); }
+      } catch (err) { showToast("Cierra sesión e iníciala nuevamente antes de eliminar tu cuenta."); }
     }
 
     // --- DATA LISTENERS ---
@@ -736,7 +766,7 @@
             ${currentUserData.role === 'admin' && u.id !== auth.currentUser.uid ? `<button onclick="expelUser('${u.id}')" class="text-rose-500 bg-rose-50 dark:bg-rose-900/30 p-2 rounded-lg"><i data-lucide="user-x" class="w-4 h-4"></i></button>` : ''}
           </div>`).join('');
         lucide.createIcons();
-        if(document.getElementById('secResumen').classList.contains('hidden') === false) renderCharts();
+        if(!document.getElementById('secResumen').classList.contains('hidden')) renderCharts();
       });
     }
 
@@ -754,8 +784,8 @@
             <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2"><div class="bg-[#E76F51] h-2.5 rounded-full transition-all" style="width: ${pct}%"></div></div>
             <div class="flex justify-between text-xs text-slate-500 mb-3"><span>$${d.currentAmount.toFixed(2)} ahorrados</span><span>Meta: $${d.targetAmount.toFixed(2)}</span></div>
             <div class="flex gap-2">
-              <button onclick="addGoalFund('${doc.id}', ${d.currentAmount})" class="flex-1 bg-emerald-100 text-emerald-700 py-1.5 rounded-lg text-xs font-bold">+ Aportar</button>
-              ${currentUserData.role === 'admin' ? `<button onclick="deleteGoal('${doc.id}')" class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+              <button onclick="addGoalFund('${doc.id}', ${d.currentAmount})" class="flex-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 py-1.5 rounded-lg text-xs font-bold">+ Aportar</button>
+              ${currentUserData.role === 'admin' ? `<button onclick="deleteGoal('${doc.id}')" class="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 px-3 py-1.5 rounded-lg text-xs font-bold"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
             </div>
           </div>`;
         }).join('');
@@ -818,7 +848,7 @@
             <div>
               <p class="font-bold text-sm dark:text-white">${m.category}</p>
               <p class="text-xs text-slate-500">${m.note} • ${m.date}</p>
-              <p class="text-[10px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} ${m.receipt ? '• 📎 Foto' : ''}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} ${m.receipt ? `<button onclick="viewReceipt('${m.receipt}')" class="text-[#E76F51] font-bold underline ml-1">📎 Recibo</button>` : ''}</p>
             </div>
           </div>
           <div class="text-right">
@@ -828,7 +858,7 @@
         </div>`;
       }).join('');
       lucide.createIcons();
-      if(document.getElementById('secResumen').classList.contains('hidden') === false) { renderCharts(); renderBudgets(); }
+      if(!document.getElementById('secResumen').classList.contains('hidden')) { renderCharts(); renderBudgets(); }
     }
 
     function renderCharts() {
