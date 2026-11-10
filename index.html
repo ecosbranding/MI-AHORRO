@@ -657,6 +657,29 @@
         <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
+        <!-- Modal Editar Nombre de Familia -->
+<div id="editFamilyModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-5 h-5 text-terracotta"></i> Editar Familia
+            </h3>
+            <button onclick="closeEditFamilyModal()" class="text-slate-400 hover:text-slate-200">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+        <form onsubmit="handleUpdateFamilyName(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1 ml-1">Nuevo Nombre de la Familia</label>
+                <input type="text" id="inputNewFamilyName" required class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-terracotta outline-none text-sm font-semibold">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="closeEditFamilyModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-xl text-sm">Cancelar</button>
+                <button type="submit" class="flex-1 py-3 bg-terracotta text-white font-bold rounded-xl text-sm shadow-lg shadow-terracotta/20">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
       </div>
 
       <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
@@ -2140,7 +2163,7 @@
       }
     }
 
-    // GESTIÓN DE ESPACIO / GRUPO
+        // GESTIÓN DE ESPACIO / GRUPO
     function renderEspacio(members, pending) {
       const membersContainer = document.getElementById('membersList');
       const pendingSection = document.getElementById('pendingSection');
@@ -2148,24 +2171,40 @@
 
       // Botón renombrar solo para admin
       const btnRename = document.getElementById('btnRenameFamily');
-      if (currentUserData.role === 'admin') btnRename.classList.remove('hidden');
-      else btnRename.classList.add('hidden');
+      if (btnRename) {
+        if (currentUserData.role === 'admin') {
+          btnRename.classList.remove('hidden');
+          btnRename.onclick = openEditFamilyModal;
+        } else {
+          btnRename.classList.add('hidden');
+        }
+      }
 
       // Lista de miembros activos
       membersContainer.innerHTML = members.map(m => `
-        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40">
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/60">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-[#E76F51] text-white font-bold flex items-center justify-center text-xs overflow-hidden">
               ${m.photoBase64 ? `<img src="${m.photoBase64}" class="w-full h-full object-cover">` : (m.displayName || 'U').charAt(0).toUpperCase()}
             </div>
             <div>
-              <h4 class="font-bold text-xs text-slate-900 dark:text-white">${m.displayName || 'Usuario'}</h4>
-              <p class="text-[10px] text-slate-400">${m.email} ${m.role === 'admin' ? '• Admin' : ''}</p>
+              <h4 class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1">
+                ${m.displayName || 'Usuario'}
+                ${m.uid === auth.currentUser.uid ? '<span class="text-[9px] text-[#E76F51] font-normal">(Tú)</span>' : ''}
+              </h4>
+              <p class="text-[10px] text-slate-400">${m.email} ${m.role === 'admin' ? '• Admin' : '• Miembro'}</p>
             </div>
           </div>
-          ${(currentUserData.role === 'admin' && m.uid !== auth.currentUser.uid) ? `
-            <button onclick="handleExpelMember('${m.uid}')" class="text-rose-500 hover:text-rose-700 p-1" title="Expulsar"><i data-lucide="user-x" class="w-4 h-4"></i></button>
-          ` : ''}
+          <div class="flex items-center space-x-1">
+            ${(currentUserData.role === 'admin' && m.uid !== auth.currentUser.uid) ? `
+              <!-- Botón Cambiar Rol de Admin -->
+              <button onclick="handleToggleAdminRole('${m.uid}', '${m.role}')" class="p-1.5 text-xs rounded-lg ${m.role === 'admin' ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30' : 'text-[#E76F51] hover:bg-orange-50 dark:hover:bg-orange-950/30'}" title="${m.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}">
+                <i data-lucide="${m.role === 'admin' ? 'shield-off' : 'shield-plus'}" class="w-4 h-4"></i>
+              </button>
+              <!-- Botón Expulsar -->
+              <button onclick="handleExpelMember('${m.uid}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30" title="Expulsar"><i data-lucide="user-x" class="w-4 h-4"></i></button>
+            ` : ''}
+          </div>
         </div>
       `).join('');
 
@@ -2189,6 +2228,36 @@
       }
 
       lucide.createIcons();
+    }
+
+        // FUNCIÓN PARA OTORGAR O QUITAR ADMINISTRADOR
+    async function handleToggleAdminRole(targetUid, currentRole) {
+      const newRole = currentRole === 'admin' ? 'member' : 'admin';
+      const actionText = newRole === 'admin' ? 'dar el rol de Administrador a' : 'quitar el rol de Administrador a';
+      
+      if (!confirm(`¿Estás seguro de que deseas ${actionText} este miembro?`)) return;
+
+      try {
+        await db.collection('users').doc(targetUid).update({
+          role: newRole
+        });
+        
+        if (currentFamilyData && currentFamilyData.id) {
+          const familyRef = db.collection('families').doc(currentFamilyData.id);
+          if (newRole === 'admin') {
+            await familyRef.update({
+              admins: firebase.firestore.FieldValue.arrayUnion(targetUid)
+            });
+          } else {
+            await familyRef.update({
+              admins: firebase.firestore.FieldValue.arrayRemove(targetUid)
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error al cambiar rol:', error);
+        alert('Error al actualizar el rol del miembro.');
+      }
     }
 
     function shareViaWhatsApp() {
@@ -2286,6 +2355,84 @@
         toast.classList.add('opacity-0');
       }, 3500);
     }
+
+    // Abrir y cerrar modal de nombre de familia
+function openEditFamilyModal() {
+    const modal = document.getElementById('editFamilyModal');
+    const input = document.getElementById('inputNewFamilyName');
+    if (modal && input) {
+        input.value = currentFamilyData.familyName || '';
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeEditFamilyModal() {
+    const modal = document.getElementById('editFamilyModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// Guardar nuevo nombre de familia en Firestore
+async function handleUpdateFamilyName(e) {
+    e.preventDefault();
+    const newName = document.getElementById('inputNewFamilyName').value.trim();
+    if (!newName) return;
+
+    try {
+        await db.collection('families').doc(currentFamilyData.id).update({
+            familyName: newName
+        });
+
+        currentFamilyData.familyName = newName;
+        document.getElementById('headerFamilyName').textContent = newName;
+        closeEditFamilyModal();
+        renderCurrentView();
+    } catch (error) {
+        console.error("Error al actualizar nombre de familia:", error);
+        alert("Ocurrió un error al actualizar el nombre.");
+    }
+}
+
+// Otorgar o quitar rol de Administrador a un integrante
+async function toggleAdminRole(targetUid, isCurrentlyAdmin) {
+    if (!confirm(`¿Estás seguro de que deseas ${isCurrentlyAdmin ? 'quitar' : 'asignar'} el rol de Administrador a este miembro?`)) {
+        return;
+    }
+
+    try {
+        const familyRef = db.collection('families').doc(currentFamilyData.id);
+        
+        if (isCurrentlyAdmin) {
+            // Quitar de administradores
+            await familyRef.update({
+                admins: firebase.firestore.FieldValue.arrayRemove(targetUid)
+            });
+            await db.collection('users').doc(targetUid).update({ role: 'member' });
+        } else {
+            // Añadir a administradores
+            await familyRef.update({
+                admins: firebase.firestore.FieldValue.arrayUnion(targetUid)
+            });
+            await db.collection('users').doc(targetUid).update({ role: 'admin' });
+        }
+
+        // Actualizar estado local
+        if (!currentFamilyData.admins) {
+            currentFamilyData.admins = [currentFamilyData.adminUid || currentFamilyData.createdBy];
+        }
+        
+        if (isCurrentlyAdmin) {
+            currentFamilyData.admins = currentFamilyData.admins.filter(id => id !== targetUid);
+        } else {
+            currentFamilyData.admins.push(targetUid);
+        }
+
+        renderCurrentView();
+    } catch (error) {
+        console.error("Error al cambiar rol:", error);
+        alert("Ocurrió un error al modificar los permisos.");
+    }
+}
+    
   </script>
 </body>
 </html>
