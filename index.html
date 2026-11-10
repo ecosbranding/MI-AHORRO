@@ -13,37 +13,85 @@
   
   <title>Ahorro Familiar - Gestión Financiera Colaborativa</title>
 
-  <!-- Dynamic Web App Manifest Injection (GitHub Pages PWA Support) -->
+  <!-- Dynamic Web App Manifest Injection (GitHub Pages PWA Support with HD Canvas PNG Icons) -->
   <script>
-    const manifestData = {
-      name: "Ahorro Familiar",
-      short_name: "AhorroFam",
-      start_url: "./",
-      display: "standalone",
-      background_color: "#0F172A",
-      theme_color: "#E76F51",
-      icons: [
-        {
-          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='%23E76F51'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>",
-          sizes: "192x192",
-          type: "image/svg+xml",
-          purpose: "any maskable"
-        },
-        {
-          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 24 24' fill='%23E76F51'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>",
-          sizes: "512x512",
-          type: "image/svg+xml",
-          purpose: "any maskable"
-        }
-      ]
-    };
-    const stringManifest = JSON.stringify(manifestData);
-    const blobManifest = new Blob([stringManifest], { type: 'application/json' });
-    const manifestURL = URL.createObjectURL(blobManifest);
-    const manifestLink = document.createElement('link');
-    manifestLink.rel = 'manifest';
-    manifestLink.href = manifestURL;
-    document.head.appendChild(manifestLink);
+    function generatePNGIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#E76F51');
+      gradient.addColorStop(1, '#D05A3F');
+      ctx.fillStyle = gradient;
+
+      const r = size * 0.22;
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(size - r, 0);
+      ctx.quadraticCurveTo(size, 0, size, r);
+      ctx.lineTo(size, size - r);
+      ctx.quadraticCurveTo(size, size, size - r, size);
+      ctx.lineTo(r, size);
+      ctx.quadraticCurveTo(0, size, 0, size - r);
+      ctx.lineTo(0, r);
+      ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      const cx = size / 2;
+      const cy = size / 2;
+      const hSize = size * 0.28;
+
+      ctx.moveTo(cx, cy + hSize * 0.7);
+      ctx.bezierCurveTo(cx - hSize * 1.2, cy, cx - hSize * 1.2, cy - hSize * 0.8, cx - hSize * 0.5, cy - hSize * 0.8);
+      ctx.bezierCurveTo(cx - hSize * 0.1, cy - hSize * 0.8, cx, cy - hSize * 0.4, cx, cy - hSize * 0.4);
+      ctx.bezierCurveTo(cx, cy - hSize * 0.4, cx + hSize * 0.1, cy - hSize * 0.8, cx + hSize * 0.5, cy - hSize * 0.8);
+      ctx.bezierCurveTo(cx + hSize * 1.2, cy - hSize * 0.8, cx + hSize * 1.2, cy, cx, cy + hSize * 0.7);
+      ctx.fill();
+
+      return canvas.toDataURL('image/png');
+    }
+
+    try {
+      const icon192 = generatePNGIcon(192);
+      const icon512 = generatePNGIcon(512);
+
+      const manifestData = {
+        name: "Ahorro Familiar",
+        short_name: "AhorroFam",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#0F172A",
+        theme_color: "#E76F51",
+        icons: [
+          {
+            src: icon192,
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable"
+          },
+          {
+            src: icon512,
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable"
+          }
+        ]
+      };
+      const stringManifest = JSON.stringify(manifestData);
+      const blobManifest = new Blob([stringManifest], { type: 'application/json' });
+      const manifestURL = URL.createObjectURL(blobManifest);
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = manifestURL;
+      document.head.appendChild(manifestLink);
+    } catch (e) {
+      console.log("Manifest injection fallback:", e);
+    }
   </script>
   
   <!-- Tailwind CSS -->
@@ -215,7 +263,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Botón Instalar PWA Header (Siempre visible para fácil acceso) -->
+        <!-- Botón Instalar PWA Header -->
         <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#E76F51] hover:bg-[#E76F51]/10 transition-colors" title="Instalar Aplicación">
           <i data-lucide="download" class="w-5 h-5"></i>
         </button>
@@ -562,7 +610,7 @@
 
           <!-- Opciones Adicionales -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-            <!-- Botón Instalar App PWA (SIEMPRE VISIBLE) -->
+            <!-- Botón Instalar App PWA -->
             <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
@@ -919,28 +967,62 @@
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-    // Manejo Inteligente de Instalación PWA
+    // Manejo Inteligente de Instalación PWA y Ocultamiento
     let deferredPrompt = null;
+
+    function isPWAInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches 
+          || window.navigator.standalone === true 
+          || document.referrer.includes('android-app://');
+    }
+
+    function updatePWAUIVisibility() {
+      const installed = isPWAInstalled();
+      const banner = document.getElementById('pwaInstallBanner');
+      const btnHeader = document.getElementById('btnInstallPWAHeader');
+      const btnProfile = document.getElementById('btnInstallPWAProfile');
+
+      if (installed) {
+        if (banner) banner.style.display = 'none';
+        if (btnHeader) btnHeader.style.display = 'none';
+        if (btnProfile) btnProfile.style.display = 'none';
+      } else {
+        if (banner) banner.style.display = 'flex';
+        if (btnHeader) btnHeader.style.display = 'flex';
+        if (btnProfile) btnProfile.style.display = 'flex';
+      }
+    }
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      updatePWAUIVisibility();
     });
 
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
+      updatePWAUIVisibility();
       showToast("¡Aplicación instalada con éxito!");
     });
 
-    function triggerPWAInstall() {
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', () => {
+      updatePWAUIVisibility();
+    });
+
+    async function triggerPWAInstall() {
+      if (isPWAInstalled()) {
+        updatePWAUIVisibility();
+        return;
+      }
+
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('Usuario aceptó instalar PWA');
-          }
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Usuario aceptó instalar PWA');
           deferredPrompt = null;
-        });
+          updatePWAUIVisibility();
+        }
       } else {
         openInstallGuideModal();
       }
@@ -960,13 +1042,16 @@
       lucide.createIcons();
       initTheme();
       populateFilterCategory();
+      updatePWAUIVisibility();
 
       // Service Worker para PWA (Inline Blob Fallback si sw.js directo no existe)
       if ('serviceWorker' in navigator) {
         const swCode = `
           self.addEventListener('install', (e) => self.skipWaiting());
           self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-          self.addEventListener('fetch', (e) => {});
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
         `;
         const blobSW = new Blob([swCode], { type: 'application/javascript' });
         const swUrl = URL.createObjectURL(blobSW);
@@ -1263,6 +1348,7 @@
         listenToMembers(currentUserData.familyId);
       }
 
+      updatePWAUIVisibility();
       showSection('secResumen');
     }
 
