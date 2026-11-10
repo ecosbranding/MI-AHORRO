@@ -245,7 +245,7 @@
       <!-- SECCIÓN 1: RESUMEN / INICIO -->
       <section id="secResumen" class="space-y-6">
 
-        <!-- Mini Banner de Instalación App en Inicio -->
+        <!-- Mini Banner de Instalación App en Inicio (Oculto por defecto, revelado si el navegador lo permite) -->
         <div id="pwaInstallBanner" class="hidden mb-5 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
             <!-- Loguito de la App (Terracota + Icono Blanco) -->
@@ -306,6 +306,20 @@
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>Nuevo Gasto</span>
           </button>
+        </div>
+
+        <!-- Pagos Recurrentes Rápidos (Acceso Directo en Inicio) -->
+        <div id="homeRecurringSection" class="hidden bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="repeat" class="w-4 h-4 text-[#E76F51]"></i>
+              <span>Pagos Recurrentes Rápidos</span>
+            </h3>
+            <button onclick="showSection('secRecurrentes')" class="text-xs font-semibold text-[#E76F51] hover:underline">Ver todos</button>
+          </div>
+          <div id="homeRecurringList" class="space-y-3">
+            <!-- Dinámico -->
+          </div>
         </div>
 
         <!-- Gráfico de Gastos por Miembro -->
@@ -516,8 +530,8 @@
 
           <!-- Opciones Adicionales -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-            <!-- Botón Instalar App PWA (Siempre visible por defecto) -->
-            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
+            <!-- Botón Instalar App PWA (Oculto por defecto, revelado si el navegador lo permite) -->
+            <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="hidden w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
             </button>
@@ -824,17 +838,19 @@
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-    // Manejo de Instalación PWA
+    // Manejo de Instalación PWA (Estricto: Mostrar botones SOLO si está disponible el prompt)
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       
-      // Mostrar botones en header y el banner mini
+      // Mostrar todos los botones solo si el evento se dispara y es capturado
       const btnHeader = document.getElementById('btnInstallPWAHeader');
+      const btnProfile = document.getElementById('btnInstallPWAProfile');
       const installBanner = document.getElementById('pwaInstallBanner');
 
       if (btnHeader) btnHeader.classList.remove('hidden');
+      if (btnProfile) btnProfile.classList.remove('hidden');
       if (installBanner) installBanner.classList.remove('hidden');
     });
 
@@ -851,18 +867,14 @@
     });
 
     function triggerPWAInstall() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted PWA install');
-          }
-          deferredPrompt = null;
-        });
-      } else {
-        // Fallback si el evento no existe (ej. iOS o ya instalado)
-        showToast("Para instalar, selecciona 'Agregar a la pantalla principal' en el menú de opciones de tu navegador.");
-      }
+      if (!deferredPrompt) return; // Ya no hay mensajes falsos, si no existe no hace nada (los botones están ocultos)
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Usuario aceptó instalar PWA');
+        }
+        deferredPrompt = null;
+      });
     }
 
     // Inicialización al cargar la página
@@ -1819,11 +1831,16 @@
     // GASTOS RECURRENTES
     function renderRecurring() {
       const container = document.getElementById('recurringList');
+      const homeSection = document.getElementById('homeRecurringSection');
+      const homeList = document.getElementById('homeRecurringList');
+
       if (recurringData.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No hay gastos recurrentes registrados.</p>';
+        if(homeSection) homeSection.classList.add('hidden');
         return;
       }
 
+      // Render completo en pestaña Recurrentes
       container.innerHTML = recurringData.map(r => {
         const iconName = CATEGORY_ICONS[r.category] || 'layout-grid';
         return `
@@ -1846,6 +1863,31 @@
         </div>
         `;
       }).join('');
+
+      // Render compacto en Home (máx 3)
+      if (homeSection) {
+        homeSection.classList.remove('hidden');
+        homeList.innerHTML = recurringData.slice(0, 3).map(r => {
+          const iconName = CATEGORY_ICONS[r.category] || 'layout-grid';
+          return `
+          <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
+                <i data-lucide="${iconName}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-900 dark:text-white leading-tight">${r.name}</h4>
+                <p class="text-[10px] text-slate-400 mt-0.5">${formatCurrency(r.amount)}</p>
+              </div>
+            </div>
+            <button onclick="handlePayRecurring('${r.id}')" class="px-3 py-1.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white text-[11px] font-bold rounded-xl shadow-sm transition-transform active:scale-95">
+              Pagar
+            </button>
+          </div>
+          `;
+        }).join('');
+      }
+
       lucide.createIcons();
     }
 
