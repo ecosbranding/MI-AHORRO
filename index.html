@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Ahorro Familiar</title>
 
-  <!-- PWA Manifest & Meta Tag Setup -->
+  <!-- Manifest & Meta Tags -->
   <link rel="manifest" href="./manifest.webmanifest" />
-  <meta name="theme-color" content="#1e293b" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <meta name="theme-color" content="#E76F51" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -20,11 +21,11 @@
       theme: {
         extend: {
           colors: {
-            app: {
-              dark: '#0f172a',
-              card: '#1e293b',
-              primary: '#E76F51',
-              accent: '#f4a261'
+            brand: {
+              DEFAULT: '#E76F51',
+              dark: '#D05A3F',
+              light: '#F4A261',
+              cream: '#FDFBF7'
             }
           }
         }
@@ -33,34 +34,32 @@
   </script>
 
   <!-- External Libraries -->
-  <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 
-  <!-- Firebase Compat SDKs (v10.12.0) -->
+  <!-- Firebase SDKs (Compat v10.12.0) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
     body { -webkit-tap-highlight-color: transparent; }
-    .toast-enter { animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-app-dark text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden antialiased transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden antialiased transition-colors duration-300">
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-20 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <!-- Toast Notification Flotante -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap border border-slate-700/50 backdrop-blur-md"></div>
 
   <!-- AUTHENTICATION SCREEN -->
-  <div id="authScreen" class="h-full flex flex-col bg-slate-50 dark:bg-app-dark overflow-y-auto">
+  <div id="authScreen" class="h-full flex flex-col bg-slate-50 dark:bg-slate-900 overflow-y-auto">
     
     <!-- Login Form -->
     <div id="loginForm" class="flex flex-col h-full items-center justify-center p-6 w-full max-w-md mx-auto">
-      <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-[#E76F51]/30">
+      <div class="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-brand/30">
         <i data-lucide="heart-handshake" class="w-10 h-10 text-white"></i>
       </div>
       <h1 class="text-3xl font-bold mb-2 text-slate-800 dark:text-white">Bienvenido</h1>
@@ -69,37 +68,37 @@
       <div class="w-full space-y-4">
         <div>
           <label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Correo Electrónico</label>
-          <input type="email" id="loginEmail" autocomplete="username" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#E76F51] outline-none transition-shadow" placeholder="tu@correo.com">
+          <input type="email" id="loginEmail" autocomplete="username" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-brand outline-none transition-shadow" placeholder="tu@correo.com">
         </div>
         <div class="relative">
           <label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Contraseña</label>
-          <input type="password" id="loginPassword" autocomplete="current-password" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-[#E76F51] outline-none transition-shadow" placeholder="••••••••">
+          <input type="password" id="loginPassword" autocomplete="current-password" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-brand outline-none transition-shadow" placeholder="••••••••">
           <button type="button" onclick="togglePassword('loginPassword', 'loginEye')" class="absolute right-4 top-10 text-slate-400">
             <i data-lucide="eye" id="loginEye" class="w-5 h-5"></i>
           </button>
         </div>
         <div class="flex items-center gap-2 pt-1">
-          <input type="checkbox" id="loginRemember" class="w-4 h-4 rounded text-[#E76F51] focus:ring-[#E76F51]" checked>
+          <input type="checkbox" id="loginRemember" class="w-4 h-4 rounded text-brand focus:ring-brand" checked>
           <label for="loginRemember" class="text-sm dark:text-slate-300">Recordarme</label>
         </div>
-        <button onclick="handleLogin()" class="w-full bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform active:scale-95 mt-4">Entrar</button>
+        <button onclick="handleLogin()" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform active:scale-95 mt-4">Entrar</button>
         
         <div class="text-center mt-6">
           <p class="text-slate-500 dark:text-slate-400 text-sm">¿No tienes un Espacio?</p>
-          <button onclick="showAuthView('options')" class="text-[#E76F51] font-bold mt-2">Crear o Unirse</button>
+          <button onclick="showAuthView('options')" class="text-brand font-bold mt-2">Crear o Unirse</button>
         </div>
       </div>
     </div>
 
     <!-- Registration Options -->
     <div id="registerOptions" class="hidden flex-col h-full items-center justify-center p-6 w-full max-w-md mx-auto">
-      <div class="w-16 h-16 bg-[#E76F51] rounded-2xl flex items-center justify-center mb-6">
+      <div class="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center mb-6">
         <i data-lucide="users" class="w-10 h-10 text-white"></i>
       </div>
       <h2 class="text-2xl font-bold mb-8 text-center dark:text-white">Únete a Ahorro Familiar</h2>
       
       <div class="w-full space-y-4">
-        <button onclick="showAuthView('createSpace')" class="w-full bg-[#E76F51] text-white font-bold py-4 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
+        <button onclick="showAuthView('createSpace')" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-4 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
           <i data-lucide="plus" class="w-5 h-5"></i>
           <span>Crear mi Espacio</span>
         </button>
@@ -120,24 +119,24 @@
       <div class="space-y-4 w-full">
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Nombre de la Familia/Espacio</label>
-          <input type="text" id="regSpaceName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]" placeholder="Ej. Familia Pérez">
+          <input type="text" id="regSpaceName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand" placeholder="Ej. Familia Pérez">
         </div>
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Tu Nombre</label>
-          <input type="text" id="regAdminName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]" placeholder="Ej. Juan">
+          <input type="text" id="regAdminName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand" placeholder="Ej. Juan">
         </div>
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Correo Electrónico</label>
-          <input type="email" id="regAdminEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <input type="email" id="regAdminEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand">
         </div>
         <div class="relative">
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Contraseña (Mín. 6)</label>
-          <input type="password" id="regAdminPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <input type="password" id="regAdminPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-brand">
           <button type="button" onclick="togglePassword('regAdminPass', 'regAdminEye')" class="absolute right-4 top-9 text-slate-400">
             <i data-lucide="eye" id="regAdminEye" class="w-5 h-5"></i>
           </button>
         </div>
-        <button onclick="handleCreateSpace()" class="w-full bg-[#E76F51] text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Crear Espacio</button>
+        <button onclick="handleCreateSpace()" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Crear Espacio</button>
       </div>
     </div>
 
@@ -150,36 +149,36 @@
       <div class="space-y-4 w-full">
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Código de Invitación</label>
-          <input type="text" id="regJoinCode" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none uppercase font-mono focus:ring-2 focus:ring-[#E76F51]" placeholder="FAM-XXXX">
+          <input type="text" id="regJoinCode" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none uppercase font-mono focus:ring-2 focus:ring-brand" placeholder="FAM-XXXX">
         </div>
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Tu Nombre</label>
-          <input type="text" id="regJoinName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <input type="text" id="regJoinName" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand">
         </div>
         <div>
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Correo Electrónico</label>
-          <input type="email" id="regJoinEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <input type="email" id="regJoinEmail" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand">
         </div>
         <div class="relative">
           <label class="block text-sm font-medium mb-1 dark:text-slate-300">Contraseña (Mín. 6)</label>
-          <input type="password" id="regJoinPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-[#E76F51]">
+          <input type="password" id="regJoinPass" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-brand">
           <button type="button" onclick="togglePassword('regJoinPass', 'regJoinEye')" class="absolute right-4 top-9 text-slate-400">
             <i data-lucide="eye" id="regJoinEye" class="w-5 h-5"></i>
           </button>
         </div>
-        <button onclick="handleJoinSpace()" class="w-full bg-[#E76F51] text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Solicitar Unión</button>
+        <button onclick="handleJoinSpace()" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 rounded-xl shadow mt-4 active:scale-95 transition-transform">Solicitar Unión</button>
       </div>
     </div>
   </div>
 
   <!-- MAIN APP SCREEN -->
-  <div id="mainApp" class="hidden h-full flex flex-col bg-slate-50 dark:bg-app-dark">
+  <div id="mainApp" class="hidden h-full flex flex-col bg-slate-50 dark:bg-slate-900">
     
     <!-- Top Header -->
-    <header class="bg-white dark:bg-app-card px-4 pt-safe-top pb-3 shadow-sm z-10 sticky top-0 border-b border-slate-100 dark:border-slate-800">
+    <header class="bg-white dark:bg-slate-800 px-4 pt-safe-top pb-3 shadow-sm z-10 sticky top-0 border-b border-slate-100 dark:border-slate-800">
       <div class="flex items-center justify-between mt-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shadow-md">
+          <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shadow-md">
             <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
           </div>
           <div class="flex flex-col">
@@ -188,13 +187,13 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="hidden w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[#E76F51]">
+          <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="hidden w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-brand">
             <i data-lucide="download" class="w-5 h-5"></i>
           </button>
           <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
             <i data-lucide="moon" id="themeIcon" class="w-5 h-5"></i>
           </button>
-          <img id="headerAvatar" src="https://ui-avatars.com/api/?name=U&background=E76F51&color=fff" class="w-10 h-10 rounded-full object-cover border-2 border-[#E76F51] shadow-sm">
+          <img id="headerAvatar" src="https://ui-avatars.com/api/?name=U&background=E76F51&color=fff" class="w-10 h-10 rounded-full object-cover border-2 border-brand shadow-sm">
         </div>
       </div>
     </header>
@@ -205,10 +204,10 @@
       <!-- SECTION: RESUMEN -->
       <section id="secResumen" class="space-y-5">
         
-        <!-- Recuadro pequeño "Instalar App" con logo de la App -->
+        <!-- Recuadro pequeño "Instalar App" en Inicio con el logo terracota de la App -->
         <div id="pwaInstallBanner" class="hidden mb-4 p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
+            <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shrink-0 shadow-md">
               <i data-lucide="heart-handshake" class="w-6 h-6 text-white"></i>
             </div>
             <div>
@@ -216,14 +215,14 @@
               <p class="text-[11px] text-slate-300 leading-tight mt-0.5">Acceso rápido en inicio</p>
             </div>
           </div>
-          <button onclick="triggerPWAInstall()" class="px-3.5 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white text-xs font-semibold rounded-xl shadow flex items-center gap-1.5 shrink-0 transition-transform active:scale-95">
+          <button onclick="triggerPWAInstall()" class="px-3.5 py-2 bg-brand hover:bg-brand-dark text-white text-xs font-semibold rounded-xl shadow flex items-center gap-1.5 shrink-0 transition-transform active:scale-95">
             <i data-lucide="download" class="w-4 h-4"></i>
             <span>Instalar</span>
           </button>
         </div>
 
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-32 h-32 bg-[#E76F51] rounded-full blur-[60px] opacity-20"></div>
+          <div class="absolute top-0 right-0 w-32 h-32 bg-brand rounded-full blur-[60px] opacity-20"></div>
           <p class="text-slate-300 text-sm font-medium mb-1">Balance Total</p>
           <h2 id="totalBalance" class="text-4xl font-extrabold tracking-tight mb-4">$0.00</h2>
           <div class="flex gap-4">
@@ -238,17 +237,17 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
-          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-[#E76F51]"></i> Gastos por Categoría</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-brand"></i> Gastos por Categoría</h3>
           <div class="relative h-48 w-full"><canvas id="categoryChart"></canvas></div>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
-          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-[#E76F51]"></i> Gastos por Integrante</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-brand"></i> Gastos por Integrante</h3>
           <div class="relative h-48 w-full"><canvas id="memberChart"></canvas></div>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 class="font-bold mb-4 dark:text-white">Progreso de Presupuestos Mensuales</h3>
           <div id="budgetProgressList" class="space-y-4"></div>
         </div>
@@ -257,10 +256,10 @@
       <!-- SECTION: MOVIMIENTOS -->
       <section id="secMovimientos" class="hidden space-y-4">
         
-        <div class="bg-white dark:bg-app-card p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-3">
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-3">
           <div class="relative">
             <i data-lucide="search" class="absolute left-3 top-3 w-5 h-5 text-slate-400"></i>
-            <input type="text" id="searchMovements" oninput="renderMovements()" placeholder="Buscar por nota, categoría, integrante..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-[#E76F51] text-sm">
+            <input type="text" id="searchMovements" oninput="renderMovements()" placeholder="Buscar por nota, categoría, integrante..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand text-sm">
           </div>
           <div class="flex justify-between items-center text-sm text-slate-500 dark:text-slate-400 px-1">
             <span>Balance filtrado:</span>
@@ -270,25 +269,25 @@
 
         <div class="flex justify-between items-center px-1">
           <h2 class="font-bold text-lg dark:text-white">Últimos Movimientos</h2>
-          <button onclick="exportToCSV()" class="text-sm text-[#E76F51] font-medium flex items-center gap-1 bg-[#E76F51]/10 px-3 py-1.5 rounded-lg"><i data-lucide="download" class="w-4 h-4"></i> CSV</button>
+          <button onclick="exportToCSV()" class="text-sm text-brand font-medium flex items-center gap-1 bg-brand/10 px-3 py-1.5 rounded-lg"><i data-lucide="download" class="w-4 h-4"></i> CSV</button>
         </div>
         <div id="movementsList" class="space-y-3"></div>
       </section>
 
       <!-- SECTION: METAS Y GASTOS FIJOS -->
       <section id="secMetas" class="hidden space-y-6">
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-[#E76F51]"></i> Metas de Ahorro</h3>
-            <button onclick="promptNewGoal()" class="text-[#E76F51] bg-[#E76F51]/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-brand"></i> Metas de Ahorro</h3>
+            <button onclick="promptNewGoal()" class="text-brand bg-brand/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
           </div>
           <div id="goalsList" class="space-y-4"></div>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="repeat" class="w-5 h-5 text-[#E76F51]"></i> Gastos Recurrentes</h3>
-            <button onclick="promptNewRecurring()" class="text-[#E76F51] bg-[#E76F51]/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+            <h3 class="font-bold dark:text-white flex items-center gap-2"><i data-lucide="repeat" class="w-5 h-5 text-brand"></i> Gastos Recurrentes</h3>
+            <button onclick="promptNewRecurring()" class="text-brand bg-brand/10 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
           </div>
           <p class="text-xs text-slate-500 mb-3">Suscripciones, luz, agua. Toca "Pagar" para registrar el gasto al instante.</p>
           <div id="recurringList" class="space-y-3"></div>
@@ -297,28 +296,28 @@
 
       <!-- SECTION: ESPACIO -->
       <section id="secEspacio" class="hidden space-y-6">
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
-          <p class="text-xs text-[#E76F51] font-bold tracking-wider mb-2 uppercase">Tu Espacio Financiero</p>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+          <p class="text-xs text-brand font-bold tracking-wider mb-2 uppercase">Tu Espacio Financiero</p>
           <div class="flex items-center gap-2 mb-2">
             <h2 id="spaceTabName" class="text-2xl font-bold dark:text-white">Mi Familia</h2>
-            <button id="btnEditFamily" onclick="editFamilyName()" class="text-slate-400 hover:text-[#E76F51] hidden"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+            <button id="btnEditFamily" onclick="editFamilyName()" class="text-slate-400 hover:text-brand hidden"><i data-lucide="pencil" class="w-4 h-4"></i></button>
           </div>
           <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Comparte tu código para que otros se unan a este grupo:</p>
-          <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl flex items-center justify-between mb-4">
-            <span id="spaceTabCode" class="text-2xl font-mono font-bold text-[#E76F51] tracking-widest">---</span>
-            <button onclick="copyCode()" class="text-slate-400 hover:text-[#E76F51]"><i data-lucide="download" class="w-5 h-5"></i></button>
+          <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl flex items-center justify-between mb-4 border border-slate-200/60 dark:border-slate-700">
+            <span id="spaceTabCode" class="text-2xl font-mono font-bold text-brand tracking-widest">---</span>
+            <button onclick="copyCode()" class="text-slate-400 hover:text-brand"><i data-lucide="download" class="w-5 h-5"></i></button>
           </div>
           
-          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG Vector -->
+          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG Vector (100% idéntico al original) -->
           <button onclick="shareViaWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition-transform active:scale-95 text-base">
             <svg class="w-6 h-6 shrink-0 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.447-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414zM12.004 2.003c-5.512 0-9.991 4.478-9.991 9.991 0 1.762.459 3.477 1.332 4.99l-1.415 5.17 5.293-1.388c1.458.795 3.107 1.218 4.781 1.218 5.513 0 9.991-4.478 9.991-9.991 0-5.513-4.478-9.991-9.991-9.991zm0 18.234c-1.503 0-2.977-.403-4.265-1.167l-.306-.181-3.167.83.845-3.088-.198-.316c-.841-1.338-1.286-2.885-1.286-4.47 0-4.542 3.696-8.238 8.238-8.238 4.541 0 8.237 3.696 8.237 8.238 0 4.542-3.696 8.237-8.238 8.237z"/>
             </svg>
             <span>Invitar por WhatsApp</span>
           </button>
         </div>
 
-        <div id="adminPanel" class="hidden bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div id="adminPanel" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 class="font-bold mb-4 dark:text-white">Solicitudes Pendientes de Aprobación</h3>
           <div id="pendingList" class="space-y-3"><p class="text-sm text-slate-500">Sin solicitudes pendientes.</p></div>
           
@@ -327,7 +326,7 @@
           <button onclick="saveBudgets()" class="w-full mt-4 bg-slate-800 dark:bg-slate-700 text-white py-2.5 rounded-xl text-sm font-bold">Guardar Presupuestos</button>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
           <h3 class="font-bold mb-4 dark:text-white">Integrantes del Grupo</h3>
           <div id="membersList" class="space-y-3"></div>
         </div>
@@ -335,10 +334,10 @@
 
       <!-- SECTION: PERFIL -->
       <section id="secPerfil" class="hidden space-y-6">
-        <div class="bg-white dark:bg-app-card rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
           <div class="relative w-24 h-24 mx-auto mb-4">
             <img id="profileAvatar" src="" class="w-full h-full rounded-full object-cover border-4 border-slate-100 dark:border-slate-800 shadow-md">
-            <label class="absolute bottom-0 right-0 w-8 h-8 bg-[#E76F51] rounded-full flex items-center justify-center text-white cursor-pointer shadow-lg">
+            <label class="absolute bottom-0 right-0 w-8 h-8 bg-brand rounded-full flex items-center justify-center text-white cursor-pointer shadow-lg">
               <i data-lucide="pencil" class="w-4 h-4"></i>
               <input type="file" accept="image/*" class="hidden" onchange="uploadProfilePhoto(event)">
             </label>
@@ -348,7 +347,7 @@
           <button onclick="editProfileName()" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium">Editar Nombre</button>
         </div>
 
-        <div class="bg-white dark:bg-app-card rounded-3xl p-2 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-sm border border-slate-100 dark:border-slate-800">
           <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="hidden w-full flex items-center gap-3 p-4 text-left border-b border-slate-100 dark:border-slate-800">
             <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"><i data-lucide="download" class="w-5 h-5"></i></div>
             <div class="flex-1"><h4 class="font-medium dark:text-white">Instalar Aplicación</h4><p class="text-xs text-slate-500">Añadir a pantalla de inicio</p></div>
@@ -367,12 +366,12 @@
     </main>
 
     <!-- FAB: Add Transaction -->
-    <button onclick="openModal()" class="fixed bottom-24 right-6 w-14 h-14 bg-[#E76F51] rounded-2xl flex items-center justify-center text-white shadow-xl shadow-[#E76F51]/40 transition-transform active:scale-90 z-20">
+    <button onclick="openModal()" class="fixed bottom-24 right-6 w-14 h-14 bg-brand rounded-2xl flex items-center justify-center text-white shadow-xl shadow-brand/40 transition-transform active:scale-90 z-20">
       <i data-lucide="plus" class="w-7 h-7"></i>
     </button>
 
     <!-- Bottom Navigation -->
-    <nav class="bg-white dark:bg-app-card border-t border-slate-100 dark:border-slate-800 px-2 py-3 pb-safe-bottom fixed bottom-0 w-full z-30">
+    <nav class="bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-800 px-2 py-3 pb-safe-bottom fixed bottom-0 w-full z-30">
       <ul class="flex justify-around items-center">
         <li><button onclick="switchTab('secResumen')" class="nav-btn active flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secResumen"><i data-lucide="layout-dashboard" class="w-6 h-6"></i><span class="text-[10px] font-medium">Resumen</span></button></li>
         <li><button onclick="switchTab('secMovimientos')" class="nav-btn flex flex-col items-center gap-1 p-2 text-slate-400 w-16" data-tab="secMovimientos"><i data-lucide="arrow-left-right" class="w-6 h-6"></i><span class="text-[10px] font-medium">Historial</span></button></li>
@@ -385,7 +384,7 @@
 
   <!-- TRANSACTION MODAL -->
   <div id="txModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center">
-    <div class="bg-white dark:bg-app-card w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl p-6 pb-safe-bottom animate-[slideInUp_0.3s_ease-out]">
+    <div class="bg-white dark:bg-slate-800 w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl p-6 pb-safe-bottom animate-[slideInUp_0.3s_ease-out]">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold dark:text-white">Nuevo Movimiento</h2>
         <button onclick="closeModal()" class="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -399,25 +398,25 @@
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Monto ($)</label>
-          <input type="number" id="txAmount" class="w-full text-3xl font-bold bg-transparent border-b-2 border-slate-200 dark:border-slate-700 py-2 outline-none focus:border-[#E76F51] dark:text-white" placeholder="0.00" step="0.01">
+          <input type="number" id="txAmount" class="w-full text-3xl font-bold bg-transparent border-b-2 border-slate-200 dark:border-slate-700 py-2 outline-none focus:border-brand dark:text-white" placeholder="0.00" step="0.01">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoría</label>
-          <select id="txCategory" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white appearance-none"></select>
+          <select id="txCategory" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand dark:text-white appearance-none"></select>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nota / Descripción</label>
-          <input type="text" id="txNote" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white" placeholder="¿De qué fue?">
+          <input type="text" id="txNote" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand dark:text-white" placeholder="¿De qué fue?">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fecha</label>
-          <input type="date" id="txDate" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#E76F51] dark:text-white">
+          <input type="date" id="txDate" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand dark:text-white">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Foto del Recibo (Opcional)</label>
-          <input type="file" id="txReceipt" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20">
+          <input type="file" id="txReceipt" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
         </div>
-        <button onclick="saveTransaction()" class="w-full bg-[#E76F51] text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform mt-2">Guardar</button>
+        <button onclick="saveTransaction()" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform mt-2">Guardar</button>
       </div>
     </div>
   </div>
@@ -524,13 +523,16 @@
 
     // --- UTILS ---
     function showToast(msg) {
-      const t = document.createElement('div');
-      t.className = 'bg-slate-800 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium toast-enter flex items-center gap-2';
-      t.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-[#E76F51]"></i> ${msg}`;
-      document.getElementById('toastContainer').appendChild(t);
-      lucide.createIcons();
-      setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 3000);
     }
+
     function generateCode() { return 'FAM-' + Math.floor(1000 + Math.random() * 9000); }
     function normalizeEmail(email) { return email.trim().toLowerCase(); }
     function togglePassword(inputId, iconId) {
@@ -695,7 +697,7 @@
         currentUserData = doc.data();
         if (currentUserData.status === 'pending') {
           showScreen('authScreen');
-          document.getElementById('authScreen').innerHTML = `<div class="flex flex-col h-full items-center justify-center p-6 text-center"><i data-lucide="clock" class="w-16 h-16 text-[#E76F51] mb-4"></i><h2 class="text-2xl font-bold mb-2">Solicitud Pendiente</h2><p class="text-slate-500 mb-8">El administrador debe aprobar tu ingreso.</p><button onclick="handleLogout()" class="text-[#E76F51] font-bold">Cerrar Sesión</button></div>`;
+          document.getElementById('authScreen').innerHTML = `<div class="flex flex-col h-full items-center justify-center p-6 text-center"><i data-lucide="clock" class="w-16 h-16 text-brand mb-4"></i><h2 class="text-2xl font-bold mb-2">Solicitud Pendiente</h2><p class="text-slate-500 mb-8">El administrador debe aprobar tu ingreso.</p><button onclick="handleLogout()" class="text-brand font-bold">Cerrar Sesión</button></div>`;
           lucide.createIcons();
           return;
         }
@@ -779,9 +781,9 @@
           return `<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center mb-2">
               <h4 class="font-bold text-sm dark:text-white">${d.title}</h4>
-              <span class="text-xs font-bold ${pct >= 100 ? 'text-emerald-500' : 'text-[#E76F51]'}">${pct}%</span>
+              <span class="text-xs font-bold ${pct >= 100 ? 'text-emerald-500' : 'text-brand'}">${pct}%</span>
             </div>
-            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2"><div class="bg-[#E76F51] h-2.5 rounded-full transition-all" style="width: ${pct}%"></div></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2"><div class="bg-brand h-2.5 rounded-full transition-all" style="width: ${pct}%"></div></div>
             <div class="flex justify-between text-xs text-slate-500 mb-3"><span>$${d.currentAmount.toFixed(2)} ahorrados</span><span>Meta: $${d.targetAmount.toFixed(2)}</span></div>
             <div class="flex gap-2">
               <button onclick="addGoalFund('${doc.id}', ${d.currentAmount})" class="flex-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 py-1.5 rounded-lg text-xs font-bold">+ Aportar</button>
@@ -802,7 +804,7 @@
           return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
             <div><p class="font-bold text-sm dark:text-white">${d.name}</p><p class="text-xs text-slate-500">${d.category} • $${d.amount.toFixed(2)}</p></div>
             <div class="flex gap-2">
-              <button onclick="payRecurring('${d.name}', ${d.amount}, '${d.category}')" class="bg-[#E76F51] text-white px-3 py-1.5 rounded-lg text-xs font-bold">Pagar</button>
+              <button onclick="payRecurring('${d.name}', ${d.amount}, '${d.category}')" class="bg-brand text-white px-3 py-1.5 rounded-lg text-xs font-bold">Pagar</button>
               ${currentUserData.role === 'admin' ? `<button onclick="deleteRecurring('${doc.id}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
             </div>
           </div>`;
@@ -840,7 +842,7 @@
 
       document.getElementById('movementsList').innerHTML = filtered.map(m => {
         const isInc = m.type === 'income';
-        return `<div class="bg-white dark:bg-app-card p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        return `<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}">
               <i data-lucide="${isInc ? 'arrow-down-left' : 'arrow-up-right'}" class="w-5 h-5"></i>
@@ -848,7 +850,7 @@
             <div>
               <p class="font-bold text-sm dark:text-white">${m.category}</p>
               <p class="text-xs text-slate-500">${m.note} • ${m.date}</p>
-              <p class="text-[10px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} ${m.receipt ? `<button onclick="viewReceipt('${m.receipt}')" class="text-[#E76F51] font-bold underline ml-1">📎 Recibo</button>` : ''}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} ${m.receipt ? `<button onclick="viewReceipt('${m.receipt}')" class="text-brand font-bold underline ml-1">📎 Recibo</button>` : ''}</p>
             </div>
           </div>
           <div class="text-right">
@@ -973,10 +975,13 @@
       const n = prompt("Tu nuevo nombre:", currentUserData.displayName);
       if(n && n.trim()) db.collection('users').doc(auth.currentUser.uid).update({ displayName: n.trim() });
     }
-    function uploadProfilePhoto(e) {
-      if (e.target.files.length > 0) {
-        compressImage(e.target.files[0], 200, 0.4, b64 => { db.collection('users').doc(auth.currentUser.uid).update({ photoBase64: b64 }).then(()=>showToast("Foto actualizada.")); });
-      }
+    function uploadProfilePhoto(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      compressImage(file, 200, 0.4, base64 => {
+        db.collection('users').doc(auth.currentUser.uid).update({ photoBase64: base64 });
+        showToast("Foto de perfil actualizada");
+      });
     }
 
     function shareViaWhatsApp() {
@@ -996,14 +1001,22 @@
     }
 
     function exportToCSV() {
-      if(movementsData.length === 0) return showToast("No hay movimientos.");
-      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Usuario\n";
-      movementsData.forEach(m => { csv += `${m.date},${m.type==='income'?'Ingreso':'Gasto'},"${m.category}",${m.amount},"${m.note}","${m.userName}"\n`; });
+      if (movementsData.length === 0) {
+        showToast("No hay movimientos para exportar.");
+        return;
+      }
+      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Registrado Por\n";
+      movementsData.forEach(m => {
+        csv += `"${m.date}","${m.type}","${m.category}","${m.amount}","${m.note || ''}","${m.userName || ''}"\n`;
+      });
+
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `movimientos_${currentFamilyData.familyName}_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      link.setAttribute("download", `ahorro_familiar_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
