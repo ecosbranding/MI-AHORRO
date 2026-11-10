@@ -216,15 +216,6 @@
             </button>
           </div>
         </div>
-        <!-- Campo Nombre de la Familia (Visible solo al Crear Espacio) -->
-<div id="familyNameGroup" class="space-y-1">
-    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">Nombre o Apellido de la Familia</label>
-    <div class="relative">
-        <i data-lucide="users" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
-        <input type="text" id="regFamilyName" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-terracotta outline-none text-sm font-semibold" placeholder="Ej. Carvajal Vera o Pérez">
-    </div>
-    <p class="text-[10px] text-slate-400 ml-1">En la app se mostrará automáticamente como: <span class="text-terracotta font-medium">Familia [Tu Apellido]</span></p>
-</div>
 
         <!-- Código de Grupo (Solo si se selecciona Unirse) -->
         <div id="fieldGroupCode" class="hidden">
@@ -1299,37 +1290,6 @@
             status: status,
             photoBase64: "",
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            // Dentro de la función de Registro, cuando el modo es 'create':
-if (window.currentSpaceMode === 'create' || !window.currentSpaceMode) {
-    const rawFamilyInput = document.getElementById('regFamilyName') ? document.getElementById('regFamilyName').value.trim() : '';
-    
-    if (!rawFamilyInput) {
-        alert("Por favor ingresa el apellido o nombre para tu familia.");
-        return;
-    }
-
-    // Formatear automáticamente para que siempre empiece con "Familia " sin duplicar
-    const cleanName = rawFamilyInput.replace(/^familia\s+/i, ''); // Si el usuario escribió "Familia Pérez", quita "Familia "
-    const formattedFamilyName = `Familia ${cleanName}`;
-
-    // Crear la familia en Firestore
-    const familyRef = await db.collection('families').add({
-        familyName: formattedFamilyName,
-        createdBy: user.uid,
-        admins: [user.uid],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Guardar los datos del usuario asignándole el rol de Admin
-    await db.collection('users').doc(user.uid).set({
-        name: userName,
-        email: userEmail,
-        familyId: familyRef.id,
-        role: 'admin',
-        status: 'active',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-}
           };
 
           await db.collection('users').doc(cred.user.uid).set(userData);
@@ -2470,30 +2430,6 @@ async function toggleAdminRole(targetUid, isCurrentlyAdmin) {
     } catch (error) {
         console.error("Error al cambiar rol:", error);
         alert("Ocurrió un error al modificar los permisos.");
-    }
-}
-
-    function toggleSpaceMode(mode) {
-    window.currentSpaceMode = mode; // 'create' o 'join'
-    
-    const familyNameGroup = document.getElementById('familyNameGroup');
-    const familyCodeGroup = document.getElementById('familyCodeGroup'); // El campo donde se pone el código para unirse
-    const btnCreate = document.getElementById('btnSpaceCreate');
-    const btnJoin = document.getElementById('btnSpaceJoin');
-
-    if (mode === 'create') {
-        if (familyNameGroup) familyNameGroup.classList.remove('hidden');
-        if (familyCodeGroup) familyCodeGroup.classList.add('hidden');
-        
-        // Estilos de botones activo/inactivo
-        if (btnCreate) btnCreate.className = "flex-1 py-3 px-4 rounded-xl border-2 border-terracotta bg-terracotta/10 text-terracotta font-bold text-xs transition-all";
-        if (btnJoin) btnJoin.className = "flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-400 text-xs font-medium transition-all";
-    } else {
-        if (familyNameGroup) familyNameGroup.classList.add('hidden');
-        if (familyCodeGroup) familyCodeGroup.classList.remove('hidden');
-
-        if (btnCreate) btnCreate.className = "flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-400 text-xs font-medium transition-all";
-        if (btnJoin) btnJoin.className = "flex-1 py-3 px-4 rounded-xl border-2 border-terracotta bg-terracotta/10 text-terracotta font-bold text-xs transition-all";
     }
 }
     
