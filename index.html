@@ -1014,15 +1014,50 @@
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-    // Manejo Inteligente de Instalación PWA y Ocultamiento
+        // Manejo Inteligente de Instalación (APK Android + PWA PC + iOS)
     let deferredPrompt = null;
 
+    // Conectar el manifest.json real subido al repositorio
+    (function initPWAManifest() {
+      try {
+        let manifestLink = document.getElementById('pwa-manifest') || document.querySelector('link[rel="manifest"]');
+        if (!manifestLink) {
+          manifestLink = document.createElement('link');
+          manifestLink.id = 'pwa-manifest';
+          manifestLink.rel = 'manifest';
+          document.head.appendChild(manifestLink);
+        }
+        // Utiliza tu manifest.json subido a GitHub
+        manifestLink.href = './manifest.json';
+
+        // Registrar tu sw.js real subido a GitHub
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('SW Registrado correctamente'))
+            .catch(() => {
+              // Fallback en memoria si sw.js no está accesible
+              const swCode = `
+                self.addEventListener('install', (e) => self.skipWaiting());
+                self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => {})));
+              `;
+              const blobSW = new Blob([swCode], { type: 'application/javascript' });
+              navigator.serviceWorker.register(URL.createObjectURL(blobSW));
+            });
+        }
+      } catch (err) {
+        console.error('Error inicializando PWA:', err);
+      }
+    })();
+
+    // Detectar si la app ya se ejecuta como instalada
     function isPWAInstalled() {
       return window.matchMedia('(display-mode: standalone)').matches 
           || window.navigator.standalone === true 
           || document.referrer.includes('android-app://');
     }
 
+    // Controlar visibilidad de botones
     function updatePWAUIVisibility() {
       const installed = isPWAInstalled();
       const banner = document.getElementById('pwaInstallBanner');
@@ -1030,9 +1065,9 @@
       const btnProfile = document.getElementById('btnInstallPWAProfile');
 
       if (installed) {
-        if (banner) banner.style.display = 'none';
-        if (btnHeader) btnHeader.style.display = 'none';
-        if (btnProfile) btnProfile.style.display = 'none';
+        if (banner) banner.style.setProperty('display', 'none', 'important');
+        if (btnHeader) btnHeader.style.setProperty('display', 'none', 'important');
+        if (btnProfile) btnProfile.style.setProperty('display', 'none', 'important');
       } else {
         if (banner) banner.style.display = 'flex';
         if (btnHeader) btnHeader.style.display = 'block';
@@ -1040,6 +1075,7 @@
       }
     }
 
+    // Capturar evento nativo para PC/Desktop
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -1049,84 +1085,94 @@
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       updatePWAUIVisibility();
-      showToast("¡Aplicación instalada con éxito!");
+      if (typeof showToast === 'function') {
+        showToast("¡Aplicación instalada con éxito!");
+      }
     });
 
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', () => {
-      updatePWAUIVisibility();
-    });
-
+    // FUNCIÓN PRINCIPAL DE INSTALACIÓN UNIVERSAL
     async function triggerPWAInstall() {
       if (isPWAInstalled()) {
+        if (typeof showToast === 'function') showToast("La aplicación ya está instalada.");
         updatePWAUIVisibility();
         return;
       }
 
-      if (deferredPrompt) {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /android/i.test(ua);
+      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+
+      if (isAndroid) {
+        // EN ANDROID: Descargar directamente tu archivo miahorro.apk subido a GitHub
+        if (typeof showToast === 'function') showToast("Descargando archivo de instalación (.apk)...");
+        const link = document.createElement('a');
+        link.href = './miahorro.apk';
+        link.download = 'miahorro.apk';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (isIOS) {
+        // EN IPHONE: Mostrar la guía de instalación de Safari
+        openInstallGuideModal();
+      } else if (deferredPrompt) {
+        // EN PC / MAC (CHROME O EDGE): Instalación nativa de escritorio
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         if (choiceResult.outcome === 'accepted') {
-          console.log('Usuario aceptó instalar PWA');
           deferredPrompt = null;
           updatePWAUIVisibility();
         }
       } else {
+        // Respaldar mostrando la guía si ningún método anterior se activa
         openInstallGuideModal();
       }
     }
 
     function openInstallGuideModal() {
-      document.getElementById('installGuideModal').classList.remove('hidden');
-      lucide.createIcons();
+      const modalElement = document.getElementById('installGuideModal');
+      if (modalElement) {
+        modalElement.classList.remove('hidden');
+      }
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
     }
 
     function closeInstallGuideModal() {
-      document.getElementById('installGuideModal').classList.add('hidden');
+      const modalElement = document.getElementById('installGuideModal');
+      if (modalElement) {
+        modalElement.classList.add('hidden');
+      }
     }
 
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initTheme();
-      populateFilterCategory();
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+      if (typeof initTheme === 'function') initTheme();
+      if (typeof populateFilterCategory === 'function') populateFilterCategory();
       updatePWAUIVisibility();
 
-      // Service Worker para PWA
-      if ('serviceWorker' in navigator) {
-        const swCode = `
-          self.addEventListener('install', (e) => self.skipWaiting());
-          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-          self.addEventListener('fetch', (e) => {
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-          });
-        `;
-        const blobSW = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blobSW);
-        
-        navigator.serviceWorker.register('./sw.js').catch(() => {
-          navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
-        });
-      }
-
-      // Escuchador de Autenticación
+      // Escuchador de Autenticación de Firebase
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          if (isRegistering) return;
+          if (typeof isRegistering !== 'undefined' && isRegistering) return;
           try {
             const userDoc = await db.collection('users').doc(user.uid).get();
             if (userDoc.exists) {
               currentUserData = { uid: user.uid, ...userDoc.data() };
-              setupMainApp();
+              if (typeof setupMainApp === 'function') setupMainApp();
             } else {
-              if (!isRegistering) {
-                showToast("Cargando perfil de usuario...");
+              if (typeof isRegistering === 'undefined' || !isRegistering) {
+                if (typeof showToast === 'function') showToast("Cargando perfil de usuario...");
               }
             }
           } catch (err) {
             console.error("Error obteniendo usuario:", err);
           }
         } else {
-          showAuthScreen();
+          if (typeof showAuthScreen === 'function') showAuthScreen();
         }
       });
     });
