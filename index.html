@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -39,19 +39,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Estilos personalizados para la PWA */
     body {
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 4px;
-    }
-    /* Ocultar elementos Netlify si existieran */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
     .netlify-badge, [data-netlify-deploy] { display: none !important; }
   </style>
 </head>
@@ -76,8 +69,7 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <!-- Quick Dark Mode Toggle -->
-          <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Modo Oscuro">
             <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
             <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
           </button>
@@ -98,77 +90,82 @@
             <i data-lucide="heart-handshake" class="w-12 h-12"></i>
           </div>
           <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Ahorro Familiar</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Gestión financiera colaborativa para tu hogar</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Gestión financiera colaborativa o personal</p>
         </div>
 
         <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700">
           <div class="flex border-b border-slate-200 dark:border-slate-700 mb-6">
-            <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 font-semibold border-b-2 border-brand text-brand">Iniciar Sesión</button>
-            <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600">Crear Cuenta</button>
+            <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition">Iniciar Sesión</button>
+            <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition">Crear Cuenta</button>
           </div>
 
           <!-- LOGIN FORM -->
           <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Correo Electrónico</label>
-              <input type="email" id="loginEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="tu@correo.com">
+              <input type="email" id="loginEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="tu@correo.com">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Contraseña</label>
               <div class="relative">
-                <input type="password" id="loginPassword" autocomplete="current-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition pr-10" placeholder="••••••••">
+                <input type="password" id="loginPassword" autocomplete="current-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand pr-10" placeholder="••••••••">
                 <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginPasswordIcon')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
                   <i id="loginPasswordIcon" data-lucide="eye" class="w-5 h-5"></i>
                 </button>
               </div>
             </div>
-            <div class="flex items-center justify-between text-sm">
+            <div class="flex items-center text-sm">
               <label class="flex items-center text-slate-600 dark:text-slate-400 cursor-pointer">
-                <input type="checkbox" id="rememberMe" checked class="rounded border-slate-300 text-brand focus:ring-brand mr-2">
-                Recordarme
+                <input type="checkbox" id="rememberMe" checked class="rounded border-slate-300 text-brand focus:ring-brand mr-2"> Recordarme
               </label>
             </div>
-            <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
-              <span>Ingresar</span>
-            </button>
+            <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition">Ingresar</button>
           </form>
 
           <!-- REGISTER FORM -->
           <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">¿Cómo deseas comenzar?</label>
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <button type="button" id="btnOptCreate" onclick="setRegOption('create')" class="p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-center leading-tight">Crear mi<br>Espacio</span>
+              </button>
+              <button type="button" id="btnOptJoin" onclick="setRegOption('join')" class="p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition">
+                <i data-lucide="users" class="w-6 h-6"></i>
+                <span class="text-center leading-tight">Unirme con<br>Código</span>
+              </button>
+            </div>
+            <input type="hidden" id="regGroupOption" value="create">
+
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre Completo</label>
-              <input type="text" id="regName" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="Ej: María García">
+              <input type="text" id="regName" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="Ej: María García">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Correo Electrónico</label>
-              <input type="email" id="regEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition" placeholder="tu@correo.com">
+              <input type="email" id="regEmail" autocomplete="username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="tu@correo.com">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Contraseña (Mín. 6 caracteres)</label>
               <div class="relative">
-                <input type="password" id="regPassword" autocomplete="new-password" required minlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition pr-10" placeholder="••••••••">
+                <input type="password" id="regPassword" autocomplete="new-password" required minlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand pr-10" placeholder="••••••••">
                 <button type="button" onclick="togglePasswordVisibility('regPassword', 'regPasswordIcon')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
                   <i id="regPasswordIcon" data-lucide="eye" class="w-5 h-5"></i>
                 </button>
               </div>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Grupo Familiar</label>
-              <select id="regGroupOption" onchange="toggleFamilyCodeInput()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand outline-none transition">
-                <option value="create">Crear un Nuevo Grupo Familiar</option>
-                <option value="join">Unirme con un Código de Familia</option>
-              </select>
-            </div>
+
             <div id="familyNameContainer">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre de la Familia</label>
-              <input type="text" id="regFamilyName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand outline-none transition" placeholder="Ej: Familia Pérez">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Nombre de tu Espacio/Familia</label>
+              <input type="text" id="regFamilyName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand" placeholder="Ej: Finanzas de María">
             </div>
             <div id="familyCodeContainer" class="hidden">
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Código de Familia (6 caracteres)</label>
-              <input type="text" id="regFamilyCode" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand outline-none transition uppercase" placeholder="Ej: FAM123">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">Código de Invitación (6 caracteres)</label>
+              <input type="text" id="regFamilyCode" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand uppercase" placeholder="Ej: FAM123">
             </div>
-            <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
-              <span>Registrarse e Ingresar</span>
+
+            <button type="submit" id="btnRegisterSubmit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center">
+              <span>Registrarme e Ingresar</span>
             </button>
           </form>
         </div>
@@ -181,14 +178,14 @@
             <i data-lucide="clock" class="w-8 h-8"></i>
           </div>
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Solicitud en Espera</h3>
-          <p class="text-slate-600 dark:text-slate-300 text-sm mb-6">Tu cuenta ha sido creada con éxito. El administrador del grupo familiar debe aprobar tu solicitud para darte acceso completo.</p>
+          <p class="text-slate-600 dark:text-slate-300 text-sm mb-6">Te has unido mediante un código de invitación. El administrador de este grupo debe aprobar tu acceso.</p>
           <button onclick="handleLogout()" class="px-6 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
             Cerrar Sesión
           </button>
         </div>
       </section>
 
-      <!-- TAB 1: DASHBOARD / RESUMEN -->
+      <!-- TAB 1: DASHBOARD -->
       <section id="screenDashboard" class="hidden space-y-6">
         <!-- Balance Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -221,14 +218,14 @@
           </div>
         </div>
 
-        <!-- Monthly Budgets Progress Section (NUEVO) -->
+        <!-- Presupuestos Mensuales -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-2">
               <i data-lucide="target" class="w-5 h-5 text-brand"></i>
               <h3 class="font-bold text-slate-900 dark:text-white">Presupuestos Mensuales por Categoría</h3>
             </div>
-            <button id="btnManageBudgets" onclick="openBudgetModal()" class="hidden text-xs text-brand font-semibold hover:underline">Configurar</button>
+            <button id="btnManageBudgets" onclick="openBudgetModal()" class="hidden text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-200 transition">Configurar Límites</button>
           </div>
           <div id="budgetsList" class="space-y-3">
             <p class="text-xs text-slate-400 italic">Cargando presupuestos...</p>
@@ -242,35 +239,27 @@
               <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400"></i>
               <span>Gastos por Categoría</span>
             </h3>
-            <div class="h-64 relative">
-              <canvas id="chartCategory"></canvas>
-            </div>
+            <div class="h-64 relative"><canvas id="chartCategory"></canvas></div>
           </div>
-
-          <!-- Member Expense Breakdown Chart (NUEVO) -->
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
             <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
               <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
               <span>Gastos por Integrante</span>
             </h3>
-            <div class="h-64 relative">
-              <canvas id="chartMember"></canvas>
-            </div>
+            <div class="h-64 relative"><canvas id="chartMember"></canvas></div>
           </div>
         </div>
       </section>
 
       <!-- TAB 2: MOVIMIENTOS -->
       <section id="screenMovements" class="hidden space-y-4">
-        <!-- Controls & Search Header -->
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-3">
           <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
-            <!-- Search Bar (NUEVO) -->
+            <!-- Barra de búsqueda en tiempo real -->
             <div class="relative w-full sm:w-72">
               <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
-              <input type="text" id="searchInput" oninput="renderMovementsList()" placeholder="Buscar por nota, integrante..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand">
+              <input type="text" id="searchInput" oninput="renderMovementsList()" placeholder="Buscar por nota, categoría, persona..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand">
             </div>
-
             <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
               <select id="filterType" onchange="renderMovementsList()" class="px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white outline-none">
                 <option value="all">Todos los tipos</option>
@@ -283,24 +272,21 @@
               </button>
             </div>
           </div>
+          <!-- Totales calculados en tiempo real -->
           <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-700">
             <span>Resultados encontrados: <strong id="movementCount" class="text-slate-700 dark:text-slate-200">0</strong></span>
             <span>Total Filtrado: <strong id="movementFilteredTotal" class="text-brand font-bold">$0.00</strong></span>
           </div>
         </div>
 
-        <!-- Movements List -->
-        <div id="movementsList" class="space-y-2">
-          <!-- Movimientos se renderizan dinámicamente -->
-        </div>
+        <div id="movementsList" class="space-y-2"></div>
       </section>
 
-      <!-- TAB 3: METAS Y RECURRENTES (NUEVO TAB) -->
+      <!-- TAB 3: METAS Y RECURRENTES -->
       <section id="screenGoalsRecurring" class="hidden space-y-6">
-        <!-- Tab Selector -->
         <div class="flex border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl p-1 shadow-sm">
-          <button id="subtabGoalsBtn" onclick="switchGoalsSubtab('goals')" class="flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm">Metas de Ahorro</button>
-          <button id="subtabRecurringBtn" onclick="switchGoalsSubtab('recurring')" class="flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400">Gastos Recurrentes</button>
+          <button id="subtabGoalsBtn" onclick="switchGoalsSubtab('goals')" class="flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition">Metas de Ahorro</button>
+          <button id="subtabRecurringBtn" onclick="switchGoalsSubtab('recurring')" class="flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition">Gastos Recurrentes</button>
         </div>
 
         <!-- SUBTAB 1: METAS DE AHORRO -->
@@ -312,70 +298,60 @@
               <span>Nueva Meta</span>
             </button>
           </div>
-          <div id="goalsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Render dinámico de metas -->
-          </div>
+          <div id="goalsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
         <!-- SUBTAB 2: GASTOS RECURRENTES -->
         <div id="subtabRecurring" class="hidden space-y-4">
           <div class="flex justify-between items-center">
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg">Suscripciones y Pagos Fijos</h3>
+            <h3 class="font-bold text-slate-900 dark:text-white text-lg">Suscripciones y Gastos Fijos</h3>
             <button onclick="openRecurringModal()" class="bg-brand text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1">
               <i data-lucide="plus" class="w-4 h-4"></i>
               <span>Nuevo Gasto Fijo</span>
             </button>
           </div>
-          <div id="recurringList" class="space-y-3">
-            <!-- Render dinámico de gastos recurrentes -->
-          </div>
+          <div id="recurringList" class="space-y-3"></div>
         </div>
       </section>
 
-      <!-- TAB 4: FAMILIA -->
+      <!-- TAB 4: FAMILIA / ESPACIO -->
       <section id="screenFamily" class="hidden space-y-6">
-        <!-- Family Header Card -->
         <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <span class="text-xs font-semibold text-brand uppercase tracking-wider">Grupo Familiar</span>
+              <span class="text-xs font-semibold text-brand uppercase tracking-wider">Tu Espacio Financiero</span>
               <div class="flex items-center space-x-3 mt-1">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white" id="famTitleName">Familia</h2>
-                <button id="btnRenameFamily" onclick="handleRenameFamily()" class="hidden text-slate-400 hover:text-brand p-1">
+                <button id="btnRenameFamily" onclick="handleRenameFamily()" class="hidden text-slate-400 hover:text-brand p-1" title="Cambiar Nombre">
                   <i data-lucide="pencil" class="w-4 h-4"></i>
                 </button>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comparte este código con tus familiares para unirse:</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Comparte tu código para que otros se unan a este grupo:</p>
             </div>
             <div class="flex items-center space-x-2 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl border border-slate-200 dark:border-slate-600">
               <code class="text-xl font-mono font-bold text-brand tracking-widest" id="famCodeDisplay">------</code>
-              <button onclick="copyFamilyCode()" class="p-2 text-slate-500 hover:text-brand rounded-lg" title="Copiar código">
+              <button onclick="copyFamilyCode()" class="p-2 text-slate-500 hover:text-brand rounded-lg" title="Copiar Código">
                 <i data-lucide="download" class="w-5 h-5"></i>
               </button>
             </div>
           </div>
+
+          <!-- Botón Verde WhatsApp Integrado -->
+          <button id="btnWhatsAppShare" onclick="shareViaWhatsApp()" class="hidden w-full mt-6 bg-[#25D366] hover:bg-[#1DA851] text-white font-bold py-3.5 rounded-xl shadow-md flex items-center justify-center space-x-2 transition">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.645.823 5.097 2.223 7.07L.6 24l5.056-1.52A11.96 11.96 0 0 0 12.031 24c6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm0 22.067a9.92 9.92 0 0 1-5.068-1.39l-.364-.216-3.766 1.13.996-3.664-.236-.376A9.926 9.926 0 0 1 2.103 12.03c0-5.485 4.46-9.945 9.945-9.945 5.485 0 9.946 4.46 9.946 9.945 0 5.485-4.46 9.945-9.945 9.945zm5.45-7.462c-.298-.15-1.765-.87-2.038-.97-.272-.1-4.706-.1-1.637 0-.583-.098-.38-.27-.636-.57-.258-.302-.516-.378-.814-.228-.298.15-1.26.464-2.4 1.48-.888.792-1.488 1.77-1.662 2.072-.174.302-.018.465.13.614.135.135.298.347.447.521.15.174.202.302.302.503.1.202.05.378-.025.528-.075.15-.662 1.597-.908 2.186-.24.577-.484.498-.662.507-.174.008-.373.008-.572.008-.199 0-.521.074-.794.376-.272.302-1.042 1.018-1.042 2.483s1.066 2.879 1.215 3.08c.15.202 2.1 3.207 5.088 4.496 2.016.868 2.76.924 3.754.78.694-.101 2.147-.878 2.445-1.727.298-.849.298-1.578.208-1.728-.09-.15-.347-.24-.645-.39z"/></svg>
+            <span>Invitar Amigos o Familiares por WhatsApp</span>
+          </button>
         </div>
 
-        <!-- Pre-approved Invitations (Admin Only) -->
-        <div id="inviteSection" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="font-bold text-slate-900 dark:text-white mb-2">Pre-aprobar Invitación por Correo</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Los usuarios inscritos con este correo se aprobarán automáticamente.</p>
-          <form onsubmit="handleInviteEmail(event)" class="flex gap-2">
-            <input type="email" id="inviteEmailInput" placeholder="familiar@correo.com" required class="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
-            <button type="submit" class="bg-brand text-white px-4 py-2 rounded-xl text-sm font-bold">Invitar</button>
-          </form>
-          <div id="invitedEmailsTags" class="flex flex-wrap gap-2 mt-3"></div>
-        </div>
-
-        <!-- Pending Members (Admin Only) -->
+        <!-- Solicitudes Pendientes (Solo Admin) -->
         <div id="pendingMembersSection" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
           <h3 class="font-bold text-slate-900 dark:text-white mb-4">Solicitudes Pendientes de Aprobación</h3>
           <div id="pendingMembersList" class="space-y-3"></div>
         </div>
 
-        <!-- Active Members List -->
+        <!-- Integrantes del Grupo -->
         <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="font-bold text-slate-900 dark:text-white mb-4">Miembros de la Familia</h3>
+          <h3 class="font-bold text-slate-900 dark:text-white mb-4">Integrantes del Grupo</h3>
           <div id="activeMembersList" class="space-y-3"></div>
         </div>
       </section>
@@ -396,19 +372,17 @@
           <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="profileDisplayName">Usuario</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400" id="profileEmail">correo@ejemplo.com</p>
 
-          <!-- Edit Profile Name -->
           <form onsubmit="handleUpdateProfileName(event)" class="mt-4 flex gap-2 max-w-xs mx-auto">
             <input type="text" id="profileNameInput" required class="flex-1 px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none" placeholder="Nuevo Nombre">
             <button type="submit" class="bg-brand text-white px-3 py-1.5 rounded-xl text-xs font-bold">Guardar</button>
           </form>
         </div>
 
-        <!-- Extra Actions -->
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700">
           <button onclick="exportToCSV()" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
             <div class="flex items-center space-x-3">
               <i data-lucide="download" class="w-5 h-5 text-slate-500"></i>
-              <span class="font-medium text-slate-800 dark:text-slate-200">Exportar Datos (CSV)</span>
+              <span class="font-medium text-slate-800 dark:text-slate-200">Exportar Datos a Excel (CSV)</span>
             </div>
           </button>
           
@@ -441,7 +415,7 @@
 
     </main>
 
-    <!-- BOTTOM NAVIGATION BAR (MOBILE & DESKTOP) -->
+    <!-- NAVIGATION BAR -->
     <nav id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 max-w-4xl mx-auto z-30 transition-colors">
       <div class="flex justify-around items-center h-16">
         <button onclick="switchTab('dashboard')" id="navDashboard" class="flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold">
@@ -458,7 +432,7 @@
         </button>
         <button onclick="switchTab('family')" id="navFamily" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <i data-lucide="users" class="w-5 h-5"></i>
-          <span class="text-[10px] mt-1">Familia</span>
+          <span class="text-[10px] mt-1">Espacio</span>
         </button>
         <button onclick="switchTab('profile')" id="navProfile" class="flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <i data-lucide="user" class="w-5 h-5"></i>
@@ -529,7 +503,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CONFIGURAR PRESUPUESTOS (NUEVO) -->
+  <!-- MODAL: PRESUPUESTOS -->
   <div id="modalBudget" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
       <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
@@ -548,7 +522,7 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVA META DE AHORRO (NUEVO) -->
+  <!-- MODAL: NUEVA META -->
   <div id="modalGoal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
       <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
@@ -576,7 +550,7 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVO GASTO RECURRENTE (NUEVO) -->
+  <!-- MODAL: NUEVO GASTO RECURRENTE -->
   <div id="modalRecurring" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
       <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
@@ -613,7 +587,7 @@
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
 
-  <!-- SCRIPT LOGIC -->
+  <!-- JARSCRIPT COMPLETE LOGIC -->
   <script>
     // 1. FIREBASE CONFIG
     const firebaseConfig = {
@@ -627,7 +601,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 2. STATE APP
+    // STATE
     let currentUser = null;
     let currentUserData = null;
     let currentFamilyData = null;
@@ -636,9 +610,8 @@
     let recurringData = [];
     let familyMembers = [];
     let activeTab = 'dashboard';
-    
-    // Listeners Unsubscribers
     let unsubs = [];
+    let isRegistering = false; // Banderas de control de estado
 
     // Chart instances
     let chartCatInstance = null;
@@ -649,27 +622,22 @@
       "Salud", "Entretenimiento", "Educación", "Sueldo", "Otros"
     ];
 
-    // 3. INITIALIZATION
+    // INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initTheme();
 
-      // Register SW
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(() => {});
       }
 
-      // Pre-fill today's date in movement modal
       document.getElementById('movDate').value = new Date().toISOString().split('T')[0];
-
-      // File Reader for Receipt photo compression
       document.getElementById('movReceiptInput').addEventListener('change', handleReceiptCompress);
 
-      // Auth Observer
       auth.onAuthStateChanged(user => {
         currentUser = user;
         if (user) {
-          listenUserData(user.uid);
+          if (!isRegistering) listenUserData(user.uid);
         } else {
           cleanupListeners();
           showScreen('auth');
@@ -677,7 +645,6 @@
       });
     });
 
-    // Theme Switcher Logic
     function initTheme() {
       const savedTheme = localStorage.getItem('ahorro_theme');
       if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -693,11 +660,11 @@
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('ahorro_theme', isDark ? 'dark' : 'light');
       document.getElementById('darkModeToggle').checked = isDark;
-      renderCharts(); // Re-render charts for appropriate colors
+      renderCharts();
     }
 
     function cleanupListeners() {
-      unsubs.forEach(unsub => unsub());
+      unsubs.forEach(u => u());
       unsubs = [];
       currentUserData = null;
       currentFamilyData = null;
@@ -707,16 +674,15 @@
       familyMembers = [];
     }
 
-    // Email Helper
     function normalizeEmail(email) {
       return (email || "").trim().toLowerCase();
     }
 
-    // 4. FIRESTORE REALTIME LISTENERS
+    // LISTENERS
     function listenUserData(uid) {
       const unsub = db.collection('users').doc(uid).onSnapshot(doc => {
         if (!doc.exists) {
-          showToast("Perfil de usuario no encontrado.");
+          if (!isRegistering) showToast("Perfil no encontrado.");
           return;
         }
         currentUserData = doc.data();
@@ -726,7 +692,6 @@
           return;
         }
 
-        // Approved User: Load Family
         if (currentUserData.familyId) {
           listenFamilyData(currentUserData.familyId);
           listenMovements(currentUserData.familyId);
@@ -736,7 +701,7 @@
         }
 
         updateUIHeaderAndProfile();
-        showScreen(activeTab);
+        showScreen(activeTab === 'auth' || activeTab === 'pending' ? 'dashboard' : activeTab);
       });
       unsubs.push(unsub);
     }
@@ -745,10 +710,10 @@
       const unsub = db.collection('families').doc(familyId).onSnapshot(doc => {
         if (doc.exists) {
           currentFamilyData = doc.data();
-          document.getElementById('headerFamilyName').innerText = currentFamilyData.familyName || "Familia";
-          document.getElementById('famTitleName').innerText = currentFamilyData.familyName || "Familia";
+          const name = currentFamilyData.familyName || "Mi Espacio";
+          document.getElementById('headerFamilyName').innerText = name;
+          document.getElementById('famTitleName').innerText = name;
           document.getElementById('famCodeDisplay').innerText = currentFamilyData.code || "------";
-          renderInvitedEmails();
           renderBudgetsProgress();
         }
       });
@@ -760,10 +725,7 @@
         .where('familyId', '==', familyId)
         .onSnapshot(snapshot => {
           movementsData = [];
-          snapshot.forEach(doc => {
-            movementsData.push({ id: doc.id, ...doc.data() });
-          });
-          // Sort by date desc
+          snapshot.forEach(doc => movementsData.push({ id: doc.id, ...doc.data() }));
           movementsData.sort((a,b) => new Date(b.date) - new Date(a.date));
           renderDashboard();
           renderMovementsList();
@@ -773,18 +735,18 @@
     }
 
     function listenGoals(familyId) {
-      const unsub = db.collection('families').doc(familyId).collection('goals').onSnapshot(snapshot => {
+      const unsub = db.collection('families').doc(familyId).collection('goals').onSnapshot(snap => {
         goalsData = [];
-        snapshot.forEach(doc => goalsData.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(doc => goalsData.push({ id: doc.id, ...doc.data() }));
         renderGoals();
       });
       unsubs.push(unsub);
     }
 
     function listenRecurring(familyId) {
-      const unsub = db.collection('families').doc(familyId).collection('recurring').onSnapshot(snapshot => {
+      const unsub = db.collection('families').doc(familyId).collection('recurring').onSnapshot(snap => {
         recurringData = [];
-        snapshot.forEach(doc => recurringData.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(doc => recurringData.push({ id: doc.id, ...doc.data() }));
         renderRecurring();
       });
       unsubs.push(unsub);
@@ -793,16 +755,16 @@
     function listenFamilyMembers(familyId) {
       const unsub = db.collection('users')
         .where('familyId', '==', familyId)
-        .onSnapshot(snapshot => {
+        .onSnapshot(snap => {
           familyMembers = [];
-          snapshot.forEach(doc => familyMembers.push({ uid: doc.id, ...doc.data() }));
+          snap.forEach(doc => familyMembers.push({ uid: doc.id, ...doc.data() }));
           renderFamilyMembers();
           renderCharts();
         });
       unsubs.push(unsub);
     }
 
-    // 5. AUTH HANDLERS
+    // AUTHENTICATION HANDLERS
     function switchAuthTab(tab) {
       const loginForm = document.getElementById('loginForm');
       const regForm = document.getElementById('registerForm');
@@ -812,13 +774,13 @@
       if (tab === 'login') {
         loginForm.classList.remove('hidden');
         regForm.classList.add('hidden');
-        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand";
-        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600";
+        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition";
+        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition";
       } else {
         loginForm.classList.add('hidden');
         regForm.classList.remove('hidden');
-        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand";
-        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600";
+        regBtn.className = "flex-1 py-2 font-semibold border-b-2 border-brand text-brand transition";
+        loginBtn.className = "flex-1 py-2 font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition";
       }
     }
 
@@ -835,32 +797,39 @@
       lucide.createIcons();
     }
 
-    function toggleFamilyCodeInput() {
-      const opt = document.getElementById('regGroupOption').value;
-      const nameBox = document.getElementById('familyNameContainer');
-      const codeBox = document.getElementById('familyCodeContainer');
+    function setRegOption(opt) {
+      document.getElementById('regGroupOption').value = opt;
+      const bC = document.getElementById('btnOptCreate');
+      const bJ = document.getElementById('btnOptJoin');
+      const boxName = document.getElementById('familyNameContainer');
+      const boxCode = document.getElementById('familyCodeContainer');
+
       if (opt === 'create') {
-        nameBox.classList.remove('hidden');
-        codeBox.classList.add('hidden');
+        bC.className = "p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
+        bJ.className = "p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
+        boxName.classList.remove('hidden');
+        boxCode.classList.add('hidden');
       } else {
-        nameBox.classList.add('hidden');
-        codeBox.classList.remove('hidden');
+        bJ.className = "p-4 border-2 border-brand bg-brand/5 dark:bg-brand/20 text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
+        bC.className = "p-4 border-2 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-brand hover:text-brand rounded-xl font-bold text-sm flex flex-col items-center justify-center gap-2 transition";
+        boxCode.classList.remove('hidden');
+        boxName.classList.add('hidden');
       }
     }
 
     async function handleLogin(e) {
       e.preventDefault();
       const email = normalizeEmail(document.getElementById('loginEmail').value);
-      const password = document.getElementById('loginPassword').value; // Password unchanged
-      const rememberMe = document.getElementById('rememberMe').checked;
+      const password = document.getElementById('loginPassword').value;
+      const remember = document.getElementById('rememberMe').checked;
 
       try {
-        const persistence = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+        const persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
         await auth.setPersistence(persistence);
         await auth.signInWithEmailAndPassword(email, password);
-        showToast("¡Bienvenido de nuevo!");
+        showToast("¡Bienvenido!");
       } catch (err) {
-        showToast("Error al iniciar sesión: Credenciales incorrectas.");
+        showToast("Error al ingresar: Credenciales no válidas.");
       }
     }
 
@@ -872,17 +841,21 @@
       const groupOpt = document.getElementById('regGroupOption').value;
 
       try {
+        const submitBtn = document.getElementById('btnRegisterSubmit');
+        submitBtn.innerText = "Creando cuenta...";
+        submitBtn.disabled = true;
+        isRegistering = true; // Evita el fallo por disparos de snapshot antes de escribir en Firestore
+
         let familyId = "";
         let role = "member";
         let status = "pending";
 
         if (groupOpt === 'create') {
-          const famName = document.getElementById('regFamilyName').value.trim() || `Familia de ${name}`;
+          const famName = document.getElementById('regFamilyName').value.trim() || `Finanzas de ${name}`;
           const code = Math.random().toString(36).substring(2, 8).toUpperCase();
           const famRef = await db.collection('families').add({
             familyName: famName,
             code: code,
-            invitedEmails: [],
             budgets: {},
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
@@ -893,16 +866,9 @@
           const codeInput = document.getElementById('regFamilyCode').value.trim().toUpperCase();
           const famSnap = await db.collection('families').where('code', '==', codeInput).limit(1).get();
           if (famSnap.empty) {
-            showToast("Código de familia no válido.");
-            return;
+            throw new Error("Código de invitación no encontrado.");
           }
-          const famDoc = famSnap.docs[0];
-          familyId = famDoc.id;
-          const famData = famDoc.data();
-          const invited = famData.invitedEmails || [];
-          if (invited.includes(email)) {
-            status = "approved";
-          }
+          familyId = famSnap.docs[0].id;
         }
 
         const cred = await auth.createUserWithEmailAndPassword(email, password);
@@ -916,9 +882,16 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        showToast("Cuenta creada exitosamente");
+        isRegistering = false;
+        listenUserData(cred.user.uid);
+        showToast("Cuenta creada correctamente");
+
       } catch (err) {
-        showToast(err.message || "Error al registrar cuenta.");
+        isRegistering = false;
+        const submitBtn = document.getElementById('btnRegisterSubmit');
+        submitBtn.innerText = "Registrarme e Ingresar";
+        submitBtn.disabled = false;
+        showToast(err.message || "Error al registrar la cuenta.");
       }
     }
 
@@ -929,27 +902,23 @@
     }
 
     async function handleDeleteAccount() {
-      if (!confirm("⚠️ ¿Estás completamente seguro de que deseas ELIMINAR tu cuenta?\nSe perderá tu perfil, acceso a la familia y tus registros. Esta acción es irreversible.")) return;
-      if (!confirm("Última advertencia:\n¿Eliminar cuenta definitivamente?")) return;
+      if (!confirm("⚠️ ¿Estás completamente seguro de que deseas ELIMINAR tu cuenta?\nEsta acción es irreversible.")) return;
+      if (!confirm("Última confirmación:\n¿Eliminar definitivamente?")) return;
 
       try {
         const user = auth.currentUser;
         if (!user) return;
         await db.collection("users").doc(user.uid).delete();
         await user.delete();
-        showToast("Tu cuenta ha sido eliminada permanentemente.");
+        showToast("Cuenta eliminada.");
         cleanupListeners();
         showScreen("auth");
       } catch (err) {
-        if (err.code === 'auth/requires-recent-login') {
-          showToast("Por seguridad, debes cerrar sesión e iniciarla de nuevo antes de eliminar tu cuenta.");
-        } else {
-          showToast("Hubo un error al eliminar tu cuenta.");
-        }
+        showToast("Cierra sesión e iníciala nuevamente antes de eliminar tu cuenta.");
       }
     }
 
-    // 6. UI RENDERERS & NAVIGATION
+    // UI RENDER & SCREENS
     function showScreen(screen) {
       activeTab = screen;
       document.getElementById('screenAuth').classList.add('hidden');
@@ -980,29 +949,28 @@
       header.classList.remove('hidden');
       bottomNav.classList.remove('hidden');
 
-      // Reset Nav Styling
       ['Dashboard', 'Movements', 'GoalsRecurring', 'Family', 'Profile'].forEach(t => {
         const el = document.getElementById(`nav${t}`);
-        if (el) el.className = "flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200";
+        if (el) el.className = "flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition";
       });
 
       if (screen === 'dashboard') {
         document.getElementById('screenDashboard').classList.remove('hidden');
-        document.getElementById('navDashboard').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold";
+        document.getElementById('navDashboard').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
         renderDashboard();
       } else if (screen === 'movements') {
         document.getElementById('screenMovements').classList.remove('hidden');
-        document.getElementById('navMovements').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold";
+        document.getElementById('navMovements').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
         renderMovementsList();
       } else if (screen === 'goalsRecurring') {
         document.getElementById('screenGoalsRecurring').classList.remove('hidden');
-        document.getElementById('navGoalsRecurring').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold";
+        document.getElementById('navGoalsRecurring').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
       } else if (screen === 'family') {
         document.getElementById('screenFamily').classList.remove('hidden');
-        document.getElementById('navFamily').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold";
+        document.getElementById('navFamily').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
       } else if (screen === 'profile') {
         document.getElementById('screenProfile').classList.remove('hidden');
-        document.getElementById('navProfile').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold";
+        document.getElementById('navProfile').className = "flex flex-col items-center justify-center flex-1 h-full text-brand font-semibold transition";
       }
     }
 
@@ -1016,31 +984,30 @@
       document.getElementById('headerUserEmail').innerText = currentUserData.email || "";
       document.getElementById('headerUserRole').innerHTML = `<i data-lucide="user" class="w-3 h-3"></i><span>${currentUserData.role === 'admin' ? 'Administrador' : 'Miembro'}</span>`;
       
-      const avatarEl = document.getElementById('headerAvatar');
-      const profileAvatar = document.getElementById('profileAvatarDisplay');
+      const avatarHeader = document.getElementById('headerAvatar');
+      const avatarProfile = document.getElementById('profileAvatarDisplay');
       if (currentUserData.photoBase64) {
-        avatarEl.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
-        profileAvatar.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
+        avatarHeader.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
+        avatarProfile.innerHTML = `<img src="${currentUserData.photoBase64}" class="w-full h-full object-cover">`;
       } else {
-        avatarEl.innerText = initial;
-        profileAvatar.innerText = initial;
+        avatarHeader.innerText = initial;
+        avatarProfile.innerText = initial;
       }
 
       document.getElementById('profileDisplayName').innerText = currentUserData.displayName || "Usuario";
       document.getElementById('profileEmail').innerText = currentUserData.email || "";
       document.getElementById('profileNameInput').value = currentUserData.displayName || "";
 
-      // Show admin controls
       const isAdmin = currentUserData.role === 'admin';
       document.getElementById('btnRenameFamily').classList.toggle('hidden', !isAdmin);
-      document.getElementById('inviteSection').classList.toggle('hidden', !isAdmin);
       document.getElementById('pendingMembersSection').classList.toggle('hidden', !isAdmin);
       document.getElementById('btnManageBudgets').classList.toggle('hidden', !isAdmin);
+      document.getElementById('btnWhatsAppShare').classList.toggle('hidden', !isAdmin);
 
       lucide.createIcons();
     }
 
-    // 7. DASHBOARD & CHARTS
+    // DASHBOARD & CHARTS
     function renderDashboard() {
       const now = new Date();
       const currentMonth = now.getMonth();
@@ -1055,10 +1022,9 @@
         }
       });
 
-      const balance = inc - exp;
       document.getElementById('dashIncome').innerText = `$${inc.toFixed(2)}`;
       document.getElementById('dashExpense').innerText = `$${exp.toFixed(2)}`;
-      document.getElementById('dashBalance').innerText = `$${balance.toFixed(2)}`;
+      document.getElementById('dashBalance').innerText = `$${(inc - exp).toFixed(2)}`;
 
       renderCharts();
     }
@@ -1068,7 +1034,6 @@
       const isDark = document.documentElement.classList.contains('dark');
       const textColor = isDark ? '#94A3B8' : '#64748B';
 
-      // 1. Category Chart
       const catTotals = {};
       CATEGORIES.forEach(c => catTotals[c] = 0);
       movementsData.filter(m => m.type === 'expense').forEach(m => {
@@ -1096,11 +1061,10 @@
         }
       });
 
-      // 2. Member Breakdown Chart (NUEVO)
       const memTotals = {};
       familyMembers.forEach(mem => { memTotals[mem.displayName || mem.email] = 0; });
       movementsData.filter(m => m.type === 'expense').forEach(m => {
-        const memName = m.userName || 'Desconocido';
+        const memName = m.userName || 'Familiar';
         memTotals[memName] = (memTotals[memName] || 0) + Number(m.amount);
       });
 
@@ -1112,7 +1076,7 @@
       chartMemInstance = new Chart(ctxMem, {
         type: 'pie',
         data: {
-          labels: memLabels.length ? memLabels : ['Sin registros'],
+          labels: memLabels.length ? memLabels : ['Sin datos'],
           datasets: [{
             data: memValues.length ? memValues : [1],
             backgroundColor: ['#2A9D8F', '#E76F51', '#E9C46A', '#457B9D', '#F4A261']
@@ -1126,7 +1090,7 @@
       });
     }
 
-    // 8. PRESUPUESTOS (NUEVO)
+    // PRESUPUESTOS
     function renderBudgetsProgress() {
       const container = document.getElementById('budgetsList');
       if (!container) return;
@@ -1136,7 +1100,6 @@
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
 
-      // Spent per category this month
       const catSpent = {};
       movementsData.filter(m => {
         const d = new Date(m.date);
@@ -1148,7 +1111,7 @@
       const activeCategories = CATEGORIES.filter(c => budgets[c] && Number(budgets[c]) > 0);
 
       if (activeCategories.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 italic">No hay presupuestos configurados por el administrador.</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 italic">No hay presupuestos configurados.</p>`;
         return;
       }
 
@@ -1181,7 +1144,7 @@
       container.innerHTML = CATEGORIES.map(cat => `
         <div class="flex items-center justify-between gap-3">
           <label class="text-xs font-semibold text-slate-700 dark:text-slate-200">${cat}</label>
-          <input type="number" step="0.01" data-cat="${cat}" value="${budgets[cat] || ''}" placeholder="Sin límite" class="w-32 px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
+          <input type="number" step="0.01" data-cat="${cat}" value="${budgets[cat] || ''}" placeholder="Límite" class="w-32 px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white outline-none">
         </div>
       `).join('');
       document.getElementById('modalBudget').classList.remove('hidden');
@@ -1197,9 +1160,7 @@
       const newBudgets = {};
       inputs.forEach(inp => {
         const val = parseFloat(inp.value);
-        if (!isNaN(val) && val > 0) {
-          newBudgets[inp.dataset.cat] = val;
-        }
+        if (!isNaN(val) && val > 0) newBudgets[inp.dataset.cat] = val;
       });
 
       try {
@@ -1211,7 +1172,7 @@
       }
     }
 
-    // 9. MOVIMIENTOS LIST & HANDLERS
+    // MOVEMIENTS
     function renderMovementsList() {
       const container = document.getElementById('movementsList');
       const search = (document.getElementById('searchInput').value || "").toLowerCase();
@@ -1233,7 +1194,7 @@
       document.getElementById('movementFilteredTotal').innerText = `$${sum.toFixed(2)}`;
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No se encontraron movimientos.</div>`;
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No se encontraron registros.</div>`;
         return;
       }
 
@@ -1342,7 +1303,7 @@
     }
 
     async function handleDeleteMovement(id) {
-      if (!confirm("¿Eliminar este registro de movimiento?")) return;
+      if (!confirm("¿Eliminar este registro?")) return;
       try {
         await db.collection('movements').doc(id).delete();
         showToast("Movimiento eliminado");
@@ -1351,7 +1312,7 @@
       }
     }
 
-    // 10. METAS DE AHORRO & GASTOS RECURRENTES (NUEVO TAB LOGIC)
+    // METAS DE AHORRO Y RECURRENTES
     function switchGoalsSubtab(tab) {
       const gBtn = document.getElementById('subtabGoalsBtn');
       const rBtn = document.getElementById('subtabRecurringBtn');
@@ -1361,17 +1322,16 @@
       if (tab === 'goals') {
         gBox.classList.remove('hidden');
         rBox.classList.add('hidden');
-        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm";
-        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400";
+        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition";
+        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition";
       } else {
         rBox.classList.remove('hidden');
         gBox.classList.add('hidden');
-        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm";
-        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400";
+        rBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg bg-brand text-white shadow-sm transition";
+        gBtn.className = "flex-1 py-2 font-semibold text-sm rounded-lg text-slate-500 dark:text-slate-400 transition";
       }
     }
 
-    // Goals Render
     function renderGoals() {
       const container = document.getElementById('goalsList');
       if (goalsData.length === 0) {
@@ -1448,18 +1408,17 @@
     }
 
     async function handleDeleteGoal(goalId) {
-      if (!confirm("¿Eliminar esta meta de ahorro?")) return;
+      if (!confirm("¿Eliminar esta meta?")) return;
       try {
         await db.collection('families').doc(currentUserData.familyId).collection('goals').doc(goalId).delete();
         showToast("Meta eliminada");
       } catch (err) { showToast("Error al eliminar meta"); }
     }
 
-    // Recurring Render
     function renderRecurring() {
       const container = document.getElementById('recurringList');
       if (recurringData.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No hay suscripciones o gastos fijos registrados.</div>`;
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">No hay suscripciones registradas.</div>`;
         return;
       }
 
@@ -1532,7 +1491,7 @@
       } catch (err) { showToast("Error al eliminar"); }
     }
 
-    // 11. FAMILIA ADMIN LOGIC
+    // FAMILIA & WHATSAPP
     function renderFamilyMembers() {
       const activeContainer = document.getElementById('activeMembersList');
       const pendingContainer = document.getElementById('pendingMembersList');
@@ -1579,25 +1538,21 @@
       lucide.createIcons();
     }
 
-    function renderInvitedEmails() {
-      const container = document.getElementById('invitedEmailsTags');
-      const invited = (currentFamilyData && currentFamilyData.invitedEmails) || [];
-      container.innerHTML = invited.map(email => `
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-brand/10 text-brand">
-          ${email}
-          <button onclick="handleRemoveInvitedEmail('${email}')" class="ml-1 text-brand hover:text-brand-dark">&times;</button>
-        </span>
-      `).join('');
+    function shareViaWhatsApp() {
+      const appUrl = window.location.href.split('?')[0];
+      const code = currentFamilyData.code;
+      const text = `¡Hola! Te invito a unirte a mi grupo en *Ahorro Familiar* 📊.\n\n👉 Ingresa aquí: ${appUrl}\n🔑 Usa mi código de invitación: *${code}*`;
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     async function handleRenameFamily() {
       const currentName = currentFamilyData?.familyName || "";
-      const newName = prompt("Ingresa el nuevo nombre para la familia:", currentName);
+      const newName = prompt("Ingresa el nuevo nombre para el grupo:", currentName);
       if (newName !== null && newName.trim() !== "" && newName !== currentName) {
         try {
           await db.collection("families").doc(currentUserData.familyId).update({ familyName: newName.trim() });
-          showToast("Nombre de la familia actualizado");
-        } catch (error) { showToast("Error al actualizar el nombre"); }
+          showToast("Nombre actualizado");
+        } catch (error) { showToast("Error al actualizar"); }
       }
     }
 
@@ -1607,39 +1562,18 @@
       showToast("Código copiado al portapapeles");
     }
 
-    async function handleInviteEmail(e) {
-      e.preventDefault();
-      const input = document.getElementById('inviteEmailInput');
-      const email = normalizeEmail(input.value);
-      if (!email) return;
-
-      const currentInvited = currentFamilyData.invitedEmails || [];
-      if (!currentInvited.includes(email)) {
-        currentInvited.push(email);
-        await db.collection('families').doc(currentUserData.familyId).update({ invitedEmails: currentInvited });
-        showToast("Invitación agregada");
-        input.value = "";
-      }
-    }
-
-    async function handleRemoveInvitedEmail(email) {
-      const currentInvited = (currentFamilyData.invitedEmails || []).filter(e => e !== email);
-      await db.collection('families').doc(currentUserData.familyId).update({ invitedEmails: currentInvited });
-      showToast("Invitación removida");
-    }
-
     async function handleApproveMember(uid) {
       await db.collection('users').doc(uid).update({ status: 'approved' });
       showToast("Miembro aprobado");
     }
 
     async function handleExpelMember(uid) {
-      if (!confirm("¿Seguro que deseas remover a este integrante de la familia?")) return;
+      if (!confirm("¿Seguro que deseas remover a este integrante?")) return;
       await db.collection('users').doc(uid).update({ familyId: "", status: 'pending' });
       showToast("Integrante removido");
     }
 
-    // 12. PERFIL HANDLERS & EXPORT CSV
+    // PERFIL & EXPORT
     async function handleUpdateProfileName(e) {
       e.preventDefault();
       const name = document.getElementById('profileNameInput').value.trim();
@@ -1684,13 +1618,12 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `movimientos_ahorro_familiar_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute("download", `ahorro_familiar_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
-    // 13. UTILS
     function showToast(msg) {
       const toast = document.getElementById('toast');
       toast.innerText = msg;
