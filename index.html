@@ -366,6 +366,16 @@
             <span>Instalar</span>
           </button>
         </div>
+
+        <!-- CONMUTADOR DE MODO: FAMILIAR VS MIS FINANZAS (PRIVADO) -->
+<div class="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl mb-4 border border-slate-200/60 dark:border-slate-700/60 shadow-inner">
+  <button type="button" id="btnModeFamily" onclick="setDashboardMode('family')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5">
+    <i data-lucide="users" class="w-4 h-4"></i> Familia
+  </button>
+  <button type="button" id="btnModePersonal" onclick="setDashboardMode('personal')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5">
+    <i data-lucide="user" class="w-4 h-4"></i> Mis Finanzas
+  </button>
+</div>
         
         <!-- Tarjetero de Balances -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1598,50 +1608,80 @@
     }
 
     // SELECTOR DE CATEGORÍA INTERACTIVO (BOTTOM SHEET)
-    function openCategoryPicker(targetId, forceType = null) {
-      currentCategoryTarget = targetId;
-      const modal = document.getElementById('categoryPickerModal');
-      const content = document.getElementById('categoryPickerContent');
-      const list = document.getElementById('categoryPickerList');
-      
-      let typeToLoad = 'expense';
-      if (forceType) {
-        typeToLoad = forceType;
-      } else if (targetId === 'movCategory') {
-        typeToLoad = document.getElementById('movType').value;
-      }
-      
-      const categories = typeToLoad === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-      
-      list.innerHTML = categories.map(cat => {
-        const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
-        return `
-          <button onclick="selectCategory('${cat}', '${iconName}')" class="flex items-center gap-3 p-3.5 w-full rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
-            <div class="w-10 h-10 rounded-xl bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0 shadow-sm">
-              <i data-lucide="${iconName}" class="w-5 h-5"></i>
-            </div>
-            <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">${cat}</span>
-          </button>
-        `;
-      }).join('');
-      
-      lucide.createIcons();
-      modal.classList.remove('hidden');
-      
-      setTimeout(() => {
-        content.classList.remove('translate-y-full');
-      }, 10);
-    }
+function openCategoryPicker(targetId, forceType = null) {
+  currentCategoryTarget = targetId;
+  const modal = document.getElementById('categoryPickerModal');
+  const content = document.getElementById('categoryPickerContent');
+  const list = document.getElementById('categoryPickerList');
+  
+  let typeToLoad = 'expense';
+  if (forceType) {
+    typeToLoad = forceType;
+  } else if (targetId === 'movCategory') {
+    typeToLoad = document.getElementById('movType').value;
+  }
+  
+  const categories = typeToLoad === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  
+  list.innerHTML = categories.map(cat => {
+    const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
+    return `
+      <button onclick="selectCategory('${cat}', '${iconName}')" class="flex items-center gap-3 p-3.5 w-full rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+        <div class="w-10 h-10 rounded-xl bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0 shadow-sm">
+          <i data-lucide="${iconName}" class="w-5 h-5"></i>
+        </div>
+        <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">${cat}</span>
+      </button>
+    `;
+  }).join('');
+  
+  lucide.createIcons();
+  modal.classList.remove('hidden');
+  
+  setTimeout(() => {
+    content.classList.remove('translate-y-full');
+  }, 10);
+}
 
-    function closeCategoryPicker() {
-      const modal = document.getElementById('categoryPickerModal');
-      const content = document.getElementById('categoryPickerContent');
-      
-      content.classList.add('translate-y-full');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 300);
+function closeCategoryPicker() {
+  const modal = document.getElementById('categoryPickerModal');
+  const content = document.getElementById('categoryPickerContent');
+  
+  content.classList.add('translate-y-full');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 300);
+}
+
+function selectCategory(categoryName, iconName) {
+  document.getElementById(currentCategoryTarget).value = categoryName;
+  
+  const textEl = document.getElementById(currentCategoryTarget + 'Text');
+  const iconEl = document.getElementById(currentCategoryTarget + 'Icon');
+  if (textEl) textEl.innerText = categoryName;
+  if (iconEl) iconEl.setAttribute('data-lucide', iconName);
+
+  // Mostrar u ocultar el input de texto si es "Otros"
+  if (currentCategoryTarget === 'movCategory') {
+    const customDiv = document.getElementById('movCustomCategoryDiv');
+    const customInput = document.getElementById('movCustomCategory');
+    if (customDiv) {
+      if (categoryName.toLowerCase().includes('otros')) {
+        customDiv.classList.remove('hidden');
+        if (customInput) {
+          customInput.value = '';
+          customInput.focus();
+        }
+      } else {
+        customDiv.classList.add('hidden');
+        if (customInput) customInput.value = '';
+      }
     }
+  }
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+  closeCategoryPicker();
+}
 
     function selectCategory(categoryName, iconName) {
       document.getElementById(currentCategoryTarget).value = categoryName;
@@ -1652,83 +1692,123 @@
       closeCategoryPicker();
     }
 
-    // RENDER RESUMEN & GRÁFICO
-    function renderResumen() {
-      let totalInc = 0;
-      let totalExp = 0;
+    // Estado global del modo de vista (Familiar o Personal)
+let dashboardMode = 'family'; 
 
-      movementsData.forEach(m => {
-        const amt = parseFloat(m.amount) || 0;
-        if (m.type === 'income') totalInc += amt;
-        else if (m.type === 'expense') totalExp += amt;
-      });
+function setDashboardMode(mode) {
+  dashboardMode = mode;
+  const btnFam = document.getElementById('btnModeFamily');
+  const btnPer = document.getElementById('btnModePersonal');
 
-      document.getElementById('totalIncomesDisplay').innerText = formatCurrency(totalInc);
-      document.getElementById('totalExpensesDisplay').innerText = formatCurrency(totalExp);
-      
-      const net = totalInc - totalExp;
-      const netEl = document.getElementById('netBalanceDisplay');
-      netEl.innerText = formatCurrency(net);
+  if (mode === 'family') {
+    btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
+    btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
+  } else {
+    btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
+    btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
+  }
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+  renderResumen();
+}
 
-      // Lista reciente (últimos 4)
-      const recentList = document.getElementById('recentMovementsList');
-      if (movementsData.length === 0) {
-        recentList.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No hay movimientos registrados.</p>';
-      } else {
-        const top = movementsData.slice(0, 4);
-        recentList.innerHTML = top.map(m => createMovementHTML(m)).join('');
-      }
+// RENDER RESUMEN & GRÁFICO (CON SOPORTE DE VISTA PRIVADA)
+function renderResumen() {
+  // Filtrar los movimientos según el modo activo
+  let filteredMovements = movementsData;
+  if (dashboardMode === 'personal' && auth.currentUser) {
+    const myEmail = currentUserData ? currentUserData.email : auth.currentUser.email;
+    const myUid = auth.currentUser.uid;
+    filteredMovements = movementsData.filter(m => m.userEmail === myEmail || m.userId === myUid);
+  }
 
-      renderMemberChart();
+  let totalInc = 0;
+  let totalExp = 0;
+
+  filteredMovements.forEach(m => {
+    const amt = parseFloat(m.amount) || 0;
+    if (m.type === 'income') totalInc += amt;
+    else if (m.type === 'expense') totalExp += amt;
+  });
+
+  document.getElementById('totalIncomesDisplay').innerText = formatCurrency(totalInc);
+  document.getElementById('totalExpensesDisplay').innerText = formatCurrency(totalExp);
+  
+  const net = totalInc - totalExp;
+  const netEl = document.getElementById('netBalanceDisplay');
+  netEl.innerText = formatCurrency(net);
+
+  // Lista reciente (últimos 4 filtrados)
+  const recentList = document.getElementById('recentMovementsList');
+  if (recentList) {
+    if (filteredMovements.length === 0) {
+      recentList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">${dashboardMode === 'personal' ? 'No tienes movimientos personales registrados.' : 'No hay movimientos registrados.'}</p>`;
+    } else {
+      const top = filteredMovements.slice(0, 4);
+      recentList.innerHTML = top.map(m => createMovementHTML(m)).join('');
     }
+  }
 
-    function renderMemberChart() {
-      const ctx = document.getElementById('memberExpenseChart');
-      if (!ctx) return;
+  renderMemberChart(filteredMovements);
+}
 
-      const expensesByMember = {};
-      movementsData.filter(m => m.type === 'expense').forEach(m => {
-        const name = m.userName || 'Desconocido';
-        expensesByMember[name] = (expensesByMember[name] || 0) + (parseFloat(m.amount) || 0);
-      });
+function renderMemberChart(dataToRender = movementsData) {
+  const ctx = document.getElementById('memberExpenseChart');
+  if (!ctx) return;
 
-      const labels = Object.keys(expensesByMember);
-      const data = Object.values(expensesByMember);
+  // Si estamos en modo personal, ocultamos el gráfico por miembros ya que solo tú estás viendo tu saldo
+  const chartParent = ctx.closest('.bg-white, .dark\\:bg-slate-800') || ctx.parentElement;
+  if (dashboardMode === 'personal') {
+    if (chartParent) chartParent.style.display = 'none';
+    if (memberChartInstance) memberChartInstance.destroy();
+    return;
+  } else {
+    if (chartParent) chartParent.style.display = 'block';
+  }
 
-      if (memberChartInstance) memberChartInstance.destroy();
+  const expensesByMember = {};
+  dataToRender.filter(m => m.type === 'expense').forEach(m => {
+    const name = m.userName || 'Desconocido';
+    expensesByMember[name] = (expensesByMember[name] || 0) + (parseFloat(m.amount) || 0);
+  });
 
-      if (labels.length === 0) {
-        return;
-      }
+  const labels = Object.keys(expensesByMember);
+  const data = Object.values(expensesByMember);
 
-      const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD'];
+  if (memberChartInstance) memberChartInstance.destroy();
 
-      memberChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: colors.slice(0, labels.length),
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                boxWidth: 12,
-                font: { size: 11 },
-                color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
-              }
-            }
+  if (labels.length === 0) {
+    return;
+  }
+
+  const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD'];
+
+  memberChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors.slice(0, labels.length),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 12,
+            font: { size: 11 },
+            color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
           }
         }
-      });
+      }
     }
+  });
+}
 
     // MOVIMIENTOS LIST & FILTROS
     function createMovementHTML(m) {
@@ -1801,58 +1881,79 @@
       document.getElementById('movementModal').classList.remove('hidden');
     }
 
-    function closeMovementModal() {
-      document.getElementById('movementModal').classList.add('hidden');
+   function closeMovementModal() {
+  document.getElementById('movementModal').classList.add('hidden');
+
+  // Reset del campo personalizado
+  const customDiv = document.getElementById('movCustomCategoryDiv');
+  const customInput = document.getElementById('movCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
+}
+
+async function handleSaveMovement(e) {
+  e.preventDefault();
+  const type = document.getElementById('movType').value;
+  const amount = parseFloat(document.getElementById('movAmount').value);
+  let category = document.getElementById('movCategory').value;
+  const customCategoryInput = document.getElementById('movCustomCategory');
+  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
+  const date = document.getElementById('movDate').value; // Mantiene la cadena local "YYYY-MM-DD" intacta
+  const note = document.getElementById('movNote').value.trim();
+  const receipt = document.getElementById('movReceiptBase64').value;
+  const movId = document.getElementById('movId').value;
+
+  if (!amount || amount <= 0) {
+    showToast("Ingresa un monto válido");
+    return;
+  }
+  if (!category) {
+    showToast("Selecciona una categoría");
+    return;
+  }
+
+  // Si la categoría seleccionada es "Otros...", usamos el texto personalizado escrito por el usuario
+ if (category.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+    category = customCategoryVal;
+  }
+
+  const payload = {
+    familyId: currentUserData.familyId,
+    type: type,
+    amount: amount,
+    category: category,
+    date: date, // ← EXACTA del formulario, sin sobrescribir con timestamp del servidor
+    note: note,
+    receipt: receipt || '',
+    userId: auth.currentUser.uid,
+    userName: currentUserData.displayName || currentUserData.email,
+    userEmail: currentUserData.email
+  };
+
+  try {
+    if (movId) {
+      await db.collection('movements').doc(movId).update(payload);
+      showToast("Movimiento actualizado");
+    } else {
+      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('movements').add(payload);
+      showToast("Movimiento guardado con éxito");
     }
+    closeMovementModal();
+  } catch (err) {
+    showToast("Error al guardar: " + err.message);
+  }
+}
 
-    async function handleSaveMovement(e) {
-      e.preventDefault();
-      const type = document.getElementById('movType').value;
-      const amount = parseFloat(document.getElementById('movAmount').value);
-      const category = document.getElementById('movCategory').value;
-      const date = document.getElementById('movDate').value;
-      const note = document.getElementById('movNote').value.trim();
-      const receipt = document.getElementById('movReceiptBase64').value;
-
-      if (!amount || amount <= 0) {
-        showToast("Ingresa un monto válido");
-        return;
-      }
-      if (!category) {
-        showToast("Selecciona una categoría");
-        return;
-      }
-
-      try {
-        await db.collection('movements').add({
-          familyId: currentUserData.familyId,
-          type: type,
-          amount: amount,
-          category: category,
-          date: date,
-          note: note,
-          receipt: receipt,
-          userId: auth.currentUser.uid,
-          userName: currentUserData.displayName || currentUserData.email,
-          userEmail: currentUserData.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Movimiento guardado con éxito");
-        closeMovementModal();
-      } catch (err) {
-        showToast("Error al guardar: " + err.message);
-      }
-    }
-
-    async function handleDeleteMovement(id) {
-      if (!confirm("¿Eliminar este movimiento?")) return;
-      try {
-        await db.collection('movements').doc(id).delete();
-        showToast("Movimiento eliminado");
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
-    }
+async function handleDeleteMovement(id) {
+  if (!confirm("¿Eliminar este movimiento?")) return;
+  try {
+    await db.collection('movements').doc(id).delete();
+    showToast("Movimiento eliminado");
+  } catch (err) {
+    showToast("Error al eliminar");
+  }
+}
 
     // COMPROBANTES COMPRESIÓN BASE64 CANVAS
     function handleReceiptCompress(e) {
