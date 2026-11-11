@@ -742,56 +742,61 @@
       </div>
 
       <form id="movementForm" onsubmit="handleSaveMovement(event)" class="space-y-4">
-        <input type="hidden" id="movId">
-        <input type="hidden" id="movType" value="expense">
+  <input type="hidden" id="movId">
+  <input type="hidden" id="movType" value="expense">
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
-          <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="0.00">
-        </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
+    <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="0.00">
+  </div>
 
-        <!-- Selector de Categoría Personalizado -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <button type="button" onclick="openCategoryPicker('movCategory')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/80">
-            <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
-                <i id="movCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
-              </div>
-              <span id="movCategoryText" class="font-semibold">Seleccionar...</span>
-            </div>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
-          </button>
-          <input type="hidden" id="movCategory" required>
+  <!-- Selector de Categoría Personalizado -->
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
+    <button type="button" onclick="openCategoryPicker('movCategory')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/80">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+          <i id="movCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
         </div>
+        <span id="movCategoryText" class="font-semibold">Seleccionar...</span>
+      </div>
+      <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+    </button>
+    <input type="hidden" id="movCategory" required>
+    
+    <!-- CAMPO NUEVO: Nombre de Categoría Personalizada (se despliega si eligen "Otros") -->
+    <div id="movCustomCategoryDiv" class="hidden mt-2">
+      <input type="text" id="movCustomCategory" placeholder="Escribe la categoría personalizada..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
+    </div>
+  </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
-          <input type="date" id="movDate" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors">
-        </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
+    <input type="date" id="movDate" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors">
+  </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota / Descripción (Opcional)</label>
-          <input type="text" id="movNote" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors" placeholder="Ej. Compra de supermercado">
-        </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota / Descripción (Opcional)</label>
+    <input type="text" id="movNote" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors" placeholder="Ej. Compra de supermercado">
+  </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Comprobante / Recibo (Opcional)</label>
-          <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20 transition-colors">
-          <input type="hidden" id="movReceiptBase64">
-          <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
-            <img id="receiptPreviewImg" src="" class="w-full h-full object-cover">
-            <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5 hover:bg-slate-900 transition-colors">
-              <i data-lucide="x" class="w-3 h-3"></i>
-            </button>
-          </div>
-        </div>
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Comprobante / Recibo (Opcional)</label>
+    <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20 transition-colors">
+    <input type="hidden" id="movReceiptBase64">
+    <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+      <img id="receiptPreviewImg" src="" class="w-full h-full object-cover">
+      <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5 hover:bg-slate-900 transition-colors">
+        <i data-lucide="x" class="w-3 h-3"></i>
+      </button>
+    </div>
+  </div>
 
-        <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeMovementModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
-          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
-        </div>
-      </form>
+  <div class="flex gap-2 pt-3">
+    <button type="button" onclick="closeMovementModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
+    <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
+  </div>
+</form>
     </div>
   </div>
 
@@ -1188,7 +1193,7 @@
     }
 
     function formatCurrency(num) {
-      return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(num || 0);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num || 0);
     }
 
     function formatDate(dateStr) {
