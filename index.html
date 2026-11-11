@@ -877,88 +877,100 @@
     </div>
   </div>
 
-  <!-- MODAL: DEFINIR PRESUPUESTO -->
-  <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-bold text-slate-900 dark:text-white">Definir Presupuesto</h3>
-        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
-          <i data-lucide="x" class="w-4 h-4"></i>
+ <!-- MODAL: DEFINIR PRESUPUESTO -->
+<div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white">Definir Presupuesto</h3>
+      <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form onsubmit="handleSaveBudget(event)" class="space-y-4">
+      <!-- Selector de Categoría Personalizado -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
+        <button type="button" onclick="openCategoryPicker('budgetCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+              <i id="budgetCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+            </div>
+            <span id="budgetCategoryText" class="font-semibold">Seleccionar...</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
         </button>
+        <input type="hidden" id="budgetCategory" required>
+
+        <!-- Campo Texto para Categoría Personalizada ("Otros") -->
+        <div id="budgetCustomCategoryDiv" class="hidden mt-2">
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre de categoría personalizada</label>
+          <input type="text" id="budgetCustomCategory" placeholder="Ej: Mascotas, Gustitos..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
+        </div>
       </div>
 
-      <form onsubmit="handleSaveBudget(event)" class="space-y-4">
-        <!-- Selector de Categoría Personalizado -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <button type="button" onclick="openCategoryPicker('budgetCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
-            <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
-                <i id="budgetCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
-              </div>
-              <span id="budgetCategoryText" class="font-semibold">Seleccionar...</span>
-            </div>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
-          </button>
-          <input type="hidden" id="budgetCategory" required>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Límite Máximo Mensual ($)</label>
-          <input type="number" step="0.01" id="budgetAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="300.00">
-        </div>
-
-        <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeBudgetModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: AGREGAR GASTO RECURRENTE -->
-  <div id="recurringModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-bold text-slate-900 dark:text-white">Nuevo Gasto Recurrente</h3>
-        <button onclick="closeRecurringModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Límite Máximo Mensual ($)</label>
+        <input type="number" step="0.01" id="budgetAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="300.00">
       </div>
 
-      <form onsubmit="handleSaveRecurring(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre / Servicio</label>
-          <input type="text" id="recName" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Netflix, Arriendo, Luz">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
-          <input type="number" step="0.01" id="recAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="15.00">
-        </div>
-
-        <!-- Selector de Categoría Personalizado -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-          <button type="button" onclick="openCategoryPicker('recCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
-            <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
-                <i id="recCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
-              </div>
-              <span id="recCategoryText" class="font-semibold">Seleccionar...</span>
-            </div>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
-          </button>
-          <input type="hidden" id="recCategory" required>
-        </div>
-
-        <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeRecurringModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
-        </div>
-      </form>
-    </div>
+      <div class="flex gap-2 pt-3">
+        <button type="button" onclick="closeBudgetModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+        <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
+      </div>
+    </form>
   </div>
+</div>
+
+<!-- MODAL: AGREGAR GASTO RECURRENTE -->
+<div id="recurringModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white">Nuevo Gasto Recurrente</h3>
+      <button onclick="closeRecurringModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 p-2 rounded-full">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form onsubmit="handleSaveRecurring(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre / Servicio</label>
+        <input type="text" id="recName" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="Ej. Netflix, Arriendo, Luz">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
+        <input type="number" step="0.01" id="recAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="15.00">
+      </div>
+
+      <!-- Selector de Categoría Personalizado -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
+        <button type="button" onclick="openCategoryPicker('recCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+              <i id="recCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+            </div>
+            <span id="recCategoryText" class="font-semibold">Seleccionar...</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <input type="hidden" id="recCategory" required>
+
+        <!-- Campo Texto para Categoría Personalizada ("Otros") -->
+        <div id="recCustomCategoryDiv" class="hidden mt-2">
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre de categoría personalizada</label>
+          <input type="text" id="recCustomCategory" placeholder="Ej: Membresía, Suscripción..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-3">
+        <button type="button" onclick="closeRecurringModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
+        <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
   <!-- MODAL: SELECTOR DE CATEGORÍA INTERACTIVO -->
   <div id="categoryPickerModal" class="hidden fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
@@ -1963,55 +1975,57 @@ async function handleDeleteMovement(id) {
 }
 
     // COMPROBANTES COMPRESIÓN BASE64 CANVAS
-    function handleReceiptCompress(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+   function handleReceiptCompress(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxDim = 400;
-          let w = img.width;
-          let h = img.height;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      // Dimensión máxima aumentada a 1000px para nitidez de texto
+      const maxDim = 1000;
+      let w = img.width;
+      let h = img.height;
 
-          if (w > h) {
-            if (w > maxDim) { h *= maxDim / w; w = maxDim; }
-          } else {
-            if (h > maxDim) { w *= maxDim / h; h = maxDim; }
-          }
+      if (w > h) {
+        if (w > maxDim) { h *= maxDim / w; w = maxDim; }
+      } else {
+        if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+      }
 
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          
-          const base64 = canvas.toDataURL('image/jpeg', 0.38);
-          document.getElementById('movReceiptBase64').value = base64;
-          
-          document.getElementById('receiptPreviewImg').src = base64;
-          document.getElementById('receiptPreview').classList.remove('hidden');
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      
+      // Calidad al 82% (0.82) para evitar borrosidad en los detalles
+      const base64 = canvas.toDataURL('image/jpeg', 0.82);
+      document.getElementById('movReceiptBase64').value = base64;
+      
+      document.getElementById('receiptPreviewImg').src = base64;
+      document.getElementById('receiptPreview').classList.remove('hidden');
+    };
+    img.src = evt.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
-    function clearReceiptPreview() {
-      document.getElementById('movReceiptFile').value = '';
-      document.getElementById('movReceiptBase64').value = '';
-      document.getElementById('receiptPreview').classList.add('hidden');
-    }
+function clearReceiptPreview() {
+  document.getElementById('movReceiptFile').value = '';
+  document.getElementById('movReceiptBase64').value = '';
+  document.getElementById('receiptPreview').classList.add('hidden');
+}
 
-    function openReceiptModal(url) {
-      document.getElementById('receiptViewImg').src = url;
-      document.getElementById('receiptViewModal').classList.remove('hidden');
-    }
+function openReceiptModal(url) {
+  document.getElementById('receiptViewImg').src = url;
+  document.getElementById('receiptViewModal').classList.remove('hidden');
+}
 
-    function closeReceiptViewModal() {
-      document.getElementById('receiptViewModal').classList.add('hidden');
-    }
+function closeReceiptViewModal() {
+  document.getElementById('receiptViewModal').classList.add('hidden');
+}
 
     // METAS DE AHORRO
     function renderGoals() {
@@ -2201,39 +2215,51 @@ async function handleDeleteMovement(id) {
       document.getElementById('budgetModal').classList.remove('hidden');
     }
 
-    function closeBudgetModal() {
-      document.getElementById('budgetModal').classList.add('hidden');
-    }
+    // MODAL PRESUPUESTOS
+function closeBudgetModal() {
+  document.getElementById('budgetModal').classList.add('hidden');
+  const customDiv = document.getElementById('budgetCustomCategoryDiv');
+  const customInput = document.getElementById('budgetCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
+}
 
-    async function handleSaveBudget(e) {
-      e.preventDefault();
-      const cat = document.getElementById('budgetCategory').value;
-      const amount = parseFloat(document.getElementById('budgetAmount').value);
+async function handleSaveBudget(e) {
+  e.preventDefault();
+  let cat = document.getElementById('budgetCategory').value;
+  const customCategoryInput = document.getElementById('budgetCustomCategory');
+  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
+  const amount = parseFloat(document.getElementById('budgetAmount').value);
 
-      if (!amount || amount <= 0) return;
-      if (!cat) { showToast('Selecciona una categoría'); return; }
+  if (!amount || amount <= 0) return;
+  if (!cat) { showToast('Selecciona una categoría'); return; }
 
-      try {
-        const updatedBudgets = { ...budgetsData, [cat]: amount };
-        await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
-        showToast("Presupuesto guardado");
-        closeBudgetModal();
-      } catch (err) {
-        showToast("Error al guardar presupuesto");
-      }
-    }
+  // Si eligió "Otros", tomar la categoría personalizada escrita por el usuario
+  if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+    cat = customCategoryVal;
+  }
 
-    async function handleDeleteBudget(cat) {
-      if (!confirm(`¿Eliminar presupuesto de ${cat}?`)) return;
-      try {
-        const updatedBudgets = { ...budgetsData };
-        delete updatedBudgets[cat];
-        await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
-        showToast("Presupuesto eliminado");
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
-    }
+  try {
+    const updatedBudgets = { ...budgetsData, [cat]: amount };
+    await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
+    showToast("Presupuesto guardado");
+    closeBudgetModal();
+  } catch (err) {
+    showToast("Error al guardar presupuesto");
+  }
+}
+
+async function handleDeleteBudget(cat) {
+  if (!confirm(`¿Eliminar presupuesto de ${cat}?`)) return;
+  try {
+    const updatedBudgets = { ...budgetsData };
+    delete updatedBudgets[cat];
+    await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
+    showToast("Presupuesto eliminado");
+  } catch (err) {
+    showToast("Error al eliminar");
+  }
+}
 
     // GASTOS RECURRENTES
     function renderRecurring() {
@@ -2309,63 +2335,74 @@ async function handleDeleteMovement(id) {
     }
 
     function closeRecurringModal() {
-      document.getElementById('recurringModal').classList.add('hidden');
-    }
+  document.getElementById('recurringModal').classList.add('hidden');
+  const customDiv = document.getElementById('recCustomCategoryDiv');
+  const customInput = document.getElementById('recCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
+}
 
-    async function handleSaveRecurring(e) {
-      e.preventDefault();
-      const name = document.getElementById('recName').value.trim();
-      const amount = parseFloat(document.getElementById('recAmount').value);
-      const cat = document.getElementById('recCategory').value;
+async function handleSaveRecurring(e) {
+  e.preventDefault();
+  const name = document.getElementById('recName').value.trim();
+  const amount = parseFloat(document.getElementById('recAmount').value);
+  let cat = document.getElementById('recCategory').value;
+  const customCategoryInput = document.getElementById('recCustomCategory');
+  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
 
-      if (!name || !amount) return;
-      if (!cat) { showToast('Selecciona una categoría'); return; }
+  if (!name || !amount || amount <= 0) return;
+  if (!cat) { showToast('Selecciona una categoría'); return; }
 
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
-          name: name,
-          amount: amount,
-          category: cat,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Recurrente guardado");
-        closeRecurringModal();
-      } catch (err) {
-        showToast("Error al guardar recurrente");
-      }
-    }
+  // Si eligió "Otros", tomar la categoría personalizada escrita
+  if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+    cat = customCategoryVal;
+  }
 
-    async function handlePayRecurring(recId) {
-      const rec = recurringData.find(r => r.id === recId);
-      if (!rec) return;
+  try {
+    await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
+      name: name,
+      amount: amount,
+      category: cat,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast("Gasto recurrente guardado");
+    closeRecurringModal();
+  } catch (err) {
+    showToast("Error al guardar recurrente");
+  }
+}
 
-      try {
-        await db.collection('movements').add({
-          familyId: currentUserData.familyId,
-          type: 'expense',
-          amount: rec.amount,
-          category: rec.category,
-          date: new Date().toISOString().split('T')[0],
-          note: `Pago Recurrente: ${rec.name}`,
-          userId: auth.currentUser.uid,
-          userName: currentUserData.displayName || currentUserData.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast(`Pago registrado: ${rec.name}`);
-      } catch (err) {
-        showToast("Error al registrar pago");
-      }
-    }
+async function handlePayRecurring(recId) {
+  const rec = recurringData.find(r => r.id === recId);
+  if (!rec) return;
 
-    async function handleDeleteRecurring(id) {
-      if (!confirm("¿Eliminar este gasto recurrente?")) return;
-      try {
-        await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
-        showToast("Recurrente eliminado");
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
-    }
+  try {
+    await db.collection('movements').add({
+      familyId: currentUserData.familyId,
+      type: 'expense',
+      amount: rec.amount,
+      category: rec.category,
+      date: new Date().toISOString().split('T')[0],
+      note: `Pago Recurrente: ${rec.name}`,
+      userId: auth.currentUser.uid,
+      userName: currentUserData.displayName || currentUserData.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(`Pago registrado: ${rec.name}`);
+  } catch (err) {
+    showToast("Error al registrar pago");
+  }
+}
+
+async function handleDeleteRecurring(id) {
+  if (!confirm("¿Eliminar este gasto recurrente?")) return;
+  try {
+    await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
+    showToast("Recurrente eliminado");
+  } catch (err) {
+    showToast("Error al eliminar");
+  }
+}
 
     // GESTIÓN DE ESPACIO / GRUPO
     function renderEspacio(members, pending) {
