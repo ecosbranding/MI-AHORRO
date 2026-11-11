@@ -1665,6 +1665,82 @@ function closeCategoryPicker() {
   }, 300);
 }
 
+// Función auxiliar para mostrar/ocultar el cuadro de categoría personalizada
+function checkCustomCategoryVisibility(targetId, categoryName) {
+  const customDivMap = {
+    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
+    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
+    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
+  };
+
+  const targetConfig = customDivMap[targetId];
+  if (!targetConfig) return;
+
+  const customDiv = document.getElementById(targetConfig.div);
+  const customInput = document.getElementById(targetConfig.input);
+
+  if (customDiv) {
+    if (categoryName && categoryName.toLowerCase().includes('otros')) {
+      customDiv.classList.remove('hidden');
+      if (customInput) customInput.focus();
+    } else {
+      customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
+  }
+}
+
+// Función auxiliar para detectar "Otros" y desplegar el input
+function checkCustomCategoryVisibility(targetId, categoryName) {
+  const customDivMap = {
+    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
+    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
+    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
+  };
+
+  const targetConfig = customDivMap[targetId];
+  if (!targetConfig) return;
+
+  const customDiv = document.getElementById(targetConfig.div);
+  const customInput = document.getElementById(targetConfig.input);
+
+  if (customDiv) {
+    if (categoryName && categoryName.toLowerCase().includes('otros')) {
+      customDiv.classList.remove('hidden');
+      if (customInput) customInput.focus();
+    } else {
+      customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
+  }
+}
+
+// Función auxiliar para detectar "Otros" y desplegar el input
+function checkCustomCategoryVisibility(targetId, categoryName) {
+  const customDivMap = {
+    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
+    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
+    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
+  };
+
+  const targetConfig = customDivMap[targetId];
+  if (!targetConfig) return;
+
+  const customDiv = document.getElementById(targetConfig.div);
+  const customInput = document.getElementById(targetConfig.input);
+
+  if (customDiv) {
+    if (categoryName && categoryName.toLowerCase().includes('otros')) {
+      customDiv.classList.remove('hidden');
+      if (customInput) customInput.focus();
+    } else {
+      customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
+  }
+}
+
+// Función principal de selección de categoría
 function selectCategory(categoryName, iconName) {
   document.getElementById(currentCategoryTarget).value = categoryName;
   
@@ -1673,36 +1749,12 @@ function selectCategory(categoryName, iconName) {
   if (textEl) textEl.innerText = categoryName;
   if (iconEl) iconEl.setAttribute('data-lucide', iconName);
 
-  // Mostrar u ocultar el input de texto si es "Otros"
-  if (currentCategoryTarget === 'movCategory') {
-    const customDiv = document.getElementById('movCustomCategoryDiv');
-    const customInput = document.getElementById('movCustomCategory');
-    if (customDiv) {
-      if (categoryName.toLowerCase().includes('otros')) {
-        customDiv.classList.remove('hidden');
-        if (customInput) {
-          customInput.value = '';
-          customInput.focus();
-        }
-      } else {
-        customDiv.classList.add('hidden');
-        if (customInput) customInput.value = '';
-      }
-    }
-  }
+  // Evaluar visibilidad del campo personalizado
+  checkCustomCategoryVisibility(currentCategoryTarget, categoryName);
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
   closeCategoryPicker();
 }
-
-    function selectCategory(categoryName, iconName) {
-      document.getElementById(currentCategoryTarget).value = categoryName;
-      document.getElementById(currentCategoryTarget + 'Text').innerText = categoryName;
-      document.getElementById(currentCategoryTarget + 'Icon').setAttribute('data-lucide', iconName);
-      
-      lucide.createIcons();
-      closeCategoryPicker();
-    }
 
     // Estado global del modo de vista (Familiar o Personal)
 let dashboardMode = 'family'; 
@@ -1884,26 +1936,40 @@ function renderMemberChart(dataToRender = movementsData) {
 
     // MODAL MOVIMIENTO
     function openMovementModal(type = 'expense') {
-      document.getElementById('movId').value = '';
-      document.getElementById('movType').value = type;
-      document.getElementById('movementModalTitle').innerText = type === 'income' ? 'Nuevo Ingreso' : 'Nuevo Gasto';
-      document.getElementById('movAmount').value = '';
-      document.getElementById('movDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('movNote').value = '';
-      document.getElementById('movReceiptBase64').value = '';
-      clearReceiptPreview();
-      
-      document.getElementById('movCategory').value = '';
-      document.getElementById('movCategoryText').innerText = 'Seleccionar...';
-      document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
-      lucide.createIcons();
-      document.getElementById('movementModal').classList.remove('hidden');
-    }
+  document.getElementById('movId').value = '';
+  document.getElementById('movType').value = type;
+  document.getElementById('movementModalTitle').innerText = type === 'income' ? 'Nuevo Ingreso' : 'Nuevo Gasto';
+  document.getElementById('movAmount').value = '';
+  
+  // Asignación de fecha LOCAL exacta de hoy (sin desfase por zona horaria UTC)
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  document.getElementById('movDate').value = `${year}-${month}-${day}`;
 
-   function closeMovementModal() {
+  document.getElementById('movNote').value = '';
+  document.getElementById('movReceiptBase64').value = '';
+  clearReceiptPreview();
+  
+  document.getElementById('movCategory').value = '';
+  document.getElementById('movCategoryText').innerText = 'Seleccionar...';
+  document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+
+  // Reset del cuadro de categoría personalizada al abrir
+  const customDiv = document.getElementById('movCustomCategoryDiv');
+  const customInput = document.getElementById('movCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
+
+  lucide.createIcons();
+  document.getElementById('movementModal').classList.remove('hidden');
+}
+
+function closeMovementModal() {
   document.getElementById('movementModal').classList.add('hidden');
 
-  // Reset del campo personalizado
+  // Reset del campo personalizado al cerrar
   const customDiv = document.getElementById('movCustomCategoryDiv');
   const customInput = document.getElementById('movCustomCategory');
   if (customDiv) customDiv.classList.add('hidden');
@@ -1984,8 +2050,8 @@ async function handleDeleteMovement(id) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      // Dimensión máxima aumentada a 1000px para nitidez de texto
-      const maxDim = 1000;
+      // Subimos a 1200px para garantizar legibilidad completa del papel
+      const maxDim = 1200;
       let w = img.width;
       let h = img.height;
 
@@ -1998,14 +2064,22 @@ async function handleDeleteMovement(id) {
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
+
+      // Renderizado de imagen con suavizado en alta definición
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, w, h);
       
-      // Calidad al 82% (0.82) para evitar borrosidad en los detalles
-      const base64 = canvas.toDataURL('image/jpeg', 0.82);
+      // Calidad al 90% (0.90) para texto super nítido
+      const base64 = canvas.toDataURL('image/jpeg', 0.90);
       document.getElementById('movReceiptBase64').value = base64;
       
-      document.getElementById('receiptPreviewImg').src = base64;
-      document.getElementById('receiptPreview').classList.remove('hidden');
+      const previewImg = document.getElementById('receiptPreviewImg');
+      const preview = document.getElementById('receiptPreview');
+      if (previewImg && preview) {
+        previewImg.src = base64;
+        preview.classList.remove('hidden');
+      }
     };
     img.src = evt.target.result;
   };
@@ -2207,17 +2281,26 @@ function closeReceiptViewModal() {
     }
 
     function openBudgetModal() {
-      document.getElementById('budgetAmount').value = '';
-      document.getElementById('budgetCategory').value = '';
-      document.getElementById('budgetCategoryText').innerText = 'Seleccionar...';
-      document.getElementById('budgetCategoryIcon').setAttribute('data-lucide', 'layout-grid');
-      lucide.createIcons();
-      document.getElementById('budgetModal').classList.remove('hidden');
-    }
+  document.getElementById('budgetAmount').value = '';
+  document.getElementById('budgetCategory').value = '';
+  document.getElementById('budgetCategoryText').innerText = 'Seleccionar...';
+  document.getElementById('budgetCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+  
+  // Reset del cuadro de categoría personalizada al abrir
+  const customDiv = document.getElementById('budgetCustomCategoryDiv');
+  const customInput = document.getElementById('budgetCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
 
-    // MODAL PRESUPUESTOS
+  lucide.createIcons();
+  document.getElementById('budgetModal').classList.remove('hidden');
+}
+
+// MODAL PRESUPUESTOS
 function closeBudgetModal() {
   document.getElementById('budgetModal').classList.add('hidden');
+  
+  // Reset del campo personalizado al cerrar
   const customDiv = document.getElementById('budgetCustomCategoryDiv');
   const customInput = document.getElementById('budgetCustomCategory');
   if (customDiv) customDiv.classList.add('hidden');
@@ -2325,17 +2408,26 @@ async function handleDeleteBudget(cat) {
     }
 
     function openRecurringModal() {
-      document.getElementById('recName').value = '';
-      document.getElementById('recAmount').value = '';
-      document.getElementById('recCategory').value = '';
-      document.getElementById('recCategoryText').innerText = 'Seleccionar...';
-      document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
-      lucide.createIcons();
-      document.getElementById('recurringModal').classList.remove('hidden');
-    }
+  document.getElementById('recName').value = '';
+  document.getElementById('recAmount').value = '';
+  document.getElementById('recCategory').value = '';
+  document.getElementById('recCategoryText').innerText = 'Seleccionar...';
+  document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
 
-    function closeRecurringModal() {
+  // Reset del cuadro de categoría personalizada al abrir
+  const customDiv = document.getElementById('recCustomCategoryDiv');
+  const customInput = document.getElementById('recCustomCategory');
+  if (customDiv) customDiv.classList.add('hidden');
+  if (customInput) customInput.value = '';
+
+  lucide.createIcons();
+  document.getElementById('recurringModal').classList.remove('hidden');
+}
+
+function closeRecurringModal() {
   document.getElementById('recurringModal').classList.add('hidden');
+
+  // Reset del campo personalizado al cerrar
   const customDiv = document.getElementById('recCustomCategoryDiv');
   const customInput = document.getElementById('recCustomCategory');
   if (customDiv) customDiv.classList.add('hidden');
