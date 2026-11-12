@@ -275,39 +275,26 @@
     </div>
   </div>
 
- <!-- Header Superior -->
-<header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
-  <div class="flex items-center gap-3 min-w-0 flex-1">
-    <!-- Logo -->
-    <div class="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-[#E76F51] to-[#D05A3F] flex items-center justify-center text-white shadow-md">
-      <i data-lucide="heart-handshake" class="w-5 h-5"></i>
-    </div>
-
-    <!-- Textos -->
-    <div class="min-w-0 flex-1">
-      <!-- Fila: nombre + badge -->
-      <div class="flex items-center gap-1.5 min-w-0">
-        <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white truncate max-w-[140px] sm:max-w-[200px] md:max-w-none">
-          Mi Espacio
-        </h2>
-        <!-- Badge FUERA del h2 → no se deforma en celular -->
-        <span id="connectionBadge"
-              class="hidden shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-          En línea
-        </span>
+  <!-- Aplicación Principal -->
+  <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen pb-20">
+    
+    <!-- Header Superior -->
+    <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E76F51] to-[#D05A3F] flex items-center justify-center text-white shadow-md">
+          <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white flex items-center gap-2">
+            Mi Espacio
+            <!-- Nuevo: Badge de Conexión -->
+            <span id="connectionBadge" class="hidden items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea
+            </span>
+          </h2>
+          <span id="headerUserName" class="text-[11px] text-slate-500 dark:text-slate-400 leading-none">Cargando...</span>
+        </div>
       </div>
-      <span id="headerUserName" class="text-[11px] text-slate-500 dark:text-slate-400 leading-none block truncate">
-        Cargando...
-      </span>
-    </div>
-  </div>
-
-  <!-- Botones derecha (los que ya tengas: theme, share, etc.) -->
-  <div class="flex items-center gap-2 shrink-0">
-    <!-- aquí van tus botones existentes -->
-  </div>
-</header>
 
       <div class="flex items-center gap-2">
         <!-- Botón Instalar PWA Header -->
@@ -1275,30 +1262,69 @@
       }
     }
 
-   // ============================================
-// INDICADOR DE CONEXIÓN ONLINE / OFFLINE
-// ============================================
-function updateConnectionStatus(isOnline) {
-  const badge = document.getElementById('connectionBadge');
-  if (!badge) return;
+    // ============================================
+    // NUEVO: INDICADOR DE CONEXIÓN ONLINE / OFFLINE
+    // ============================================
+    function updateConnectionStatus(isOnline) {
+      const badge = document.getElementById('connectionBadge');
+      if (!badge) return;
 
-  if (isOnline) {
-    badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 shrink-0";
-    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea';
-  } else {
-    badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 shrink-0";
-    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Offline';
-    if (typeof showToast === 'function') {
-      showToast("Sin conexión. Los cambios se sincronizarán al reconectar.");
+      badge.classList.remove('hidden');
+      badge.classList.add('inline-flex');
+
+      if (isOnline) {
+        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea';
+      } else {
+        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Offline';
+        if (typeof showToast === 'function') {
+          showToast("Sin conexión. Los cambios se guardarán localmente y se sincronizarán al reconectar.");
+        }
+      }
     }
-  }
-}
 
-window.addEventListener('online', () => {
-  updateConnectionStatus(true);
-  if (typeof showToast === 'function') showToast("Conexión restaurada. Sincronizando...");
-});
-window.addEventListener('offline', () => updateConnectionStatus(false));
+    window.addEventListener('online', () => {
+      updateConnectionStatus(true);
+      if (typeof showToast === 'function') showToast("Conexión restaurada. Sincronizando...");
+    });
+    window.addEventListener('offline', () => updateConnectionStatus(false));
+
+    // Estado inicial de conexión
+    updateConnectionStatus(navigator.onLine);
+
+    // Inicialización al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+      if (typeof initTheme === 'function') initTheme();
+      if (typeof populateFilterCategory === 'function') populateFilterCategory();
+      updatePWAUIVisibility();
+      updateConnectionStatus(navigator.onLine);
+
+      // Escuchador de Autenticación de Firebase
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          if (typeof isRegistering !== 'undefined' && isRegistering) return;
+          try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+              currentUserData = { uid: user.uid, ...userDoc.data() };
+              if (typeof setupMainApp === 'function') setupMainApp();
+            } else {
+              if (typeof isRegistering === 'undefined' || !isRegistering) {
+                if (typeof showToast === 'function') showToast("Cargando perfil de usuario...");
+              }
+            }
+          } catch (err) {
+            console.error("Error obteniendo usuario:", err);
+          }
+        } else {
+          if (typeof showAuthScreen === 'function') showAuthScreen();
+        }
+      });
+    });
 
     // HELPERS & NORMALIZE
     function normalizeEmail(email) {
@@ -2987,8 +3013,8 @@ async function handleDeleteBudget(cat) {
       reader.readAsDataURL(file);
     }
 
-      // ============================================
-    // EXPORTACIÓN EXCEL / CSV (Formato Plantilla LATAM/España)
+    // ============================================
+    // EXPORTACIÓN CSV (respeta filtros activos)
     // ============================================
     function exportToCSV() {
       // Usar cache filtrada si existe; si no, todos
@@ -3001,41 +3027,30 @@ async function handleDeleteBudget(cat) {
         return;
       }
 
-      // Separador ';' oficial para Excel en español/LATAM (evita todo en 1 columna)
-      const SEP = ';';
-      
-      // Encabezado de la tabla estilo plantilla
-      let csv = `Fecha${SEP}Tipo${SEP}Categoría${SEP}Monto${SEP}Nota${SEP}Registrado Por\n`;
-
+      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Registrado Por\n";
       data.forEach(m => {
         const note = String(m.note || '').replace(/"/g, '""');
         const cat = String(m.category || '').replace(/"/g, '""');
         const user = String(m.userName || '').replace(/"/g, '""');
         const tipo = m.type === 'income' ? 'Ingreso' : 'Gasto';
-        
-        // Formatear monto con coma decimal para Excel en español
-        const rawAmount = parseFloat(m.amount) || 0;
-        const montoFormatted = rawAmount.toFixed(2).replace('.', ',');
-
-        csv += `"${m.date || ''}"${SEP}"${tipo}"${SEP}"${cat}"${SEP}${montoFormatted}${SEP}"${note}"${SEP}"${user}"\n`;
+        csv += `"${m.date || ''}","${tipo}","${cat}","${m.amount || 0}","${note}","${user}"\n`;
       });
 
-      // BOM UTF-8 (\uFEFF) para que Excel reconozca tildes y caracteres especiales
+      // BOM UTF-8 para Excel
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       const now = new Date();
       const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      
       link.href = URL.createObjectURL(blob);
       link.setAttribute("download", `ahorro_familiar_${stamp}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast("Excel exportado correctamente");
+      showToast("CSV exportado correctamente");
     }
 
     // ============================================
-    // EXPORTACIÓN / IMPRESIÓN PDF PROFESIONAL CON LOGO
+    // EXPORTACIÓN / IMPRESIÓN PDF PROFESIONAL
     // ============================================
     function exportToPDF() {
       const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
@@ -3061,15 +3076,6 @@ async function handleDeleteBudget(cat) {
       const now = new Date();
       const stamp = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
 
-      // Logo SVG Base64 (Blanco) incrustado directamente (No requiere internet)
-      const LOGO_SVG = 'data:image/svg+xml;base64,' + btoa(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-          <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/>
-          <path d="m18 15-2-2"/><path d="m15 18-2-2"/>
-        </svg>
-      `.trim());
-
       // Intentar jsPDF + AutoTable
       try {
         const jspdfNS = window.jspdf || window.jsPDF;
@@ -3079,29 +3085,16 @@ async function handleDeleteBudget(cat) {
         const doc = new JsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
 
-        // Encabezado naranja
+        // Encabezado marca
         doc.setFillColor(231, 111, 81); // #E76F51
         doc.rect(0, 0, pageW, 28, 'F');
-
-        // Renderizar Logo en el Encabezado (Recadro contenedor + Ícono)
-        try {
-          doc.setFillColor(255, 255, 255);
-          doc.setGState(new doc.GState({ opacity: 0.25 }));
-          doc.roundedRect(12, 5, 18, 18, 3, 3, 'F');
-          doc.setGState(new doc.GState({ opacity: 1 }));
-          doc.addImage(LOGO_SVG, 'SVG', 14, 7, 14, 14);
-        } catch (logoErr) {
-          console.warn('Error agregando icono al PDF:', logoErr);
-        }
-
-        // Textos del Encabezado (Alineados a la derecha del logo)
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('Ahorro Familiar', 35, 14);
+        doc.text('Ahorro Familiar', 14, 14);
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('Reporte de Movimientos', 35, 22);
+        doc.text('Reporte de Movimientos', 14, 22);
 
         doc.setFontSize(9);
         doc.text(stamp, pageW - 14, 14, { align: 'right' });
@@ -3180,7 +3173,8 @@ async function handleDeleteBudget(cat) {
         console.warn('PDF fallback impresión:', err);
       }
 
-      // Fallback: ventana de impresión HTML con membrete y Logo Embebido
+      // Fallback: ventana de impresión HTML con membrete
+      // IMPORTANTE: no incluir etiquetas <script> literales aquí (rompen el parser del HTML principal)
       const rows = data.map(m => `
         <tr>
           <td>${formatDate(m.date) || ''}</td>
@@ -3197,11 +3191,9 @@ async function handleDeleteBudget(cat) {
 <html><head><meta charset="UTF-8"><title>Reporte Ahorro Familiar</title>
 <style>
   body{font-family:system-ui,sans-serif;color:#0f172a;padding:24px}
-  .head{background:#E76F51;color:#fff;padding:18px 24px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo-box{width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .head{background:#E76F51;color:#fff;padding:20px 24px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
   .head h1{margin:0;font-size:22px}
-  .head p{margin:2px 0 0;opacity:.9;font-size:13px}
+  .head p{margin:4px 0 0;opacity:.9;font-size:13px}
   .summary{display:flex;gap:16px;margin:20px 0}
   .card{flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px}
   .card span{display:block;font-size:11px;color:#64748b}
@@ -3213,12 +3205,7 @@ async function handleDeleteBudget(cat) {
   .foot{margin-top:24px;text-align:center;color:#94a3b8;font-size:11px}
 </style></head><body>
   <div class="head">
-    <div class="brand">
-      <div class="logo-box">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
-      </div>
-      <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos · ${familyName}</p></div>
-    </div>
+    <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos · ${familyName}</p></div>
     <div style="text-align:right;font-size:12px">${stamp}<br>${userName}</div>
   </div>
   <div class="summary">
@@ -3247,7 +3234,6 @@ async function handleDeleteBudget(cat) {
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
-      if (!toast) return;
       toast.innerText = msg;
       toast.classList.remove('opacity-0');
       toast.classList.add('opacity-100');
