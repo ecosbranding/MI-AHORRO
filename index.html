@@ -132,6 +132,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 
+  <!-- jsPDF & AutoTable para Exportación PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -281,7 +285,13 @@
           <i data-lucide="heart-handshake" class="w-5 h-5"></i>
         </div>
         <div>
-          <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white">Mi Espacio</h2>
+          <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white flex items-center gap-2">
+            Mi Espacio
+            <!-- Nuevo: Badge de Conexión -->
+            <span id="connectionBadge" class="hidden items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea
+            </span>
+          </h2>
           <span id="headerUserName" class="text-[11px] text-slate-500 dark:text-slate-400 leading-none">Cargando...</span>
         </div>
       </div>
@@ -410,6 +420,9 @@
           </div>
         </div>
 
+        <!-- NUEVO: Contenedor Dinámico de Alertas Inteligentes (Presupuestos / Recurrentes) -->
+        <div id="smartAlertsContainer" class="space-y-2 hidden"></div>
+
         <!-- Botones de Acción Rápida -->
         <div class="grid grid-cols-2 gap-3">
           <button onclick="openMovementModal('income')" class="p-3.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:opacity-90 text-white font-bold rounded-2xl shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
@@ -436,14 +449,28 @@
           </div>
         </div>
 
-        <!-- Gráfico de Gastos por Miembro -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-[#E76F51]"></i>
-            <span>Distribución de Gastos por Miembro</span>
-          </h3>
-          <div class="relative h-56 w-full flex items-center justify-center">
-            <canvas id="memberExpenseChart"></canvas>
+        <!-- NUEVO: Grid de Gráficos (Miembros y Categorías) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Gráfico de Gastos por Miembro -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-[#E76F51]"></i>
+              <span>Gastos por Miembro</span>
+            </h3>
+            <div class="relative h-56 w-full flex items-center justify-center">
+              <canvas id="memberExpenseChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- NUEVO: Gráfico de Gastos por Categoría -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <i data-lucide="donut" class="w-4 h-4 text-[#E76F51]"></i>
+              <span>Gastos por Categoría</span>
+            </h3>
+            <div class="relative h-56 w-full flex items-center justify-center">
+              <canvas id="categoryExpenseChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -465,12 +492,23 @@
 
       <!-- SECCIÓN 2: MOVIMIENTOS -->
       <section id="secMovimientos" class="hidden space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between flex-wrap gap-2">
           <h2 class="text-lg font-bold text-slate-900 dark:text-white">Historial de Movimientos</h2>
-          <button onclick="openMovementModal('expense')" class="px-3 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Agregar</span>
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <!-- NUEVO: Botones de Exportación CSV y PDF -->
+            <button onclick="exportToCSV()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 rounded-xl text-xs flex items-center shadow" title="Exportar Excel/CSV">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            </button>
+            <button onclick="exportToPDF()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 rounded-xl text-xs flex items-center shadow" title="Imprimir PDF">
+              <i data-lucide="printer" class="w-4 h-4"></i>
+            </button>
+
+            <button onclick="openMovementModal('expense')" class="px-3 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Agregar</span>
+            </button>
+          </div>
         </div>
 
         <!-- Filtros y Búsqueda -->
@@ -492,6 +530,29 @@
               <option value="all">Todas las categorías</option>
               <!-- Dinámico -->
             </select>
+          </div>
+
+          <!-- NUEVO: Selector Avanzado de Fechas -->
+          <div class="grid grid-cols-1 gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+            <select id="filterDateRange" onchange="toggleCustomDateInputs(); filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white appearance-none w-full">
+              <option value="all">Todas las fechas</option>
+              <option value="thisMonth" selected>Este Mes</option>
+              <option value="lastMonth">Mes Anterior</option>
+              <option value="thisYear">Este Año</option>
+              <option value="custom">Rango Personalizado...</option>
+            </select>
+          </div>
+
+          <!-- NUEVO: Rango Personalizado Oculto -->
+          <div id="customDateRangeDiv" class="hidden grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-1">Desde</label>
+              <input type="date" id="filterDateStart" onchange="filterMovements()" class="w-full px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-1">Hasta</label>
+              <input type="date" id="filterDateEnd" onchange="filterMovements()" class="w-full px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white">
+            </div>
           </div>
         </div>
 
@@ -652,8 +713,14 @@
 
             <!-- Exportar a CSV -->
             <button onclick="exportToCSV()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
-              <i data-lucide="download" class="w-4 h-4 text-emerald-500"></i>
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-500"></i>
               <span>Exportar Historial a CSV</span>
+            </button>
+
+            <!-- NUEVO: Imprimir PDF -->
+            <button onclick="exportToPDF()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
+              <i data-lucide="printer" class="w-4 h-4 text-sky-500"></i>
+              <span>Imprimir Reporte PDF</span>
             </button>
 
             <!-- Eliminar Cuenta -->
@@ -1002,6 +1069,21 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // NUEVO: Persistencia Offline Real de Firestore
+    db.enablePersistence({ synchronizeTabs: true })
+      .then(() => {
+        console.log("Firestore: Persistencia offline activada");
+      })
+      .catch((err) => {
+        if (err.code === 'failed-precondition') {
+          console.warn("Persistencia: múltiples pestañas abiertas. Solo una puede tener persistence.");
+        } else if (err.code === 'unimplemented') {
+          console.warn("Persistencia offline no soportada en este navegador.");
+        } else {
+          console.warn("Error activando persistencia:", err);
+        }
+      });
+
     // Categorías del sistema e Iconos (Diseño Premium)
     const EXPENSE_CATEGORIES = ["Alimentación", "Vivienda", "Transporte", "Servicios", "Entretenimiento", "Salud", "Educación", "Otros Gastos"];
     const INCOME_CATEGORIES = ["Sueldo / Salario", "Ventas", "Inversiones", "Regalo", "Otros Ingresos"];
@@ -1033,7 +1115,10 @@
     let authMode = 'login'; // 'login' | 'register'
     let registerType = 'create'; // 'create' | 'join'
     let memberChartInstance = null;
-    let currentCategoryTarget = ''; 
+    let categoryChartInstance = null; // NUEVO: Gráfico de categorías
+    let currentCategoryTarget = '';
+    let dashboardMode = 'family'; // 'family' | 'personal'
+    let filteredMovementsCache = []; // NUEVO: cache para exportación CSV/PDF
 
     // Subscripciones Firestore
     let unsubscribeFamily = null;
@@ -1177,6 +1262,37 @@
       }
     }
 
+    // ============================================
+    // NUEVO: INDICADOR DE CONEXIÓN ONLINE / OFFLINE
+    // ============================================
+    function updateConnectionStatus(isOnline) {
+      const badge = document.getElementById('connectionBadge');
+      if (!badge) return;
+
+      badge.classList.remove('hidden');
+      badge.classList.add('inline-flex');
+
+      if (isOnline) {
+        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea';
+      } else {
+        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Offline';
+        if (typeof showToast === 'function') {
+          showToast("Sin conexión. Los cambios se guardarán localmente y se sincronizarán al reconectar.");
+        }
+      }
+    }
+
+    window.addEventListener('online', () => {
+      updateConnectionStatus(true);
+      if (typeof showToast === 'function') showToast("Conexión restaurada. Sincronizando...");
+    });
+    window.addEventListener('offline', () => updateConnectionStatus(false));
+
+    // Estado inicial de conexión
+    updateConnectionStatus(navigator.onLine);
+
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof lucide !== 'undefined' && lucide.createIcons) {
@@ -1185,6 +1301,7 @@
       if (typeof initTheme === 'function') initTheme();
       if (typeof populateFilterCategory === 'function') populateFilterCategory();
       updatePWAUIVisibility();
+      updateConnectionStatus(navigator.onLine);
 
       // Escuchador de Autenticación de Firebase
       auth.onAuthStateChanged(async (user) => {
@@ -1244,6 +1361,7 @@
       document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
       lucide.createIcons();
       if (memberChartInstance) renderMemberChart();
+      if (typeof renderCategoryChart === 'function') renderCategoryChart(); // NUEVO
     }
 
     // AUTENTICACIÓN UI
@@ -1500,6 +1618,7 @@
       }
 
       updatePWAUIVisibility();
+      updateConnectionStatus(navigator.onLine);
       showSection('secResumen');
     }
 
@@ -1545,7 +1664,14 @@
         activeBtn.classList.add('text-[#E76F51]');
       }
 
-      if (secId === 'secResumen') renderMemberChart();
+      if (secId === 'secResumen') {
+        renderMemberChart();
+        if (typeof renderCategoryChart === 'function') renderCategoryChart();
+        if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
+      }
+      if (secId === 'secMovimientos') {
+        if (typeof filterMovements === 'function') filterMovements();
+      }
     }
 
     // LISTENERS FIRESTORE
@@ -1553,11 +1679,31 @@
       unsubscribeFamily = db.collection('families').doc(familyId).onSnapshot(doc => {
         if (doc.exists) {
           currentFamilyData = { id: doc.id, ...doc.data() };
-          document.getElementById('headerFamilyName').innerText = currentFamilyData.familyName || "Mi Espacio";
+          
+          // IMPORTANTE: Preservar el badge de conexión dentro de headerFamilyName
+          const headerFam = document.getElementById('headerFamilyName');
+          if (headerFam) {
+            const badge = document.getElementById('connectionBadge');
+            const famName = currentFamilyData.familyName || "Mi Espacio";
+            headerFam.innerHTML = '';
+            headerFam.appendChild(document.createTextNode(famName + ' '));
+            if (badge) {
+              headerFam.appendChild(badge);
+            } else {
+              // Recrear badge si se perdió
+              const newBadge = document.createElement('span');
+              newBadge.id = 'connectionBadge';
+              newBadge.className = 'hidden';
+              headerFam.appendChild(newBadge);
+              updateConnectionStatus(navigator.onLine);
+            }
+          }
+
           document.getElementById('spaceTitle').innerText = currentFamilyData.familyName || "Mi Espacio";
           document.getElementById('famCodeDisplay').innerText = currentFamilyData.code || "----";
           budgetsData = currentFamilyData.budgets || {};
           renderBudgets();
+          if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
         }
       });
     }
@@ -1592,6 +1738,7 @@
           recurringData = [];
           snapshot.forEach(doc => recurringData.push({ id: doc.id, ...doc.data() }));
           renderRecurring();
+          if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
         });
     }
 
@@ -1665,57 +1812,7 @@ function closeCategoryPicker() {
   }, 300);
 }
 
-// Función auxiliar para mostrar/ocultar el cuadro de categoría personalizada
-function checkCustomCategoryVisibility(targetId, categoryName) {
-  const customDivMap = {
-    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
-    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
-    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
-  };
-
-  const targetConfig = customDivMap[targetId];
-  if (!targetConfig) return;
-
-  const customDiv = document.getElementById(targetConfig.div);
-  const customInput = document.getElementById(targetConfig.input);
-
-  if (customDiv) {
-    if (categoryName && categoryName.toLowerCase().includes('otros')) {
-      customDiv.classList.remove('hidden');
-      if (customInput) customInput.focus();
-    } else {
-      customDiv.classList.add('hidden');
-      if (customInput) customInput.value = '';
-    }
-  }
-}
-
-// Función auxiliar para detectar "Otros" y desplegar el input
-function checkCustomCategoryVisibility(targetId, categoryName) {
-  const customDivMap = {
-    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
-    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
-    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
-  };
-
-  const targetConfig = customDivMap[targetId];
-  if (!targetConfig) return;
-
-  const customDiv = document.getElementById(targetConfig.div);
-  const customInput = document.getElementById(targetConfig.input);
-
-  if (customDiv) {
-    if (categoryName && categoryName.toLowerCase().includes('otros')) {
-      customDiv.classList.remove('hidden');
-      if (customInput) customInput.focus();
-    } else {
-      customDiv.classList.add('hidden');
-      if (customInput) customInput.value = '';
-    }
-  }
-}
-
-// Función auxiliar para detectar "Otros" y desplegar el input
+// Función auxiliar para mostrar/ocultar el cuadro de categoría personalizada (UNA SOLA VEZ)
 function checkCustomCategoryVisibility(targetId, categoryName) {
   const customDivMap = {
     'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
@@ -1755,9 +1852,6 @@ function selectCategory(categoryName, iconName) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
   closeCategoryPicker();
 }
-
-    // Estado global del modo de vista (Familiar o Personal)
-let dashboardMode = 'family'; 
 
 function setDashboardMode(mode) {
   dashboardMode = mode;
@@ -1819,20 +1913,107 @@ function renderResumen() {
   }
 
   renderMemberChart(filteredMovements);
+  renderCategoryChart(filteredMovements);
+  renderSmartAlerts();
+}
+
+// ============================================
+// NUEVO: ALERTAS INTELIGENTES (Presupuestos + Recurrentes)
+// ============================================
+function renderSmartAlerts() {
+  const container = document.getElementById('smartAlertsContainer');
+  if (!container) return;
+
+  const alerts = [];
+  const now = new Date();
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  // Gastos del mes por categoría
+  const expensesByCat = {};
+  movementsData
+    .filter(m => m.type === 'expense' && m.date && m.date.startsWith(currentMonthStr))
+    .forEach(m => {
+      expensesByCat[m.category] = (expensesByCat[m.category] || 0) + (parseFloat(m.amount) || 0);
+    });
+
+  // Presupuestos en riesgo u overflow
+  Object.keys(budgetsData || {}).forEach(cat => {
+    const limit = parseFloat(budgetsData[cat]) || 0;
+    if (limit <= 0) return;
+    const spent = expensesByCat[cat] || 0;
+    const pct = Math.round((spent / limit) * 100);
+    if (pct >= 100) {
+      alerts.push({
+        type: 'danger',
+        icon: 'alert-triangle',
+        text: `Presupuesto de <strong>${cat}</strong> excedido (${pct}%). Gastado ${formatCurrency(spent)} de ${formatCurrency(limit)}.`
+      });
+    } else if (pct >= 80) {
+      alerts.push({
+        type: 'warning',
+        icon: 'alert-circle',
+        text: `Presupuesto de <strong>${cat}</strong> al ${pct}%. Quedan ${formatCurrency(Math.max(0, limit - spent))}.`
+      });
+    }
+  });
+
+  // Recurrentes pendientes del mes (si aún no hay un gasto con la misma nota/categoría este mes)
+  (recurringData || []).forEach(r => {
+    const name = r.name || 'Pago recurrente';
+    const alreadyPaid = movementsData.some(m =>
+      m.type === 'expense' &&
+      m.date && m.date.startsWith(currentMonthStr) &&
+      (
+        (m.note && r.name && m.note.toLowerCase().includes(String(r.name).toLowerCase())) ||
+        (m.category && r.category && m.category === r.category && Math.abs((parseFloat(m.amount)||0) - (parseFloat(r.amount)||0)) < 0.01)
+      )
+    );
+    if (!alreadyPaid) {
+      alerts.push({
+        type: 'info',
+        icon: 'repeat',
+        text: `Pago recurrente pendiente: <strong>${name}</strong> (${formatCurrency(r.amount)}).`
+      });
+    }
+  });
+
+  if (alerts.length === 0) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = alerts.slice(0, 4).map(a => {
+    let colors = 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300';
+    if (a.type === 'danger') colors = 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300';
+    if (a.type === 'warning') colors = 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300';
+    return `
+      <div class="p-3 rounded-xl border text-[11px] font-medium flex items-start gap-2.5 ${colors}">
+        <i data-lucide="${a.icon}" class="w-4 h-4 shrink-0 mt-0.5"></i>
+        <span class="leading-snug">${a.text}</span>
+      </div>
+    `;
+  }).join('');
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function renderMemberChart(dataToRender = movementsData) {
   const ctx = document.getElementById('memberExpenseChart');
   if (!ctx) return;
 
-  // Si estamos en modo personal, ocultamos el gráfico por miembros ya que solo tú estás viendo tu saldo
-  const chartParent = ctx.closest('.bg-white, .dark\\:bg-slate-800') || ctx.parentElement;
+  // Ocultar solo la tarjeta del gráfico por miembro en modo personal
+  const chartCard = ctx.closest('.bg-white, .dark\\:bg-slate-800') || ctx.parentElement;
   if (dashboardMode === 'personal') {
-    if (chartParent) chartParent.style.display = 'none';
-    if (memberChartInstance) memberChartInstance.destroy();
+    if (chartCard) chartCard.style.display = 'none';
+    if (memberChartInstance) {
+      memberChartInstance.destroy();
+      memberChartInstance = null;
+    }
     return;
   } else {
-    if (chartParent) chartParent.style.display = 'block';
+    if (chartCard) chartCard.style.display = 'block';
   }
 
   const expensesByMember = {};
@@ -1844,11 +2025,12 @@ function renderMemberChart(dataToRender = movementsData) {
   const labels = Object.keys(expensesByMember);
   const data = Object.values(expensesByMember);
 
-  if (memberChartInstance) memberChartInstance.destroy();
-
-  if (labels.length === 0) {
-    return;
+  if (memberChartInstance) {
+    memberChartInstance.destroy();
+    memberChartInstance = null;
   }
+
+  if (labels.length === 0) return;
 
   const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD'];
 
@@ -1879,11 +2061,63 @@ function renderMemberChart(dataToRender = movementsData) {
   });
 }
 
+// ============================================
+// NUEVO: GRÁFICO DONA POR CATEGORÍA
+// ============================================
+function renderCategoryChart(dataToRender = movementsData) {
+  const ctx = document.getElementById('categoryExpenseChart');
+  if (!ctx) return;
+
+  const expensesByCategory = {};
+  dataToRender.filter(m => m.type === 'expense').forEach(m => {
+    const cat = m.category || 'Otros';
+    expensesByCategory[cat] = (expensesByCategory[cat] || 0) + (parseFloat(m.amount) || 0);
+  });
+
+  const labels = Object.keys(expensesByCategory);
+  const data = Object.values(expensesByCategory);
+
+  if (categoryChartInstance) {
+    categoryChartInstance.destroy();
+    categoryChartInstance = null;
+  }
+
+  if (labels.length === 0) return;
+
+  const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD', '#F72585', '#4CC9F0', '#90BE6D', '#577590'];
+
+  categoryChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 12,
+            font: { size: 10 },
+            color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
+          }
+        }
+      }
+    }
+  });
+}
+
     // MOVIMIENTOS LIST & FILTROS
     function createMovementHTML(m) {
   const isInc = m.type === 'income';
   // Si la categoría no está en la lista estándar, usa un icono por defecto ('tag' para personalizado o trending-up/down)
-  const iconName = CATEGORY_ICONS[m.category] || (isInc ? 'trending-up' : 'trending-down');
+  const iconName = CATEGORY_ICONS[m.category] || (isInc ? 'trending-up' : 'tag');
 
   return `
     <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
@@ -1913,25 +2147,90 @@ function renderMemberChart(dataToRender = movementsData) {
       filterMovements();
     }
 
+    // NUEVO: mostrar/ocultar inputs de rango personalizado
+    function toggleCustomDateInputs() {
+      const range = document.getElementById('filterDateRange');
+      const customDiv = document.getElementById('customDateRangeDiv');
+      if (!range || !customDiv) return;
+      if (range.value === 'custom') {
+        customDiv.classList.remove('hidden');
+      } else {
+        customDiv.classList.add('hidden');
+      }
+    }
+
+    function getDateRangeBounds() {
+      const rangeEl = document.getElementById('filterDateRange');
+      const range = rangeEl ? rangeEl.value : 'all';
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth(); // 0-11
+
+      const pad = (n) => String(n).padStart(2, '0');
+      const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+      if (range === 'thisMonth') {
+        const start = `${y}-${pad(m + 1)}-01`;
+        const endDate = new Date(y, m + 1, 0);
+        return { start, end: toStr(endDate) };
+      }
+      if (range === 'lastMonth') {
+        const lm = m === 0 ? 11 : m - 1;
+        const ly = m === 0 ? y - 1 : y;
+        const start = `${ly}-${pad(lm + 1)}-01`;
+        const endDate = new Date(ly, lm + 1, 0);
+        return { start, end: toStr(endDate) };
+      }
+      if (range === 'thisYear') {
+        return { start: `${y}-01-01`, end: `${y}-12-31` };
+      }
+      if (range === 'custom') {
+        const s = document.getElementById('filterDateStart')?.value || '';
+        const e = document.getElementById('filterDateEnd')?.value || '';
+        return { start: s || null, end: e || null };
+      }
+      return { start: null, end: null }; // all
+    }
+
     function filterMovements() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const type = document.getElementById('filterType').value;
-      const cat = document.getElementById('filterCategory').value;
+      const searchEl = document.getElementById('searchInput');
+      const typeEl = document.getElementById('filterType');
+      const catEl = document.getElementById('filterCategory');
+
+      const search = searchEl ? searchEl.value.toLowerCase() : '';
+      const type = typeEl ? typeEl.value : 'all';
+      const cat = catEl ? catEl.value : 'all';
+      const { start, end } = getDateRangeBounds();
 
       let filtered = movementsData.filter(m => {
-        const matchesSearch = (m.note || '').toLowerCase().includes(search) || (m.userName || '').toLowerCase().includes(search);
+        const matchesSearch = (m.note || '').toLowerCase().includes(search) ||
+          (m.userName || '').toLowerCase().includes(search) ||
+          (m.category || '').toLowerCase().includes(search);
         const matchesType = type === 'all' || m.type === type;
         const matchesCat = cat === 'all' || m.category === cat;
-        return matchesSearch && matchesType && matchesCat;
+
+        let matchesDate = true;
+        if (start || end) {
+          const d = m.date || '';
+          if (start && d < start) matchesDate = false;
+          if (end && d > end) matchesDate = false;
+        }
+
+        return matchesSearch && matchesType && matchesCat && matchesDate;
       });
 
+      // Cache para exportación CSV/PDF
+      filteredMovementsCache = filtered;
+
       const container = document.getElementById('fullMovementsList');
+      if (!container) return;
+
       if (filtered.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No se encontraron movimientos.</p>';
       } else {
         container.innerHTML = filtered.map(m => createMovementHTML(m)).join('');
       }
-      lucide.createIcons();
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     // MODAL MOVIMIENTO
@@ -2198,16 +2497,21 @@ function closeReceiptViewModal() {
           transaction.update(docRef, { currentAmount: newCurrent });
         });
 
+        // Fecha LOCAL exacta (sin UTC offset)
+        const now = new Date();
+        const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
         // Registrar como movimiento
         await db.collection('movements').add({
           familyId: currentUserData.familyId,
           type: 'expense',
           amount: amount,
           category: 'Otros Gastos',
-          date: new Date().toISOString().split('T')[0],
+          date: localDate,
           note: `Abono a Meta: ${goalsData.find(g => g.id === goalId)?.title || 'Ahorro'}`,
           userId: auth.currentUser.uid,
           userName: currentUserData.displayName || currentUserData.email,
+          userEmail: currentUserData.email,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -2228,13 +2532,14 @@ function closeReceiptViewModal() {
       }
     }
 
-    // PRESUPUESTOS
+    // PRESUPUESTOS (barras inteligentes Verde / Ámbar / Rojo)
     function renderBudgets() {
       const container = document.getElementById('budgetsList');
       const categories = Object.keys(budgetsData);
 
       if (categories.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No hay presupuestos definidos.</p>';
+        if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
         return;
       }
 
@@ -2243,20 +2548,29 @@ function closeReceiptViewModal() {
       const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
       const expensesByCat = {};
-      movementsData.filter(m => m.type === 'expense' && m.date.startsWith(currentMonthStr)).forEach(m => {
+      movementsData.filter(m => m.type === 'expense' && m.date && m.date.startsWith(currentMonthStr)).forEach(m => {
         expensesByCat[m.category] = (expensesByCat[m.category] || 0) + parseFloat(m.amount);
       });
 
       container.innerHTML = categories.map(cat => {
         const limit = parseFloat(budgetsData[cat]) || 1;
         const spent = expensesByCat[cat] || 0;
-        const pct = Math.min(100, Math.round((spent / limit) * 100));
+        const rawPct = (spent / limit) * 100;
+        const pct = Math.round(rawPct);
+        const barWidth = Math.min(100, Math.max(0, rawPct));
 
+        // Verde <80%, Ámbar 80-99%, Rojo ≥100%
         let barColor = 'bg-emerald-500';
-        if (pct > 80 && pct <= 100) barColor = 'bg-amber-500';
-        else if (pct > 100) barColor = 'bg-rose-500';
+        let badgeHTML = '';
+        if (pct >= 100) {
+          barColor = 'bg-rose-500';
+          badgeHTML = `<span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">Excedido</span>`;
+        } else if (pct >= 80) {
+          barColor = 'bg-amber-500';
+          badgeHTML = `<span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">Al límite</span>`;
+        }
         
-        const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
+        const iconName = CATEGORY_ICONS[cat] || 'tag';
 
         return `
           <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
@@ -2264,20 +2578,22 @@ function closeReceiptViewModal() {
               <div class="flex items-center gap-2">
                 <i data-lucide="${iconName}" class="w-4 h-4 text-[#E76F51]"></i>
                 <h4 class="font-bold text-xs text-slate-900 dark:text-white">${cat}</h4>
+                ${badgeHTML}
               </div>
               <button onclick="handleDeleteBudget('${cat}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
             <div class="flex justify-between text-[11px] font-semibold">
               <span class="text-slate-500 dark:text-slate-400">${formatCurrency(spent)} de ${formatCurrency(limit)}</span>
-              <span class="${pct > 100 ? 'text-rose-500 font-bold' : 'text-slate-700 dark:text-slate-300'}">${pct}%</span>
+              <span class="${pct >= 100 ? 'text-rose-500 font-bold' : pct >= 80 ? 'text-amber-600 font-bold' : 'text-slate-700 dark:text-slate-300'}">${pct}%</span>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-              <div class="${barColor} h-full transition-all duration-500 rounded-full" style="width: ${pct}%"></div>
+              <div class="${barColor} h-full transition-all duration-500 rounded-full" style="width: ${barWidth}%"></div>
             </div>
           </div>
         `;
       }).join('');
       lucide.createIcons();
+      if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
     }
 
     function openBudgetModal() {
@@ -2344,7 +2660,7 @@ async function handleDeleteBudget(cat) {
   }
 }
 
-    // GASTOS RECURRENTES
+  // GASTOS RECURRENTES
     function renderRecurring() {
       const container = document.getElementById('recurringList');
       const homeSection = document.getElementById('homeRecurringSection');
@@ -2353,12 +2669,13 @@ async function handleDeleteBudget(cat) {
       if (recurringData.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No hay gastos recurrentes registrados.</p>';
         if(homeSection) homeSection.classList.add('hidden');
+        if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
         return;
       }
 
       // Render completo en pestaña Recurrentes
       container.innerHTML = recurringData.map(r => {
-        const iconName = CATEGORY_ICONS[r.category] || 'layout-grid';
+        const iconName = CATEGORY_ICONS[r.category] || 'tag';
         return `
         <div class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
           <div class="flex items-center gap-3">
@@ -2384,7 +2701,7 @@ async function handleDeleteBudget(cat) {
       if (homeSection) {
         homeSection.classList.remove('hidden');
         homeList.innerHTML = recurringData.slice(0, 3).map(r => {
-          const iconName = CATEGORY_ICONS[r.category] || 'layout-grid';
+          const iconName = CATEGORY_ICONS[r.category] || 'tag';
           return `
           <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
             <div class="flex items-center gap-3">
@@ -2405,96 +2722,102 @@ async function handleDeleteBudget(cat) {
       }
 
       lucide.createIcons();
+      if (typeof renderSmartAlerts === 'function') renderSmartAlerts();
     }
 
     function openRecurringModal() {
-  document.getElementById('recName').value = '';
-  document.getElementById('recAmount').value = '';
-  document.getElementById('recCategory').value = '';
-  document.getElementById('recCategoryText').innerText = 'Seleccionar...';
-  document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      document.getElementById('recName').value = '';
+      document.getElementById('recAmount').value = '';
+      document.getElementById('recCategory').value = '';
+      document.getElementById('recCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
 
-  // Reset del cuadro de categoría personalizada al abrir
-  const customDiv = document.getElementById('recCustomCategoryDiv');
-  const customInput = document.getElementById('recCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
+      // Reset del cuadro de categoría personalizada al abrir
+      const customDiv = document.getElementById('recCustomCategoryDiv');
+      const customInput = document.getElementById('recCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
 
-  lucide.createIcons();
-  document.getElementById('recurringModal').classList.remove('hidden');
-}
+      lucide.createIcons();
+      document.getElementById('recurringModal').classList.remove('hidden');
+    }
 
-function closeRecurringModal() {
-  document.getElementById('recurringModal').classList.add('hidden');
+    function closeRecurringModal() {
+      document.getElementById('recurringModal').classList.add('hidden');
 
-  // Reset del campo personalizado al cerrar
-  const customDiv = document.getElementById('recCustomCategoryDiv');
-  const customInput = document.getElementById('recCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
-}
+      // Reset del campo personalizado al cerrar
+      const customDiv = document.getElementById('recCustomCategoryDiv');
+      const customInput = document.getElementById('recCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
 
-async function handleSaveRecurring(e) {
-  e.preventDefault();
-  const name = document.getElementById('recName').value.trim();
-  const amount = parseFloat(document.getElementById('recAmount').value);
-  let cat = document.getElementById('recCategory').value;
-  const customCategoryInput = document.getElementById('recCustomCategory');
-  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
+    async function handleSaveRecurring(e) {
+      e.preventDefault();
+      const name = document.getElementById('recName').value.trim();
+      const amount = parseFloat(document.getElementById('recAmount').value);
+      let cat = document.getElementById('recCategory').value;
+      const customCategoryInput = document.getElementById('recCustomCategory');
+      const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
 
-  if (!name || !amount || amount <= 0) return;
-  if (!cat) { showToast('Selecciona una categoría'); return; }
+      if (!name || !amount || amount <= 0) return;
+      if (!cat) { showToast('Selecciona una categoría'); return; }
 
-  // Si eligió "Otros", tomar la categoría personalizada escrita
-  if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
-    cat = customCategoryVal;
-  }
+      // Si eligió "Otros", tomar la categoría personalizada escrita
+      if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+        cat = customCategoryVal;
+      }
 
-  try {
-    await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
-      name: name,
-      amount: amount,
-      category: cat,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast("Gasto recurrente guardado");
-    closeRecurringModal();
-  } catch (err) {
-    showToast("Error al guardar recurrente");
-  }
-}
+      try {
+        await db.collection('families').doc(currentUserData.familyId).collection('recurring').add({
+          name: name,
+          amount: amount,
+          category: cat,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast("Gasto recurrente guardado");
+        closeRecurringModal();
+      } catch (err) {
+        showToast("Error al guardar recurrente");
+      }
+    }
 
-async function handlePayRecurring(recId) {
-  const rec = recurringData.find(r => r.id === recId);
-  if (!rec) return;
+    async function handlePayRecurring(recId) {
+      const rec = recurringData.find(r => r.id === recId);
+      if (!rec) return;
 
-  try {
-    await db.collection('movements').add({
-      familyId: currentUserData.familyId,
-      type: 'expense',
-      amount: rec.amount,
-      category: rec.category,
-      date: new Date().toISOString().split('T')[0],
-      note: `Pago Recurrente: ${rec.name}`,
-      userId: auth.currentUser.uid,
-      userName: currentUserData.displayName || currentUserData.email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast(`Pago registrado: ${rec.name}`);
-  } catch (err) {
-    showToast("Error al registrar pago");
-  }
-}
+      // Fecha LOCAL exacta (sin desfase UTC)
+      const now = new Date();
+      const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-async function handleDeleteRecurring(id) {
-  if (!confirm("¿Eliminar este gasto recurrente?")) return;
-  try {
-    await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
-    showToast("Recurrente eliminado");
-  } catch (err) {
-    showToast("Error al eliminar");
-  }
-}
+      try {
+        await db.collection('movements').add({
+          familyId: currentUserData.familyId,
+          type: 'expense',
+          amount: rec.amount,
+          category: rec.category,
+          date: localDate,
+          note: `Pago Recurrente: ${rec.name}`,
+          userId: auth.currentUser.uid,
+          userName: currentUserData.displayName || currentUserData.email,
+          userEmail: currentUserData.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast(`Pago registrado: ${rec.name}`);
+      } catch (err) {
+        showToast("Error al registrar pago");
+      }
+    }
+
+    async function handleDeleteRecurring(id) {
+      if (!confirm("¿Eliminar este gasto recurrente?")) return;
+      try {
+        await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
+        showToast("Recurrente eliminado");
+      } catch (err) {
+        showToast("Error al eliminar");
+      }
+    }
 
     // GESTIÓN DE ESPACIO / GRUPO
     function renderEspacio(members, pending) {
@@ -2617,7 +2940,16 @@ async function handleDeleteRecurring(id) {
                 familyName: newName
             });
             currentFamilyData.familyName = newName;
-            document.getElementById('headerFamilyName').innerText = newName;
+
+            // Preservar badge de conexión al actualizar el nombre
+            const headerFam = document.getElementById('headerFamilyName');
+            if (headerFam) {
+              const badge = document.getElementById('connectionBadge');
+              headerFam.innerHTML = '';
+              headerFam.appendChild(document.createTextNode(newName + ' '));
+              if (badge) headerFam.appendChild(badge);
+            }
+
             document.getElementById('spaceTitle').innerText = newName;
             closeEditFamilyModal();
             showToast("Nombre del grupo actualizado");
@@ -2681,23 +3013,223 @@ async function handleDeleteRecurring(id) {
       reader.readAsDataURL(file);
     }
 
+    // ============================================
+    // EXPORTACIÓN CSV (respeta filtros activos)
+    // ============================================
     function exportToCSV() {
-      if (movementsData.length === 0) {
+      // Usar cache filtrada si existe; si no, todos
+      const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
+        ? filteredMovementsCache
+        : movementsData;
+
+      if (!data || data.length === 0) {
         showToast("No hay movimientos para exportar.");
         return;
       }
+
       let csv = "Fecha,Tipo,Categoría,Monto,Nota,Registrado Por\n";
-      movementsData.forEach(m => {
-        csv += `"${m.date}","${m.type}","${m.category}","${m.amount}","${m.note || ''}","${m.userName || ''}"\n`;
+      data.forEach(m => {
+        const note = String(m.note || '').replace(/"/g, '""');
+        const cat = String(m.category || '').replace(/"/g, '""');
+        const user = String(m.userName || '').replace(/"/g, '""');
+        const tipo = m.type === 'income' ? 'Ingreso' : 'Gasto';
+        csv += `"${m.date || ''}","${tipo}","${cat}","${m.amount || 0}","${note}","${user}"\n`;
       });
 
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      // BOM UTF-8 para Excel
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `ahorro_familiar_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute("download", `ahorro_familiar_${stamp}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      showToast("CSV exportado correctamente");
+    }
+
+    // ============================================
+    // EXPORTACIÓN / IMPRESIÓN PDF PROFESIONAL
+    // ============================================
+    function exportToPDF() {
+      const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
+        ? filteredMovementsCache
+        : movementsData;
+
+      if (!data || data.length === 0) {
+        showToast("No hay movimientos para generar el reporte.");
+        return;
+      }
+
+      let totalInc = 0;
+      let totalExp = 0;
+      data.forEach(m => {
+        const amt = parseFloat(m.amount) || 0;
+        if (m.type === 'income') totalInc += amt;
+        else totalExp += amt;
+      });
+      const net = totalInc - totalExp;
+
+      const familyName = (currentFamilyData && currentFamilyData.familyName) ? currentFamilyData.familyName : 'Mi Espacio';
+      const userName = (currentUserData && currentUserData.displayName) ? currentUserData.displayName : '';
+      const now = new Date();
+      const stamp = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
+
+      // Intentar jsPDF + AutoTable
+      try {
+        const jspdfNS = window.jspdf || window.jsPDF;
+        const JsPDFCtor = jspdfNS && (jspdfNS.jsPDF || jspdfNS);
+        if (!JsPDFCtor) throw new Error('jsPDF no disponible');
+
+        const doc = new JsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+
+        // Encabezado marca
+        doc.setFillColor(231, 111, 81); // #E76F51
+        doc.rect(0, 0, pageW, 28, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Ahorro Familiar', 14, 14);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Reporte de Movimientos', 14, 22);
+
+        doc.setFontSize(9);
+        doc.text(stamp, pageW - 14, 14, { align: 'right' });
+        doc.text(familyName, pageW - 14, 22, { align: 'right' });
+
+        // Resumen
+        doc.setTextColor(30, 41, 59);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Resumen del período', 14, 40);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(5, 150, 105);
+        doc.text(`Ingresos: ${formatCurrency(totalInc)}`, 14, 48);
+        doc.setTextColor(225, 29, 72);
+        doc.text(`Gastos: ${formatCurrency(totalExp)}`, 80, 48);
+        doc.setTextColor(30, 41, 59);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Balance: ${formatCurrency(net)}`, 140, 48);
+
+        if (userName) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(100, 116, 139);
+          doc.text(`Generado por: ${userName} · ${data.length} movimiento(s)`, 14, 56);
+        }
+
+        const tableBody = data.map(m => [
+          formatDate(m.date) || m.date || '',
+          m.type === 'income' ? 'Ingreso' : 'Gasto',
+          m.category || '',
+          formatCurrency(m.amount),
+          m.note || '',
+          m.userName || ''
+        ]);
+
+        if (typeof doc.autoTable === 'function') {
+          doc.autoTable({
+            startY: 62,
+            head: [['Fecha', 'Tipo', 'Categoría', 'Monto', 'Nota', 'Usuario']],
+            body: tableBody,
+            styles: { fontSize: 8, cellPadding: 2.5 },
+            headStyles: {
+              fillColor: [231, 111, 81],
+              textColor: 255,
+              fontStyle: 'bold'
+            },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+            columnStyles: {
+              3: { halign: 'right' }
+            },
+            margin: { left: 14, right: 14 }
+          });
+        } else {
+          // Fallback simple sin autotable
+          let y = 62;
+          doc.setFontSize(8);
+          data.slice(0, 40).forEach(m => {
+            doc.text(`${formatDate(m.date)} | ${m.type} | ${m.category} | ${formatCurrency(m.amount)}`, 14, y);
+            y += 5;
+            if (y > 280) { doc.addPage(); y = 20; }
+          });
+        }
+
+        // Pie
+        const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 12 : 280;
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text('Ahorro Familiar — Gestión financiera colaborativa', pageW / 2, Math.min(finalY, 290), { align: 'center' });
+
+        doc.save(`reporte_ahorro_familiar_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.pdf`);
+        showToast("PDF generado correctamente");
+        return;
+      } catch (err) {
+        console.warn('PDF fallback impresión:', err);
+      }
+
+      // Fallback: ventana de impresión HTML con membrete
+      // IMPORTANTE: no incluir etiquetas <script> literales aquí (rompen el parser del HTML principal)
+      const rows = data.map(m => `
+        <tr>
+          <td>${formatDate(m.date) || ''}</td>
+          <td>${m.type === 'income' ? 'Ingreso' : 'Gasto'}</td>
+          <td>${m.category || ''}</td>
+          <td style="text-align:right">${formatCurrency(m.amount)}</td>
+          <td>${m.note || ''}</td>
+          <td>${m.userName || ''}</td>
+        </tr>
+      `).join('');
+
+      const html = `
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Reporte Ahorro Familiar</title>
+<style>
+  body{font-family:system-ui,sans-serif;color:#0f172a;padding:24px}
+  .head{background:#E76F51;color:#fff;padding:20px 24px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+  .head h1{margin:0;font-size:22px}
+  .head p{margin:4px 0 0;opacity:.9;font-size:13px}
+  .summary{display:flex;gap:16px;margin:20px 0}
+  .card{flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px}
+  .card span{display:block;font-size:11px;color:#64748b}
+  .card strong{font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{background:#E76F51;color:#fff;padding:8px;text-align:left}
+  td{padding:8px;border-bottom:1px solid #e2e8f0}
+  tr:nth-child(even){background:#f8fafc}
+  .foot{margin-top:24px;text-align:center;color:#94a3b8;font-size:11px}
+</style></head><body>
+  <div class="head">
+    <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos · ${familyName}</p></div>
+    <div style="text-align:right;font-size:12px">${stamp}<br>${userName}</div>
+  </div>
+  <div class="summary">
+    <div class="card"><span>Ingresos</span><strong style="color:#059669">${formatCurrency(totalInc)}</strong></div>
+    <div class="card"><span>Gastos</span><strong style="color:#e11d48">${formatCurrency(totalExp)}</strong></div>
+    <div class="card"><span>Balance</span><strong>${formatCurrency(net)}</strong></div>
+  </div>
+  <table>
+    <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Monto</th><th>Nota</th><th>Usuario</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <p class="foot">Ahorro Familiar — Gestión financiera colaborativa · ${data.length} movimiento(s)</p>
+</body></html>`;
+
+      const w = window.open('', '_blank');
+      if (!w) {
+        showToast("Permite ventanas emergentes para imprimir el PDF");
+        return;
+      }
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      setTimeout(() => { w.focus(); w.print(); }, 300);
+      showToast("Abriendo vista de impresión...");
     }
 
     function showToast(msg) {
