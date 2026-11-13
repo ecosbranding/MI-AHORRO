@@ -281,26 +281,29 @@
     </div>
 
     <!-- Navegación Inferior Móvil / Superior Escritorio -->
-    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex justify-around items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:shadow-none">
-      <button onclick="showSection('secResumen')" id="navResumen" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-[#E76F51] font-semibold text-[10px] transition-colors">
+    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-1 py-1.5 flex justify-around items-center overflow-x-auto no-scrollbar shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:shadow-none">
+      <button onclick="showSection('secResumen')" id="navResumen" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-[#E76F51] font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="mt-0.5">Inicio</span>
       </button>
-      <button onclick="showSection('secMovimientos')" id="navMovimientos" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secMovimientos')" id="navMovimientos" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="arrow-left-right" class="w-5 h-5"></i><span class="mt-0.5">Movs</span>
       </button>
-      <button onclick="showSection('secMetas')" id="navMetas" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secHistorial')" id="navHistorial" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
+        <i data-lucide="calendar-days" class="w-5 h-5"></i><span class="mt-0.5">Historial</span>
+      </button>
+      <button onclick="showSection('secMetas')" id="navMetas" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="target" class="w-5 h-5"></i><span class="mt-0.5">Metas</span>
       </button>
-      <button onclick="showSection('secPresupuestos')" id="navPresupuestos" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secPresupuestos')" id="navPresupuestos" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="pie-chart" class="w-5 h-5"></i><span class="mt-0.5">Presup</span>
       </button>
-      <button onclick="showSection('secRecurrentes')" id="navRecurrentes" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secRecurrentes')" id="navRecurrentes" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="repeat" class="w-5 h-5"></i><span class="mt-0.5">Recurr</span>
       </button>
-      <button onclick="showSection('secEspacio')" id="navEspacio" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secEspacio')" id="navEspacio" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="users" class="w-5 h-5"></i><span class="mt-0.5">Espacio</span>
       </button>
-      <button onclick="showSection('secPerfil')" id="navPerfil" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
+      <button onclick="showSection('secPerfil')" id="navPerfil" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors shrink-0">
         <i data-lucide="user" class="w-5 h-5"></i><span class="mt-0.5">Perfil</span>
       </button>
     </nav>
@@ -505,6 +508,41 @@
 
         <div id="fullMovementsList" class="space-y-3">
           <p class="text-xs text-slate-400 text-center py-6">Cargando movimientos...</p>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: HISTORIAL MES A MES -->
+      <section id="secHistorial" class="hidden space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Historial Mensual</h2>
+          <button onclick="renderMonthlyHistory()" class="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl shadow-sm" title="Actualizar">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-500 dark:text-slate-400 -mt-2">
+          Resumen de ingresos, gastos y balance por cada mes.
+        </p>
+
+        <!-- Totales generales de todo el historial -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Ingresos</p>
+            <p id="histTotalIngresos" class="text-sm font-bold text-emerald-600 mt-1">$0.00</p>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Gastos</p>
+            <p id="histTotalGastos" class="text-sm font-bold text-rose-600 mt-1">$0.00</p>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Balance</p>
+            <p id="histTotalBalance" class="text-sm font-bold text-slate-800 dark:text-white mt-1">$0.00</p>
+          </div>
+        </div>
+
+        <!-- Lista de meses -->
+        <div id="monthlyHistoryList" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-6">Cargando historial...</p>
         </div>
       </section>
 
@@ -1473,8 +1511,12 @@
       if (unsubscribeMembers) unsubscribeMembers();
     }
 
+        // ============================================
+    // NAVEGACIÓN Y SECCIÓN HISTORIAL MENSUAL
+    // ============================================
+
     function showSection(secId) {
-      const sections = ['secResumen', 'secMovimientos', 'secMetas', 'secPresupuestos', 'secRecurrentes', 'secEspacio', 'secPerfil'];
+      const sections = ['secResumen', 'secMovimientos', 'secHistorial', 'secMetas', 'secPresupuestos', 'secRecurrentes', 'secEspacio', 'secPerfil'];
       sections.forEach(s => {
         const el = document.getElementById(s);
         if (el) el.classList.add('hidden');
@@ -1492,6 +1534,7 @@
       const activeNavMap = {
         'secResumen': 'navResumen',
         'secMovimientos': 'navMovimientos',
+        'secHistorial': 'navHistorial',
         'secMetas': 'navMetas',
         'secPresupuestos': 'navPresupuestos',
         'secRecurrentes': 'navRecurrentes',
@@ -1512,6 +1555,111 @@
       }
       if (secId === 'secMovimientos') {
         if (typeof filterMovements === 'function') filterMovements();
+      }
+      if (secId === 'secHistorial') {
+        renderMonthlyHistory();
+      }
+    }
+
+    // Calcula y renderiza el resumen ordenado mes a mes
+    function renderMonthlyHistory() {
+      const container = document.getElementById('monthlyHistoryList');
+      if (!container) return;
+
+      if (!movementsData || movementsData.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl text-center border border-slate-100 dark:border-slate-700/60">
+            <p class="text-xs text-slate-400">No hay movimientos registrados para estructurar el historial.</p>
+          </div>`;
+        document.getElementById('histTotalIngresos').innerText = formatCurrency(0);
+        document.getElementById('histTotalGastos').innerText = formatCurrency(0);
+        document.getElementById('histTotalBalance').innerText = formatCurrency(0);
+        return;
+      }
+
+      // 1. Agrupar por mes (Año-Mes: YYYY-MM)
+      const monthlyGroup = {};
+      let totalGlobalInc = 0;
+      let totalGlobalExp = 0;
+
+      movementsData.forEach(m => {
+        if (!m.date) return;
+        const key = m.date.substring(0, 7); // Genera "YYYY-MM"
+        const amt = parseFloat(m.amount) || 0;
+
+        if (!monthlyGroup[key]) {
+          monthlyGroup[key] = { inc: 0, exp: 0, count: 0 };
+        }
+
+        if (m.type === 'income') {
+          monthlyGroup[key].inc += amt;
+          totalGlobalInc += amt;
+        } else {
+          monthlyGroup[key].exp += amt;
+          totalGlobalExp += amt;
+        }
+        monthlyGroup[key].count++;
+      });
+
+      // 2. Actualizar tarjetas con Totales Históricos Globales
+      const globalNet = totalGlobalInc - totalGlobalExp;
+      document.getElementById('histTotalIngresos').innerText = formatCurrency(totalGlobalInc);
+      document.getElementById('histTotalGastos').innerText = formatCurrency(totalGlobalExp);
+      const totalBalEl = document.getElementById('histTotalBalance');
+      totalBalEl.innerText = formatCurrency(globalNet);
+      totalBalEl.className = `text-sm font-bold mt-1 ${globalNet >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+
+      // 3. Ordenar meses del más reciente al más antiguo
+      const sortedKeys = Object.keys(monthlyGroup).sort().reverse();
+
+      const monthNames = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+      ];
+
+      // 4. Renderizar tarjetas mensuales
+      container.innerHTML = sortedKeys.map(key => {
+        const [yearStr, monthStr] = key.split('-');
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const monthLabel = `${monthNames[monthIndex] || monthStr} ${yearStr}`;
+
+        const data = monthlyGroup[key];
+        const net = data.inc - data.exp;
+        const isPositive = net >= 0;
+
+        return `
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+              <div class="flex items-center gap-2">
+                <div class="p-2 bg-[#E76F51]/10 rounded-xl text-[#E76F51]">
+                  <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">${monthLabel}</h3>
+                  <p class="text-[10px] text-slate-400">${data.count} movimiento(s)</p>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full font-bold ${isPositive ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-rose-100 dark:bg-rose-900/40 text-rose-600'}">
+                ${isPositive ? '+' : ''}${formatCurrency(net)}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-semibold">Ingresos</span>
+                <span class="font-bold text-emerald-600 text-xs">${formatCurrency(data.inc)}</span>
+              </div>
+              <div class="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-semibold">Gastos</span>
+                <span class="font-bold text-rose-600 text-xs">${formatCurrency(data.exp)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
       }
     }
 
