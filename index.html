@@ -672,7 +672,21 @@
             </div>
           </form>
 
+          <!-- ACCIONES Y COPIAS DE SEGURIDAD -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+            <!-- COPIA DE SEGURIDAD (RESPALDO Y RESTAURAR) -->
+            <button onclick="exportFullBackup()" class="w-full py-3 px-4 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors border border-indigo-100 dark:border-indigo-900/50">
+              <i data-lucide="shield-check" class="w-4 h-4 text-indigo-500"></i>
+              <span>Descargar Copia de Seguridad (JSON)</span>
+            </button>
+
+            <button onclick="triggerImportBackup()" class="w-full py-3 px-4 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors border border-emerald-100 dark:border-emerald-900/50">
+              <i data-lucide="upload-cloud" class="w-4 h-4 text-emerald-500"></i>
+              <span>Restaurar Copia de Seguridad</span>
+            </button>
+            <input type="file" id="inputBackupFile" accept=".json" class="hidden" onchange="importFullBackup(event)">
+
+            <!-- OTROS BOTONES -->
             <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
@@ -1437,6 +1451,120 @@
         showAuthScreen();
         showToast("Sesión cerrada");
       });
+    }
+
+        // ============================================
+    // COPIA DE SEGURIDAD (DESCARGAR Y RESTAURAR RESPALDO JSON)
+    // ============================================
+
+    // 1. Exportar todos los datos a un archivo JSON seguro
+    function exportFullBackup() {
+      try {
+        showToast("Generando copia de seguridad...");
+
+        const backupData = {
+          app: "AhorroFamiliar",
+          version: "1.0",
+          exportDate: new Date().toISOString(),
+          family: (typeof currentFamilyData !== 'undefined') ? currentFamilyData : null,
+          movements: (typeof movementsData !== 'undefined') ? movementsData : [],
+          goals: (typeof goalsData !== 'undefined') ? goalsData : [],
+          recurring: (typeof recurringData !== 'undefined') ? recurringData : [],
+          budgets: (typeof budgetsData !== 'undefined') ? budgetsData : {}
+        };
+
+        const jsonStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const now = new Date();
+        const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ahorro_familiar_backup_${stamp}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        showToast("Copia de seguridad descargada correctamente");
+      } catch (err) {
+        console.error("Error al exportar respaldo:", err);
+        showToast("Error al generar la copia de seguridad");
+      }
+    }
+
+    // 2. Disparar el selector de archivos
+    function triggerImportBackup() {
+      const fileInput = document.getElementById('inputBackupFile');
+      if (fileInput) fileInput.click();
+    }
+
+    // 3. Leer y restaurar los datos del archivo JSON seleccionado
+    function importFullBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const confirmRestore = confirm(
+        "¿Deseas restaurar los datos de esta copia de seguridad?\n\nNota: Esto actualizará tus movimientos, metas y presupuestos con la información guardada en este archivo."
+      );
+
+      if (!confirmRestore) {
+        event.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const importedObj = JSON.parse(e.target.result);
+
+          if (!importedObj || importedObj.app !== "AhorroFamiliar" || !Array.isArray(importedObj.movements)) {
+            alert("El archivo seleccionado no es un respaldo válido de Ahorro Familiar.");
+            return;
+          }
+
+          // Actualizar variables en memoria
+          if (Array.isArray(importedObj.movements)) movementsData = importedObj.movements;
+          if (Array.isArray(importedObj.goals)) goalsData = importedObj.goals;
+          if (Array.isArray(importedObj.recurring)) recurringData = importedObj.recurring;
+          if (importedObj.budgets) budgetsData = importedObj.budgets;
+          if (importedObj.family) currentFamilyData = importedObj.family;
+
+          // Guardar en almacenamiento local para persistencia
+          try {
+            localStorage.setItem('ahorro_movements', JSON.stringify(movementsData));
+            localStorage.setItem('ahorro_goals', JSON.stringify(goalsData));
+            localStorage.setItem('ahorro_recurring', JSON.stringify(recurringData));
+            localStorage.setItem('ahorro_budgets', JSON.stringify(budgetsData));
+          } catch(errLS) {}
+
+          // Si la app usa IndexedDB
+          if (typeof db !== 'undefined' && db) {
+            try {
+              const tx = db.transaction(['movements'], 'readwrite');
+              const store = tx.objectStore('movements');
+              await store.clear();
+              for (const item of movementsData) {
+                await store.put(item);
+              }
+            } catch (dbErr) {
+              console.warn("Actualizando IndexedDB...", dbErr);
+            }
+          }
+
+          showToast("¡Datos restaurados con éxito!");
+          setTimeout(() => location.reload(), 1200);
+
+        } catch (err) {
+          console.error("Error al leer el archivo JSON:", err);
+          alert("No se pudo leer el archivo. Asegúrate de que sea un archivo de respaldo .json válido.");
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
     }
 
     async function handleDeleteAccount() {
