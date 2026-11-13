@@ -2869,13 +2869,13 @@
       reader.readAsDataURL(file);
     }
 
-        // ============================================
-    // EXPORTACIÓN CSV - CORREGIDO PARA EXCEL LATAM/ES (CON FILTRO DE FECHAS)
+       // ============================================
+    // EXPORTACIÓN CSV (ORDENADO ALFABÉTICAMENTE POR CATEGORÍA)
     // ============================================
     function exportToCSV() {
       let data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
-        ? filteredMovementsCache
-        : movementsData;
+        ? [...filteredMovementsCache]
+        : [...movementsData];
 
       // 1. FILTRAR POR FECHAS (DESDE - HASTA)
       const exportDesde = document.getElementById('exportDesde')?.value;
@@ -2902,10 +2902,13 @@
         return;
       }
 
+      // 2. ORDENAR ALFABÉTICAMENTE POR CATEGORÍA (A -> Z)
+      data.sort((a, b) => (a.category || '').localeCompare(b.category || '', 'es', { sensitivity: 'base' }));
+
       const SEP = ';'; // Punto y coma para separar columnas en Excel Español
       
       // Membrete tipo plantilla
-      let csv = `REPORTE DE MOVIMIENTOS - AHORRO FAMILIAR\n`;
+      let csv = `REPORTE DE MOVIMIENTOS - AHORRO FAMILIAR (ORDENADO POR CATEGORÍA)\n`;
       csv += `Familia:;${(currentFamilyData && currentFamilyData.familyName) ? currentFamilyData.familyName : 'Mi Espacio'}\n`;
       csv += `Generado el:;${new Date().toLocaleDateString('es-ES')}\n`;
       if (exportDesde || exportHasta) {
@@ -2913,41 +2916,40 @@
       }
       csv += `\n`;
 
-      csv += `Fecha${SEP}Tipo${SEP}Categoría${SEP}Monto${SEP}Nota${SEP}Registrado Por\n`;
+      csv += `Categoría${SEP}Fecha${SEP}Tipo${SEP}Monto${SEP}Nota${SEP}Registrado Por\n`;
       
       data.forEach(m => {
-        const note = String(m.note || '').replace(/"/g, '""');
         const cat = String(m.category || '').replace(/"/g, '""');
+        const note = String(m.note || '').replace(/"/g, '""');
         const user = String(m.userName || '').replace(/"/g, '""');
         const tipo = m.type === 'income' ? 'Ingreso' : 'Gasto';
-        // Formateamos el monto con coma decimal para Excel
         const montoFormatted = (parseFloat(m.amount) || 0).toFixed(2).replace('.', ',');
         
-        csv += `"${m.date || ''}"${SEP}"${tipo}"${SEP}"${cat}"${SEP}${montoFormatted}${SEP}"${note}"${SEP}"${user}"\n`;
+        csv += `"${cat}"${SEP}"${m.date || ''}"${SEP}"${tipo}"${SEP}${montoFormatted}${SEP}"${note}"${SEP}"${user}"\n`;
       });
 
-      // BOM UTF-8 para que Excel lea los tildes correctamente
+      // BOM UTF-8
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       const now = new Date();
       const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `ahorro_familiar_${stamp}.csv`);
+      link.setAttribute("download", `ahorro_familiar_categorias_${stamp}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast("Excel exportado correctamente");
+      showToast("Excel exportado correctamente (Ordenado por categoría)");
     }
 
-        // ============================================
-    // EXPORTACIÓN PDF CON FILTRO DE FECHAS Y LOGO PNG
+       // ============================================
+    // EXPORTACIÓN PDF (ORDENADO ALFABÉTICAMENTE POR CATEGORÍA)
     // ============================================
     async function exportToPDF() {
-      showToast("Preparando PDF..."); // Pequeño aviso inicial
+      showToast("Preparando PDF...");
 
       let data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
-        ? filteredMovementsCache
-        : movementsData;
+        ? [...filteredMovementsCache]
+        : [...movementsData];
 
       // 1. FILTRAR POR FECHAS (DESDE - HASTA)
       const exportDesde = document.getElementById('exportDesde')?.value;
@@ -2956,7 +2958,7 @@
       if (exportDesde || exportHasta) {
         data = data.filter(m => {
           if (!m.date) return false;
-          const mDate = new Date(m.date + 'T00:00:00'); // Evita desfase de zona horaria
+          const mDate = new Date(m.date + 'T00:00:00');
           if (exportDesde) {
             const fDate = new Date(exportDesde + 'T00:00:00');
             if (mDate < fDate) return false;
@@ -2974,6 +2976,9 @@
         return;
       }
 
+      // 2. ORDENAR ALFABÉTICAMENTE POR CATEGORÍA (A -> Z)
+      data.sort((a, b) => (a.category || '').localeCompare(b.category || '', 'es', { sensitivity: 'base' }));
+
       let totalInc = 0;
       let totalExp = 0;
       data.forEach(m => {
@@ -2988,7 +2993,7 @@
       const now = new Date();
       const stamp = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
 
-      // 2. CARGAR EL LOGO .PNG DINÁMICAMENTE
+      // CARGAR EL LOGO .PNG DINÁMICAMENTE
       let base64Logo = null;
       try {
         base64Logo = await new Promise((resolve, reject) => {
@@ -3003,7 +3008,7 @@
             resolve(canvas.toDataURL('image/png'));
           };
           img.onerror = () => reject('Error imagen');
-          img.src = 'icon-192.png'; // <- Aquí llama a tu imagen directamente
+          img.src = 'icon-192.png';
         });
       } catch (err) {
         console.warn('No se pudo cargar icon-192.png localmente para el PDF', err);
@@ -3018,10 +3023,9 @@
         const pageW = doc.internal.pageSize.getWidth();
 
         // Encabezado marca
-        doc.setFillColor(231, 111, 81); // #E76F51
+        doc.setFillColor(231, 111, 81);
         doc.rect(0, 0, pageW, 28, 'F');
 
-        // Dibujar Logo PNG si cargó correctamente
         if (base64Logo) {
           doc.setFillColor(255, 255, 255);
           doc.setGState(new doc.GState({ opacity: 0.2 }));
@@ -3036,8 +3040,8 @@
         doc.text('Ahorro Familiar', 32, 14); 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        let subtitulo = 'Reporte de Movimientos';
-        if (exportDesde || exportHasta) subtitulo += ' (Filtrado)';
+        let subtitulo = 'Reporte de Movimientos (Por Categoría)';
+        if (exportDesde || exportHasta) subtitulo += ' · Filtrado';
         doc.text(subtitulo, 32, 22);
 
         doc.setFontSize(9);
@@ -3068,9 +3072,9 @@
         }
 
         const tableBody = data.map(m => [
+          m.category || '',
           formatDate(m.date) || m.date || '',
           m.type === 'income' ? 'Ingreso' : 'Gasto',
-          m.category || '',
           formatCurrency(m.amount),
           m.note || '',
           m.userName || ''
@@ -3079,7 +3083,7 @@
         if (typeof doc.autoTable === 'function') {
           doc.autoTable({
             startY: 62,
-            head: [['Fecha', 'Tipo', 'Categoría', 'Monto', 'Nota', 'Usuario']],
+            head: [['Categoría', 'Fecha', 'Tipo', 'Monto', 'Nota', 'Usuario']],
             body: tableBody,
             styles: { fontSize: 8, cellPadding: 2.5 },
             headStyles: {
@@ -3105,12 +3109,12 @@
         console.warn('Fallo jsPDF, usando fallback de impresión HTML:', err);
       }
 
-      // 3. Fallback HTML (Si falla jsPDF, este usa la ruta de la imagen directa)
+      // Fallback HTML
       const rows = data.map(m => `
         <tr>
+          <td><strong>${m.category || ''}</strong></td>
           <td>${formatDate(m.date) || ''}</td>
           <td>${m.type === 'income' ? 'Ingreso' : 'Gasto'}</td>
-          <td>${m.category || ''}</td>
           <td style="text-align:right">${formatCurrency(m.amount)}</td>
           <td>${m.note || ''}</td>
           <td>${m.userName || ''}</td>
@@ -3140,7 +3144,7 @@
       <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;">
         <img src="icon-192.png" style="width:24px;height:24px;border-radius:4px;">
       </div>
-      <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos${(exportDesde||exportHasta)?" (Filtrado)":""}</p></div>
+      <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos (Por Categoría)</p></div>
     </div>
     <div style="text-align:right;font-size:12px">${stamp}<br>${familyName}</div>
   </div>
@@ -3150,7 +3154,7 @@
     <div class="card"><span>Balance</span><strong>${formatCurrency(net)}</strong></div>
   </div>
   <table>
-    <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Monto</th><th>Nota</th><th>Usuario</th></tr></thead>
+    <thead><tr><th>Categoría</th><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Nota</th><th>Usuario</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
   <p class="foot">Generado por: ${userName} · ${data.length} movimiento(s)</p>
@@ -3166,17 +3170,6 @@
       w.document.close();
       setTimeout(() => { w.focus(); w.print(); }, 500);
       showToast("Abriendo vista de impresión...");
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.classList.remove('opacity-0');
-      toast.classList.add('opacity-100');
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0');
-      }, 3500);
     }
   </script>
 </body>
