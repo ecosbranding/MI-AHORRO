@@ -2721,16 +2721,36 @@
       reader.readAsDataURL(file);
     }
 
-    // ============================================
-    // EXPORTACIÓN CSV - CORREGIDO PARA EXCEL LATAM/ES
+        // ============================================
+    // EXPORTACIÓN CSV - CORREGIDO PARA EXCEL LATAM/ES (CON FILTRO DE FECHAS)
     // ============================================
     function exportToCSV() {
-      const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
+      let data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
         ? filteredMovementsCache
         : movementsData;
 
+      // 1. FILTRAR POR FECHAS (DESDE - HASTA)
+      const exportDesde = document.getElementById('exportDesde')?.value;
+      const exportHasta = document.getElementById('exportHasta')?.value;
+
+      if (exportDesde || exportHasta) {
+        data = data.filter(m => {
+          if (!m.date) return false;
+          const mDate = new Date(m.date + 'T00:00:00');
+          if (exportDesde) {
+            const fDate = new Date(exportDesde + 'T00:00:00');
+            if (mDate < fDate) return false;
+          }
+          if (exportHasta) {
+            const tDate = new Date(exportHasta + 'T23:59:59');
+            if (mDate > tDate) return false;
+          }
+          return true;
+        });
+      }
+
       if (!data || data.length === 0) {
-        showToast("No hay movimientos para exportar.");
+        showToast("No hay movimientos en las fechas seleccionadas.");
         return;
       }
 
@@ -2739,7 +2759,11 @@
       // Membrete tipo plantilla
       let csv = `REPORTE DE MOVIMIENTOS - AHORRO FAMILIAR\n`;
       csv += `Familia:;${(currentFamilyData && currentFamilyData.familyName) ? currentFamilyData.familyName : 'Mi Espacio'}\n`;
-      csv += `Generado el:;${new Date().toLocaleDateString('es-ES')}\n\n`;
+      csv += `Generado el:;${new Date().toLocaleDateString('es-ES')}\n`;
+      if (exportDesde || exportHasta) {
+        csv += `Rango de fechas:;${exportDesde || 'Inicio'} hasta ${exportHasta || 'Hoy'}\n`;
+      }
+      csv += `\n`;
 
       csv += `Fecha${SEP}Tipo${SEP}Categoría${SEP}Monto${SEP}Nota${SEP}Registrado Por\n`;
       
