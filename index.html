@@ -10,7 +10,6 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/png" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="manifest" href="manifest.json">
   
   <!-- Configuración Específica para iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,12 +19,10 @@
   <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png">
-  <!-- Esto elimina el color blanco feo al cargar en iOS -->
   <meta name="theme-color" content="#0F172A">
   
   <title>Ahorro Familiar - Gestión Financiera Colaborativa</title>
 
-  <!-- Dynamic Web App Manifest Injection (GitHub Pages PWA Support with HD Canvas PNG Icons) -->
   <script>
     function generatePNGIcon(size) {
       const canvas = document.createElement('canvas');
@@ -106,7 +103,6 @@
     }
   </script>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -126,41 +122,20 @@
     }
   </script>
   
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
-
-  <!-- jsPDF & AutoTable para Exportación PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-
-  <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Transiciones suaves */
-    .transition-all-custom {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    /* Estilos de scroll personalizable */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(156, 163, 175, 0.4);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(156, 163, 175, 0.6);
-    }
+    .transition-all-custom { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.6); }
   </style>
 </head>
 
@@ -174,8 +149,6 @@
   <!-- Pantalla de Autenticación -->
   <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
     <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 dark:border-slate-800 transition-all-custom">
-      
-      <!-- Brand Logo Header -->
       <div class="text-center mb-8">
         <div class="w-16 h-16 bg-gradient-to-br from-[#E76F51] to-[#D05A3F] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-[#E76F51]/30 mb-4">
           <i data-lucide="heart-handshake" class="w-10 h-10 text-white"></i>
@@ -184,7 +157,6 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Gestión financiera colaborativa</p>
       </div>
 
-      <!-- Toggle Auth Modes -->
       <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6">
         <button id="btnTabLogin" onclick="toggleAuthMode('login')" class="flex-1 py-2.5 text-xs font-bold rounded-xl transition-all-custom bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">
           Iniciar Sesión
@@ -194,10 +166,7 @@
         </button>
       </div>
 
-      <!-- Formulario Auth -->
       <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
-        
-        <!-- Nombre Completo (Solo registro) -->
         <div id="fieldDisplayName" class="hidden">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Nombre Completo</label>
           <div class="relative">
@@ -208,7 +177,6 @@
           </div>
         </div>
 
-        <!-- Opciones de Registro (Crear vs Unirse) -->
         <div id="fieldRegisterOptions" class="hidden space-y-3">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">¿Qué deseas hacer?</label>
           <div class="grid grid-cols-2 gap-2">
@@ -223,7 +191,6 @@
           </div>
         </div>
 
-        <!-- Nombre de Familia (Solo al crear) -->
         <div id="fieldFamilyName" class="hidden space-y-1">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Nombre o Apellido de la Familia</label>
           <div class="relative">
@@ -235,7 +202,6 @@
           <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Se guardará como: <span class="text-[#E76F51] font-bold">Familia [Tu Apellido]</span></p>
         </div>
 
-        <!-- Código de Grupo (Solo si se selecciona Unirse) -->
         <div id="fieldGroupCode" class="hidden">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Código de Invitación</label>
           <div class="relative">
@@ -246,13 +212,11 @@
           </div>
         </div>
 
-        <!-- Correo Electrónico -->
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Correo Electrónico</label>
           <input type="email" id="authEmail" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="usuario@correo.com">
         </div>
 
-        <!-- Contraseña -->
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Contraseña</label>
           <div class="relative">
@@ -263,51 +227,45 @@
           </div>
         </div>
 
-        <!-- Botón submit -->
         <button type="submit" id="authSubmitBtn" class="w-full mt-2 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-lg shadow-[#E76F51]/30 transition-transform active:scale-95 flex items-center justify-center gap-2">
           <span>Iniciar Sesión</span>
         </button>
       </form>
 
-      <!-- Mensaje de Error Auth -->
       <div id="authError" class="hidden mt-4 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl text-xs text-rose-600 dark:text-rose-400 text-center"></div>
-
     </div>
   </div>
 
   <!-- Aplicación Principal -->
   <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen pb-20">
     
-    <!-- Header Superior -->
+    <!-- HEADER CORREGIDO: Flex flexible para que no se deforme en Celular -->
     <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E76F51] to-[#D05A3F] flex items-center justify-center text-white shadow-md">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-[#E76F51] to-[#D05A3F] flex items-center justify-center text-white shadow-md">
           <i data-lucide="heart-handshake" class="w-5 h-5"></i>
         </div>
-        <div>
-          <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white flex items-center gap-2">
-            Mi Espacio
-            <!-- Nuevo: Badge de Conexión -->
-            <span id="connectionBadge" class="hidden items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+        <div class="min-w-0 flex-1">
+          <!-- Badge y Nombre ahora están alineados sin romperse -->
+          <div class="flex items-center gap-2">
+            <h2 id="headerFamilyName" class="font-bold text-sm leading-none text-slate-900 dark:text-white truncate">
+              Mi Espacio
+            </h2>
+            <span id="connectionBadge" class="hidden shrink-0 items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
               <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea
             </span>
-          </h2>
-          <span id="headerUserName" class="text-[11px] text-slate-500 dark:text-slate-400 leading-none">Cargando...</span>
+          </div>
+          <span id="headerUserName" class="text-[11px] text-slate-500 dark:text-slate-400 leading-none block truncate mt-1">Cargando...</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <!-- Botón Instalar PWA Header -->
+      <div class="flex items-center gap-2 shrink-0">
         <button id="btnInstallPWAHeader" onclick="triggerPWAInstall()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#E76F51] hover:bg-[#E76F51]/10 transition-colors" title="Instalar Aplicación">
           <i data-lucide="download" class="w-5 h-5"></i>
         </button>
-
-        <!-- Toggle Modo Oscuro -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
           <i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i>
         </button>
-
-        <!-- Botón Cerrar Sesión -->
         <button onclick="handleLogout()" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors" title="Cerrar Sesión">
           <i data-lucide="log-out" class="w-5 h-5"></i>
         </button>
@@ -318,39 +276,32 @@
     <div id="pendingWarningBanner" class="hidden bg-amber-500 text-slate-950 px-4 py-3 text-xs font-bold flex items-center justify-between shadow-md">
       <div class="flex items-center gap-2">
         <i data-lucide="clock" class="w-4 h-4 shrink-0"></i>
-        <span>Tu solicitud para unirte al espacio está pendiente de aprobación por el administrador.</span>
+        <span>Tu solicitud para unirte al espacio está pendiente de aprobación.</span>
       </div>
     </div>
 
     <!-- Navegación Inferior Móvil / Superior Escritorio -->
     <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex justify-around items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:shadow-none">
       <button onclick="showSection('secResumen')" id="navResumen" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-[#E76F51] font-semibold text-[10px] transition-colors">
-        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-        <span class="mt-0.5">Inicio</span>
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="mt-0.5">Inicio</span>
       </button>
       <button onclick="showSection('secMovimientos')" id="navMovimientos" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-        <span class="mt-0.5">Movs</span>
+        <i data-lucide="arrow-left-right" class="w-5 h-5"></i><span class="mt-0.5">Movs</span>
       </button>
       <button onclick="showSection('secMetas')" id="navMetas" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="target" class="w-5 h-5"></i>
-        <span class="mt-0.5">Metas</span>
+        <i data-lucide="target" class="w-5 h-5"></i><span class="mt-0.5">Metas</span>
       </button>
       <button onclick="showSection('secPresupuestos')" id="navPresupuestos" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-        <span class="mt-0.5">Presup</span>
+        <i data-lucide="pie-chart" class="w-5 h-5"></i><span class="mt-0.5">Presup</span>
       </button>
       <button onclick="showSection('secRecurrentes')" id="navRecurrentes" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="repeat" class="w-5 h-5"></i>
-        <span class="mt-0.5">Recurr</span>
+        <i data-lucide="repeat" class="w-5 h-5"></i><span class="mt-0.5">Recurr</span>
       </button>
       <button onclick="showSection('secEspacio')" id="navEspacio" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="users" class="w-5 h-5"></i>
-        <span class="mt-0.5">Espacio</span>
+        <i data-lucide="users" class="w-5 h-5"></i><span class="mt-0.5">Espacio</span>
       </button>
       <button onclick="showSection('secPerfil')" id="navPerfil" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-semibold text-[10px] transition-colors">
-        <i data-lucide="user" class="w-5 h-5"></i>
-        <span class="mt-0.5">Perfil</span>
+        <i data-lucide="user" class="w-5 h-5"></i><span class="mt-0.5">Perfil</span>
       </button>
     </nav>
 
@@ -360,7 +311,6 @@
       <!-- SECCIÓN 1: RESUMEN / INICIO -->
       <section id="secResumen" class="space-y-6">
 
-        <!-- Mini Banner de Instalación App en Inicio -->
         <div id="pwaInstallBanner" class="p-3.5 bg-slate-800/90 dark:bg-slate-800/90 border border-slate-700/80 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-sm">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-[#E76F51] flex items-center justify-center shrink-0 shadow-md">
@@ -372,24 +322,22 @@
             </div>
           </div>
           <button onclick="triggerPWAInstall()" class="px-3.5 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white text-xs font-semibold rounded-xl shadow flex items-center gap-1.5 shrink-0 transition-transform active:scale-95">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Instalar</span>
+            <i data-lucide="download" class="w-4 h-4"></i><span>Instalar</span>
           </button>
         </div>
 
-        <!-- CONMUTADOR DE MODO: FAMILIAR VS MIS FINANZAS (PRIVADO) -->
-<div class="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl mb-4 border border-slate-200/60 dark:border-slate-700/60 shadow-inner">
-  <button type="button" id="btnModeFamily" onclick="setDashboardMode('family')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5">
-    <i data-lucide="users" class="w-4 h-4"></i> Familia
-  </button>
-  <button type="button" id="btnModePersonal" onclick="setDashboardMode('personal')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5">
-    <i data-lucide="user" class="w-4 h-4"></i> Mis Finanzas
-  </button>
-</div>
+        <div class="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl mb-4 border border-slate-200/60 dark:border-slate-700/60 shadow-inner">
+          <button type="button" id="btnModeFamily" onclick="setDashboardMode('family')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4"></i> Familia
+          </button>
+          <button type="button" id="btnModePersonal" onclick="setDashboardMode('personal')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="user" class="w-4 h-4"></i> Mis Finanzas
+          </button>
+        </div>
         
-        <!-- Tarjetero de Balances -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+        <!-- TARJETAS CORREGIDAS: Misma altura y grid-cols-2 en móvil -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md flex flex-col justify-between min-h-[90px]">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
               <span class="text-xs font-semibold">Ingresos Totales</span>
               <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center">
@@ -399,7 +347,7 @@
             <p id="totalIncomesDisplay" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">$0.00</p>
           </div>
 
-          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md flex flex-col justify-between min-h-[90px]">
             <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
               <span class="text-xs font-semibold">Gastos Totales</span>
               <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-500 flex items-center justify-center">
@@ -409,7 +357,7 @@
             <p id="totalExpensesDisplay" class="text-xl font-bold text-rose-600 dark:text-rose-400">$0.00</p>
           </div>
 
-          <div class="bg-gradient-to-br from-[#E76F51] to-[#D05A3F] p-4 rounded-2xl border-0 shadow-lg shadow-[#E76F51]/20">
+          <div class="col-span-2 sm:col-span-1 bg-gradient-to-br from-[#E76F51] to-[#D05A3F] p-4 rounded-2xl border-0 shadow-lg shadow-[#E76F51]/20 flex flex-col justify-between min-h-[90px]">
             <div class="flex items-center justify-between text-white/80 mb-2">
               <span class="text-xs font-semibold">Balance Neto</span>
               <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center">
@@ -420,22 +368,17 @@
           </div>
         </div>
 
-        <!-- NUEVO: Contenedor Dinámico de Alertas Inteligentes (Presupuestos / Recurrentes) -->
         <div id="smartAlertsContainer" class="space-y-2 hidden"></div>
 
-        <!-- Botones de Acción Rápida -->
         <div class="grid grid-cols-2 gap-3">
           <button onclick="openMovementModal('income')" class="p-3.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:opacity-90 text-white font-bold rounded-2xl shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Nuevo Ingreso</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Nuevo Ingreso</span>
           </button>
           <button onclick="openMovementModal('expense')" class="p-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold rounded-2xl shadow-md shadow-[#E76F51]/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-xs sm:text-sm">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Nuevo Gasto</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Nuevo Gasto</span>
           </button>
         </div>
 
-        <!-- Pagos Recurrentes Rápidos (Acceso Directo en Inicio) -->
         <div id="homeRecurringSection" class="hidden bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -444,14 +387,10 @@
             </h3>
             <button onclick="showSection('secRecurrentes')" class="text-xs font-semibold text-[#E76F51] hover:underline">Ver todos</button>
           </div>
-          <div id="homeRecurringList" class="space-y-3">
-            <!-- Dinámico -->
-          </div>
+          <div id="homeRecurringList" class="space-y-3"></div>
         </div>
 
-        <!-- NUEVO: Grid de Gráficos (Miembros y Categorías) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Gráfico de Gastos por Miembro -->
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-[#E76F51]"></i>
@@ -462,7 +401,6 @@
             </div>
           </div>
           
-          <!-- NUEVO: Gráfico de Gastos por Categoría -->
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <i data-lucide="donut" class="w-4 h-4 text-[#E76F51]"></i>
@@ -474,7 +412,6 @@
           </div>
         </div>
 
-        <!-- Últimos Movimientos -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -496,7 +433,6 @@
           <h2 class="text-lg font-bold text-slate-900 dark:text-white">Historial de Movimientos</h2>
           
           <div class="flex items-center gap-2">
-            <!-- NUEVO: Botones de Exportación CSV y PDF -->
             <button onclick="exportToCSV()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 rounded-xl text-xs flex items-center shadow" title="Exportar Excel/CSV">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
             </button>
@@ -511,7 +447,6 @@
           </div>
         </div>
 
-        <!-- Filtros y Búsqueda -->
         <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
@@ -528,11 +463,9 @@
             </select>
             <select id="filterCategory" onchange="filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white appearance-none">
               <option value="all">Todas las categorías</option>
-              <!-- Dinámico -->
             </select>
           </div>
 
-          <!-- NUEVO: Selector Avanzado de Fechas -->
           <div class="grid grid-cols-1 gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
             <select id="filterDateRange" onchange="toggleCustomDateInputs(); filterMovements()" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white appearance-none w-full">
               <option value="all">Todas las fechas</option>
@@ -543,7 +476,6 @@
             </select>
           </div>
 
-          <!-- NUEVO: Rango Personalizado Oculto -->
           <div id="customDateRangeDiv" class="hidden grid grid-cols-2 gap-2 mt-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 mb-1">Desde</label>
@@ -556,7 +488,6 @@
           </div>
         </div>
 
-        <!-- Lista Completa de Movimientos -->
         <div id="fullMovementsList" class="space-y-3">
           <p class="text-xs text-slate-400 text-center py-6">Cargando movimientos...</p>
         </div>
@@ -570,11 +501,9 @@
             <p class="text-xs text-slate-500 dark:text-slate-400">Proyectos futuros y ahorros compartidos</p>
           </div>
           <button onclick="openGoalModal()" class="px-3 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Nueva Meta</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Nueva Meta</span>
           </button>
         </div>
-
         <div id="goalsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <p class="text-xs text-slate-400 text-center py-6 col-span-2">No hay metas configuradas.</p>
         </div>
@@ -588,11 +517,9 @@
             <p class="text-xs text-slate-500 dark:text-slate-400">Límites de gasto por categoría</p>
           </div>
           <button onclick="openBudgetModal()" class="px-3 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Definir Limite</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Definir Limite</span>
           </button>
         </div>
-
         <div id="budgetsList" class="space-y-3">
           <p class="text-xs text-slate-400 text-center py-6">No hay presupuestos definidos.</p>
         </div>
@@ -606,11 +533,9 @@
             <p class="text-xs text-slate-500 dark:text-slate-400">Pagos fijos y suscripciones</p>
           </div>
           <button onclick="openRecurringModal()" class="px-3 py-2 bg-[#E76F51] hover:bg-[#d95f42] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Nuevo Recurrente</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Nuevo Recurrente</span>
           </button>
         </div>
-
         <div id="recurringList" class="space-y-3">
           <p class="text-xs text-slate-400 text-center py-6">No hay gastos recurrentes registrados.</p>
         </div>
@@ -629,7 +554,6 @@
             </button>
           </div>
 
-          <!-- Código de Invitación -->
           <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl flex items-center justify-between">
             <div>
               <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código de Invitación</span>
@@ -640,7 +564,6 @@
             </button>
           </div>
 
-          <!-- Botón Invitar por WhatsApp con Icono Oficial SVG -->
           <button onclick="shareViaWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition-transform active:scale-95 text-base">
             <svg class="w-6 h-6 shrink-0 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.447-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414zM12.004 2.003c-5.512 0-9.991 4.478-9.991 9.991 0 1.762.459 3.477 1.332 4.99l-1.415 5.17 5.293-1.388c1.458.795 3.107 1.218 4.781 1.218 5.513 0 9.991-4.478 9.991-9.991 0-5.513-4.478-9.991-9.991-9.991zm0 18.234c-1.503 0-2.977-.403-4.265-1.167l-.306-.181-3.167.83.845-3.088-.198-.316c-.841-1.338-1.286-2.885-1.286-4.47 0-4.542 3.696-8.238 8.238-8.238 4.541 0 8.237 3.696 8.237 8.238 0 4.542-3.696 8.237-8.238 8.237z"/>
@@ -649,26 +572,20 @@
           </button>
         </div>
 
-        <!-- Solicitudes Pendientes (Admin Only) -->
         <div id="pendingSection" class="hidden bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
             <span>Solicitudes Pendientes</span>
           </h3>
-          <div id="pendingContainer" class="space-y-2">
-            <!-- Dinámico -->
-          </div>
+          <div id="pendingContainer" class="space-y-2"></div>
         </div>
 
-        <!-- Integrantes del Grupo -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-md space-y-3">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <i data-lucide="users" class="w-4 h-4 text-[#E76F51]"></i>
             <span>Integrantes Activos</span>
           </h3>
-          <div id="membersList" class="space-y-2">
-            <!-- Dinámico -->
-          </div>
+          <div id="membersList" class="space-y-2"></div>
         </div>
       </section>
 
@@ -692,7 +609,6 @@
             </div>
           </div>
 
-          <!-- Editar Nombre -->
           <form onsubmit="handleUpdateProfileName(event)" class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700/60">
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Actualizar Nombre</label>
             <div class="flex gap-2">
@@ -703,27 +619,19 @@
             </div>
           </form>
 
-          <!-- Opciones Adicionales -->
           <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/60">
-            <!-- Botón Instalar App PWA -->
             <button id="btnInstallPWAProfile" onclick="triggerPWAInstall()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="download" class="w-4 h-4 text-[#E76F51]"></i>
               <span>Instalar Aplicación PWA</span>
             </button>
-
-            <!-- Exportar a CSV -->
             <button onclick="exportToCSV()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-500"></i>
-              <span>Exportar Historial a CSV</span>
+              <span>Exportar Historial a Excel</span>
             </button>
-
-            <!-- NUEVO: Imprimir PDF -->
             <button onclick="exportToPDF()" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="printer" class="w-4 h-4 text-sky-500"></i>
               <span>Imprimir Reporte PDF</span>
             </button>
-
-            <!-- Eliminar Cuenta -->
             <button onclick="handleDeleteAccount()" class="w-full py-3 px-4 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors">
               <i data-lucide="user-x" class="w-4 h-4"></i>
               <span>Eliminar mi Cuenta</span>
@@ -735,7 +643,8 @@
     </main>
   </div>
 
-  <!-- MODAL: GUÍA DE INSTALACIÓN PWA PASO A PASO -->
+  <!-- MODALES DE LA APLICACIÓN -->
+  
   <div id="installGuideModal" class="hidden fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -751,7 +660,6 @@
       </div>
 
       <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
-        <!-- Guía Android / Chrome -->
         <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
           <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
             <i data-lucide="smartphone" class="w-4 h-4 text-[#E76F51]"></i>
@@ -764,7 +672,6 @@
           </ol>
         </div>
 
-        <!-- Guía iPhone / Safari -->
         <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
           <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
             <i data-lucide="apple" class="w-4 h-4 text-[#E76F51]"></i>
@@ -784,7 +691,6 @@
     </div>
   </div>
 
-  <!-- MODAL EDITAR NOMBRE DE FAMILIA -->
   <div id="editFamilyModal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
       <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
           <div class="flex items-center justify-between">
@@ -808,7 +714,6 @@
       </div>
   </div>
 
-  <!-- MODAL: AGREGAR / EDITAR MOVIMIENTO -->
   <div id="movementModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between">
@@ -819,65 +724,62 @@
       </div>
 
       <form id="movementForm" onsubmit="handleSaveMovement(event)" class="space-y-4">
-  <input type="hidden" id="movId">
-  <input type="hidden" id="movType" value="expense">
+        <input type="hidden" id="movId">
+        <input type="hidden" id="movType" value="expense">
 
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
-    <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="0.00">
-  </div>
-
-  <!-- Selector de Categoría Personalizado -->
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
-    <button type="button" onclick="openCategoryPicker('movCategory')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/80">
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
-          <i id="movCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Monto ($)</label>
+          <input type="number" step="0.01" id="movAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] font-bold text-slate-900 dark:text-white transition-colors" placeholder="0.00">
         </div>
-        <span id="movCategoryText" class="font-semibold">Seleccionar...</span>
-      </div>
-      <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
-    </button>
-    <input type="hidden" id="movCategory" required>
-    
-    <!-- CAMPO NUEVO: Nombre de Categoría Personalizada (se despliega si eligen "Otros") -->
-    <div id="movCustomCategoryDiv" class="hidden mt-2">
-      <input type="text" id="movCustomCategory" placeholder="Escribe la categoría personalizada..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
+          <button type="button" onclick="openCategoryPicker('movCategory')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/80">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0">
+                <i id="movCategoryIcon" data-lucide="layout-grid" class="w-4 h-4"></i>
+              </div>
+              <span id="movCategoryText" class="font-semibold">Seleccionar...</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </button>
+          <input type="hidden" id="movCategory" required>
+          
+          <div id="movCustomCategoryDiv" class="hidden mt-2">
+            <input type="text" id="movCustomCategory" placeholder="Escribe la categoría personalizada..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
+          <input type="date" id="movDate" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota / Descripción (Opcional)</label>
+          <input type="text" id="movNote" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors" placeholder="Ej. Compra de supermercado">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Comprobante / Recibo (Opcional)</label>
+          <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20 transition-colors">
+          <input type="hidden" id="movReceiptBase64">
+          <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+            <img id="receiptPreviewImg" src="" class="w-full h-full object-cover">
+            <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5 hover:bg-slate-900 transition-colors">
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-3">
+          <button type="button" onclick="closeMovementModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
+          <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
-    <input type="date" id="movDate" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors">
-  </div>
-
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nota / Descripción (Opcional)</label>
-    <input type="text" id="movNote" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white transition-colors" placeholder="Ej. Compra de supermercado">
-  </div>
-
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Comprobante / Recibo (Opcional)</label>
-    <input type="file" id="movReceiptFile" accept="image/*" onchange="handleReceiptCompress(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#E76F51]/10 file:text-[#E76F51] hover:file:bg-[#E76F51]/20 transition-colors">
-    <input type="hidden" id="movReceiptBase64">
-    <div id="receiptPreview" class="hidden mt-2 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
-      <img id="receiptPreviewImg" src="" class="w-full h-full object-cover">
-      <button type="button" onclick="clearReceiptPreview()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-0.5 hover:bg-slate-900 transition-colors">
-        <i data-lucide="x" class="w-3 h-3"></i>
-      </button>
-    </div>
-  </div>
-
-  <div class="flex gap-2 pt-3">
-    <button type="button" onclick="closeMovementModal()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">Cancelar</button>
-    <button type="submit" class="flex-1 py-3.5 bg-gradient-to-r from-[#E76F51] to-[#D05A3F] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-transform active:scale-95">Guardar</button>
-  </div>
-</form>
-    </div>
-  </div>
-
-  <!-- MODAL: VER COMPROBANTE -->
   <div id="receiptViewModal" class="hidden fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-[2rem] p-4 space-y-3 shadow-2xl">
       <button onclick="closeReceiptViewModal()" class="absolute top-3 right-3 p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
@@ -890,7 +792,6 @@
     </div>
   </div>
 
-  <!-- MODAL: AGREGAR META DE AHORRO -->
   <div id="goalModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
@@ -919,7 +820,6 @@
     </div>
   </div>
 
-  <!-- MODAL: ABONAR A META -->
   <div id="goalDepositModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
       <div class="flex items-center justify-between">
@@ -944,7 +844,6 @@
     </div>
   </div>
 
- <!-- MODAL: DEFINIR PRESUPUESTO -->
 <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
     <div class="flex items-center justify-between">
@@ -955,7 +854,6 @@
     </div>
 
     <form onsubmit="handleSaveBudget(event)" class="space-y-4">
-      <!-- Selector de Categoría Personalizado -->
       <div>
         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
         <button type="button" onclick="openCategoryPicker('budgetCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
@@ -969,7 +867,6 @@
         </button>
         <input type="hidden" id="budgetCategory" required>
 
-        <!-- Campo Texto para Categoría Personalizada ("Otros") -->
         <div id="budgetCustomCategoryDiv" class="hidden mt-2">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre de categoría personalizada</label>
           <input type="text" id="budgetCustomCategory" placeholder="Ej: Mascotas, Gustitos..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
@@ -989,7 +886,6 @@
   </div>
 </div>
 
-<!-- MODAL: AGREGAR GASTO RECURRENTE -->
 <div id="recurringModal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
     <div class="flex items-center justify-between">
@@ -1010,7 +906,6 @@
         <input type="number" step="0.01" id="recAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white" placeholder="15.00">
       </div>
 
-      <!-- Selector de Categoría Personalizado -->
       <div>
         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
         <button type="button" onclick="openCategoryPicker('recCategory', 'expense')" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#E76F51] text-slate-900 dark:text-white flex items-center justify-between transition-colors">
@@ -1024,7 +919,6 @@
         </button>
         <input type="hidden" id="recCategory" required>
 
-        <!-- Campo Texto para Categoría Personalizada ("Otros") -->
         <div id="recCustomCategoryDiv" class="hidden mt-2">
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre de categoría personalizada</label>
           <input type="text" id="recCustomCategory" placeholder="Ej: Membresía, Suscripción..." class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#E76F51] transition-colors">
@@ -1039,7 +933,6 @@
   </div>
 </div>
 
-  <!-- MODAL: SELECTOR DE CATEGORÍA INTERACTIVO -->
   <div id="categoryPickerModal" class="hidden fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
     <div id="categoryPickerContent" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transition-transform transform translate-y-full duration-300">
       <div class="flex items-center justify-between mb-4">
@@ -1048,15 +941,11 @@
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <div id="categoryPickerList" class="flex flex-col gap-1 max-h-[60vh] overflow-y-auto pb-4">
-        <!-- JS Injected -->
-      </div>
+      <div id="categoryPickerList" class="flex flex-col gap-1 max-h-[60vh] overflow-y-auto pb-4"></div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // 1. CONFIGURACIÓN FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyCQ3wAFbbNs0N2QXlBGNbtVU0MC9BD4K8A",
       authDomain: "mi-ahorro-40269.firebaseapp.com",
@@ -1069,22 +958,13 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // NUEVO: Persistencia Offline Real de Firestore
     db.enablePersistence({ synchronizeTabs: true })
-      .then(() => {
-        console.log("Firestore: Persistencia offline activada");
-      })
+      .then(() => console.log("Firestore: Persistencia offline activada"))
       .catch((err) => {
-        if (err.code === 'failed-precondition') {
-          console.warn("Persistencia: múltiples pestañas abiertas. Solo una puede tener persistence.");
-        } else if (err.code === 'unimplemented') {
-          console.warn("Persistencia offline no soportada en este navegador.");
-        } else {
-          console.warn("Error activando persistencia:", err);
-        }
+        if (err.code === 'failed-precondition') console.warn("Múltiples pestañas abiertas.");
+        else if (err.code === 'unimplemented') console.warn("Persistencia offline no soportada.");
       });
 
-    // Categorías del sistema e Iconos (Diseño Premium)
     const EXPENSE_CATEGORIES = ["Alimentación", "Vivienda", "Transporte", "Servicios", "Entretenimiento", "Salud", "Educación", "Otros Gastos"];
     const INCOME_CATEGORIES = ["Sueldo / Salario", "Ventas", "Inversiones", "Regalo", "Otros Ingresos"];
     
@@ -1104,7 +984,6 @@
       "Otros Ingresos": "plus-circle"
     };
 
-    // ESTADO DE LA APLICACIÓN
     let currentUserData = null;
     let currentFamilyData = null;
     let movementsData = [];
@@ -1112,25 +991,22 @@
     let recurringData = [];
     let budgetsData = {};
     let isRegistering = false;
-    let authMode = 'login'; // 'login' | 'register'
-    let registerType = 'create'; // 'create' | 'join'
+    let authMode = 'login';
+    let registerType = 'create';
     let memberChartInstance = null;
-    let categoryChartInstance = null; // NUEVO: Gráfico de categorías
+    let categoryChartInstance = null;
     let currentCategoryTarget = '';
-    let dashboardMode = 'family'; // 'family' | 'personal'
-    let filteredMovementsCache = []; // NUEVO: cache para exportación CSV/PDF
+    let dashboardMode = 'family';
+    let filteredMovementsCache = [];
 
-    // Subscripciones Firestore
     let unsubscribeFamily = null;
     let unsubscribeMovements = null;
     let unsubscribeGoals = null;
     let unsubscribeRecurring = null;
     let unsubscribeMembers = null;
 
-        // Manejo Inteligente de Instalación (APK Android + PWA PC + iOS)
     let deferredPrompt = null;
 
-    // Conectar el manifest.json real subido al repositorio
     (function initPWAManifest() {
       try {
         let manifestLink = document.getElementById('pwa-manifest') || document.querySelector('link[rel="manifest"]');
@@ -1140,15 +1016,12 @@
           manifestLink.rel = 'manifest';
           document.head.appendChild(manifestLink);
         }
-        // Utiliza tu manifest.json subido a GitHub
         manifestLink.href = './manifest.json';
 
-        // Registrar tu sw.js real subido a GitHub
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js')
             .then(() => console.log('SW Registrado correctamente'))
             .catch(() => {
-              // Fallback en memoria si sw.js no está accesible
               const swCode = `
                 self.addEventListener('install', (e) => self.skipWaiting());
                 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
@@ -1163,14 +1036,12 @@
       }
     })();
 
-    // Detectar si la app ya se ejecuta como instalada
     function isPWAInstalled() {
       return window.matchMedia('(display-mode: standalone)').matches 
           || window.navigator.standalone === true 
           || document.referrer.includes('android-app://');
     }
 
-    // Controlar visibilidad de botones
     function updatePWAUIVisibility() {
       const installed = isPWAInstalled();
       const banner = document.getElementById('pwaInstallBanner');
@@ -1188,7 +1059,6 @@
       }
     }
 
-    // Capturar evento nativo para PC/Desktop
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -1198,25 +1068,20 @@
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       updatePWAUIVisibility();
-      if (typeof showToast === 'function') {
-        showToast("¡Aplicación instalada con éxito!");
-      }
+      if (typeof showToast === 'function') showToast("¡Aplicación instalada con éxito!");
     });
 
-        // FUNCIÓN PRINCIPAL DE INSTALACIÓN UNIVERSAL
     async function triggerPWAInstall() {
       if (isPWAInstalled()) {
         if (typeof showToast === 'function') showToast("La aplicación ya está instalada en este equipo.");
         updatePWAUIVisibility();
         return;
       }
-
       const ua = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /android/i.test(ua);
       const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
 
       if (isAndroid) {
-        // EN ANDROID: Descargar APK directamente
         if (typeof showToast === 'function') showToast("Descargando archivo de instalación (.apk)...");
         const link = document.createElement('a');
         link.href = './miahorro.apk';
@@ -1225,10 +1090,8 @@
         link.click();
         document.body.removeChild(link);
       } else if (isIOS) {
-        // EN IPHONE: Mostrar la guía de instalación de Safari
         openInstallGuideModal();
       } else if (deferredPrompt) {
-        // EN PC / MAC: Disparar la ventana nativa emergente de Chrome/Edge
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         if (choiceResult.outcome === 'accepted') {
@@ -1236,7 +1099,6 @@
           updatePWAUIVisibility();
         }
       } else {
-        // EN PC SI CHROME BLOQUEÓ EL PROMPT: Indicar al usuario que use el icono de la barra de URL
         if (typeof showToast === 'function') {
           showToast("Haz clic en el icono de 'Instalar' situado a la derecha de la barra de dirección (URL) de tu navegador.");
         } else {
@@ -1247,24 +1109,16 @@
 
     function openInstallGuideModal() {
       const modalElement = document.getElementById('installGuideModal');
-      if (modalElement) {
-        modalElement.classList.remove('hidden');
-      }
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      }
+      if (modalElement) modalElement.classList.remove('hidden');
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     }
 
     function closeInstallGuideModal() {
       const modalElement = document.getElementById('installGuideModal');
-      if (modalElement) {
-        modalElement.classList.add('hidden');
-      }
+      if (modalElement) modalElement.classList.add('hidden');
     }
 
-    // ============================================
-    // NUEVO: INDICADOR DE CONEXIÓN ONLINE / OFFLINE
-    // ============================================
+    // JS CORREGIDO: Clases actualizadas para que no rompa el nuevo HTML
     function updateConnectionStatus(isOnline) {
       const badge = document.getElementById('connectionBadge');
       if (!badge) return;
@@ -1273,10 +1127,10 @@
       badge.classList.add('inline-flex');
 
       if (isOnline) {
-        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400";
+        badge.className = "shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400";
         badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> En línea';
       } else {
-        badge.className = "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
+        badge.className = "shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400";
         badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Offline';
         if (typeof showToast === 'function') {
           showToast("Sin conexión. Los cambios se guardarán localmente y se sincronizarán al reconectar.");
@@ -1290,20 +1144,13 @@
     });
     window.addEventListener('offline', () => updateConnectionStatus(false));
 
-    // Estado inicial de conexión
-    updateConnectionStatus(navigator.onLine);
-
-    // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      }
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
       if (typeof initTheme === 'function') initTheme();
       if (typeof populateFilterCategory === 'function') populateFilterCategory();
       updatePWAUIVisibility();
       updateConnectionStatus(navigator.onLine);
 
-      // Escuchador de Autenticación de Firebase
       auth.onAuthStateChanged(async (user) => {
         if (user) {
           if (typeof isRegistering !== 'undefined' && isRegistering) return;
@@ -1326,13 +1173,10 @@
       });
     });
 
-    // HELPERS & NORMALIZE
-    function normalizeEmail(email) {
-      return (email || "").trim().toLowerCase();
-    }
+    function normalizeEmail(email) { return (email || "").trim().toLowerCase(); }
 
     function formatCurrency(num) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num || 0);
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num || 0);
     }
 
     function formatDate(dateStr) {
@@ -1342,7 +1186,6 @@
       return dateStr;
     }
 
-    // MODO OSCURO
     function initTheme() {
       const theme = localStorage.getItem('ahorro_theme') || 'dark';
       if (theme === 'dark') {
@@ -1361,10 +1204,9 @@
       document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
       lucide.createIcons();
       if (memberChartInstance) renderMemberChart();
-      if (typeof renderCategoryChart === 'function') renderCategoryChart(); // NUEVO
+      if (typeof renderCategoryChart === 'function') renderCategoryChart();
     }
 
-    // AUTENTICACIÓN UI
     function showAuthScreen() {
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('mainApp').classList.add('hidden');
@@ -1436,7 +1278,6 @@
       lucide.createIcons();
     }
 
-    // MANEJO DE REGISTRO / LOGIN
     async function handleAuth(e) {
       e.preventDefault();
       const email = normalizeEmail(document.getElementById('authEmail').value);
@@ -1452,7 +1293,6 @@
           authError.classList.remove('hidden');
         }
       } else {
-        // REGISTRO DUAL
         const displayName = document.getElementById('authDisplayName').value.trim();
         if (!displayName) {
           authError.innerText = "Ingresa tu nombre completo.";
@@ -1467,7 +1307,6 @@
           let status = "approved";
 
           if (registerType === 'create') {
-            // Crear Nueva Familia (Añadiendo el nombre personalizado)
             const rawFamilyName = document.getElementById('authFamilyName').value.trim();
             if (!rawFamilyName) {
               authError.innerText = "Ingresa el nombre o apellido de tu familia.";
@@ -1475,8 +1314,6 @@
               isRegistering = false;
               return;
             }
-            
-            // Limpia por si escriben "Familia Perez" para evitar "Familia Familia Perez"
             const cleanName = rawFamilyName.replace(/^familia\s+/i, '');
             const formattedFamilyName = `Familia ${cleanName}`;
 
@@ -1489,7 +1326,6 @@
             });
             familyId = famRef.id;
           } else {
-            // Unirse a Familia por Código
             const inputCode = document.getElementById('authGroupCode').value.trim().toUpperCase();
             if (!inputCode) {
               authError.innerText = "Ingresa el código de invitación.";
@@ -1510,12 +1346,8 @@
           }
 
           const cred = await auth.createUserWithEmailAndPassword(email, password);
-          
-          // Si acaba de crearla, añadir su UID al array de admins de la familia
           if (registerType === 'create') {
-            await db.collection('families').doc(familyId).update({
-              admins: [cred.user.uid]
-            });
+            await db.collection('families').doc(familyId).update({ admins: [cred.user.uid] });
           }
 
           const userData = {
@@ -1581,12 +1413,10 @@
       }
     }
 
-    // CONFIGURACIÓN DE LA APP TRAS LOGIN
     function setupMainApp() {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
 
-      // Actualizar Perfil Header
       document.getElementById('headerUserName').innerText = currentUserData.displayName || currentUserData.email;
       document.getElementById('profileNameDisplay').innerText = currentUserData.displayName || 'Usuario';
       document.getElementById('profileEmailDisplay').innerText = currentUserData.email;
@@ -1599,7 +1429,6 @@
         document.getElementById('profileAvatar').innerText = (currentUserData.displayName || 'U').charAt(0).toUpperCase();
       }
 
-      // Warning Pendiente
       const pendingBanner = document.getElementById('pendingWarningBanner');
       if (currentUserData.status === 'pending') {
         pendingBanner.classList.remove('hidden');
@@ -1607,7 +1436,6 @@
         pendingBanner.classList.add('hidden');
       }
 
-      // Iniciar Subscripciones de Firestore
       cleanSubscriptions();
       if (currentUserData.familyId) {
         listenToFamily(currentUserData.familyId);
@@ -1630,7 +1458,6 @@
       if (unsubscribeMembers) unsubscribeMembers();
     }
 
-    // NAVEGACIÓN DE SECCIONES
     function showSection(secId) {
       const sections = ['secResumen', 'secMovimientos', 'secMetas', 'secPresupuestos', 'secRecurrentes', 'secEspacio', 'secPerfil'];
       sections.forEach(s => {
@@ -1641,7 +1468,6 @@
       const target = document.getElementById(secId);
       if (target) target.classList.remove('hidden');
 
-      // Estilos Navegación Activa
       const navBtns = document.querySelectorAll('.nav-btn');
       navBtns.forEach(btn => {
         btn.classList.remove('text-[#E76F51]');
@@ -1674,29 +1500,15 @@
       }
     }
 
-    // LISTENERS FIRESTORE
+    // JS CORREGIDO: Evita romper el DOM del header al llegar nuevos datos
     function listenToFamily(familyId) {
       unsubscribeFamily = db.collection('families').doc(familyId).onSnapshot(doc => {
         if (doc.exists) {
           currentFamilyData = { id: doc.id, ...doc.data() };
           
-          // IMPORTANTE: Preservar el badge de conexión dentro de headerFamilyName
           const headerFam = document.getElementById('headerFamilyName');
           if (headerFam) {
-            const badge = document.getElementById('connectionBadge');
-            const famName = currentFamilyData.familyName || "Mi Espacio";
-            headerFam.innerHTML = '';
-            headerFam.appendChild(document.createTextNode(famName + ' '));
-            if (badge) {
-              headerFam.appendChild(badge);
-            } else {
-              // Recrear badge si se perdió
-              const newBadge = document.createElement('span');
-              newBadge.id = 'connectionBadge';
-              newBadge.className = 'hidden';
-              headerFam.appendChild(newBadge);
-              updateConnectionStatus(navigator.onLine);
-            }
+            headerFam.innerText = currentFamilyData.familyName || "Mi Espacio";
           }
 
           document.getElementById('spaceTitle').innerText = currentFamilyData.familyName || "Mi Espacio";
@@ -1757,7 +1569,6 @@
         });
     }
 
-    // CATEGORÍA FILTER
     function populateFilterCategory() {
       const filterCategory = document.getElementById('filterCategory');
       filterCategory.innerHTML = '<option value="all">Todas las categorías</option>';
@@ -1766,397 +1577,361 @@
       });
     }
 
-    // SELECTOR DE CATEGORÍA INTERACTIVO (BOTTOM SHEET)
-function openCategoryPicker(targetId, forceType = null) {
-  currentCategoryTarget = targetId;
-  const modal = document.getElementById('categoryPickerModal');
-  const content = document.getElementById('categoryPickerContent');
-  const list = document.getElementById('categoryPickerList');
-  
-  let typeToLoad = 'expense';
-  if (forceType) {
-    typeToLoad = forceType;
-  } else if (targetId === 'movCategory') {
-    typeToLoad = document.getElementById('movType').value;
-  }
-  
-  const categories = typeToLoad === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-  
-  list.innerHTML = categories.map(cat => {
-    const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
-    return `
-      <button onclick="selectCategory('${cat}', '${iconName}')" class="flex items-center gap-3 p-3.5 w-full rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
-        <div class="w-10 h-10 rounded-xl bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0 shadow-sm">
-          <i data-lucide="${iconName}" class="w-5 h-5"></i>
-        </div>
-        <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">${cat}</span>
-      </button>
-    `;
-  }).join('');
-  
-  lucide.createIcons();
-  modal.classList.remove('hidden');
-  
-  setTimeout(() => {
-    content.classList.remove('translate-y-full');
-  }, 10);
-}
-
-function closeCategoryPicker() {
-  const modal = document.getElementById('categoryPickerModal');
-  const content = document.getElementById('categoryPickerContent');
-  
-  content.classList.add('translate-y-full');
-  setTimeout(() => {
-    modal.classList.add('hidden');
-  }, 300);
-}
-
-// Función auxiliar para mostrar/ocultar el cuadro de categoría personalizada (UNA SOLA VEZ)
-function checkCustomCategoryVisibility(targetId, categoryName) {
-  const customDivMap = {
-    'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
-    'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
-    'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
-  };
-
-  const targetConfig = customDivMap[targetId];
-  if (!targetConfig) return;
-
-  const customDiv = document.getElementById(targetConfig.div);
-  const customInput = document.getElementById(targetConfig.input);
-
-  if (customDiv) {
-    if (categoryName && categoryName.toLowerCase().includes('otros')) {
-      customDiv.classList.remove('hidden');
-      if (customInput) customInput.focus();
-    } else {
-      customDiv.classList.add('hidden');
-      if (customInput) customInput.value = '';
+    function openCategoryPicker(targetId, forceType = null) {
+      currentCategoryTarget = targetId;
+      const modal = document.getElementById('categoryPickerModal');
+      const content = document.getElementById('categoryPickerContent');
+      const list = document.getElementById('categoryPickerList');
+      
+      let typeToLoad = 'expense';
+      if (forceType) {
+        typeToLoad = forceType;
+      } else if (targetId === 'movCategory') {
+        typeToLoad = document.getElementById('movType').value;
+      }
+      
+      const categories = typeToLoad === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      
+      list.innerHTML = categories.map(cat => {
+        const iconName = CATEGORY_ICONS[cat] || 'layout-grid';
+        return `
+          <button onclick="selectCategory('${cat}', '${iconName}')" class="flex items-center gap-3 p-3.5 w-full rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+            <div class="w-10 h-10 rounded-xl bg-[#E76F51]/10 text-[#E76F51] flex items-center justify-center shrink-0 shadow-sm">
+              <i data-lucide="${iconName}" class="w-5 h-5"></i>
+            </div>
+            <span class="font-semibold text-sm text-slate-700 dark:text-slate-200">${cat}</span>
+          </button>
+        `;
+      }).join('');
+      
+      lucide.createIcons();
+      modal.classList.remove('hidden');
+      
+      setTimeout(() => { content.classList.remove('translate-y-full'); }, 10);
     }
-  }
-}
 
-// Función principal de selección de categoría
-function selectCategory(categoryName, iconName) {
-  document.getElementById(currentCategoryTarget).value = categoryName;
-  
-  const textEl = document.getElementById(currentCategoryTarget + 'Text');
-  const iconEl = document.getElementById(currentCategoryTarget + 'Icon');
-  if (textEl) textEl.innerText = categoryName;
-  if (iconEl) iconEl.setAttribute('data-lucide', iconName);
-
-  // Evaluar visibilidad del campo personalizado
-  checkCustomCategoryVisibility(currentCategoryTarget, categoryName);
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-  closeCategoryPicker();
-}
-
-function setDashboardMode(mode) {
-  dashboardMode = mode;
-  const btnFam = document.getElementById('btnModeFamily');
-  const btnPer = document.getElementById('btnModePersonal');
-
-  if (mode === 'family') {
-    btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
-    btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
-  } else {
-    btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
-    btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
-  }
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-  renderResumen();
-}
-
-// RENDER RESUMEN & GRÁFICO (CON SOPORTE DE VISTA PRIVADA)
-function renderResumen() {
-  // Filtrar los movimientos según el conmutador (Familia o Mis Finanzas)
-  let filteredMovements = movementsData;
-  if (dashboardMode === 'personal' && auth.currentUser) {
-    const myEmail = currentUserData ? currentUserData.email : auth.currentUser.email;
-    const myUid = auth.currentUser.uid;
-    filteredMovements = movementsData.filter(m => m.userEmail === myEmail || m.userId === myUid);
-  }
-
-  let totalInc = 0;
-  let totalExp = 0;
-
-  filteredMovements.forEach(m => {
-    const amt = parseFloat(m.amount) || 0;
-    if (m.type === 'income') totalInc += amt;
-    else if (m.type === 'expense') totalExp += amt;
-  });
-
-  document.getElementById('totalIncomesDisplay').innerText = formatCurrency(totalInc);
-  document.getElementById('totalExpensesDisplay').innerText = formatCurrency(totalExp);
-  
-  const net = totalInc - totalExp;
-  const netEl = document.getElementById('netBalanceDisplay');
-  netEl.innerText = formatCurrency(net);
-
-  // Lista reciente (últimos 4 filtrados)
-  const recentList = document.getElementById('recentMovementsList');
-  if (recentList) {
-    if (filteredMovements.length === 0) {
-      recentList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">${dashboardMode === 'personal' ? 'No tienes movimientos personales registrados.' : 'No hay movimientos registrados.'}</p>`;
-    } else {
-      const top = filteredMovements.slice(0, 4);
-      recentList.innerHTML = top.map(m => createMovementHTML(m)).join('');
+    function closeCategoryPicker() {
+      const modal = document.getElementById('categoryPickerModal');
+      const content = document.getElementById('categoryPickerContent');
+      
+      content.classList.add('translate-y-full');
+      setTimeout(() => { modal.classList.add('hidden'); }, 300);
     }
-  }
 
-  // DIBUJAR LOS ICONOS VECTORES EN MOVIMIENTOS RECIENTES
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
+    function checkCustomCategoryVisibility(targetId, categoryName) {
+      const customDivMap = {
+        'movCategory': { div: 'movCustomCategoryDiv', input: 'movCustomCategory' },
+        'budgetCategory': { div: 'budgetCustomCategoryDiv', input: 'budgetCustomCategory' },
+        'recCategory': { div: 'recCustomCategoryDiv', input: 'recCustomCategory' }
+      };
 
-  renderMemberChart(filteredMovements);
-  renderCategoryChart(filteredMovements);
-  renderSmartAlerts();
-}
+      const targetConfig = customDivMap[targetId];
+      if (!targetConfig) return;
 
-// ============================================
-// NUEVO: ALERTAS INTELIGENTES (Presupuestos + Recurrentes)
-// ============================================
-function renderSmartAlerts() {
-  const container = document.getElementById('smartAlertsContainer');
-  if (!container) return;
+      const customDiv = document.getElementById(targetConfig.div);
+      const customInput = document.getElementById(targetConfig.input);
 
-  const alerts = [];
-  const now = new Date();
-  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-  // Gastos del mes por categoría
-  const expensesByCat = {};
-  movementsData
-    .filter(m => m.type === 'expense' && m.date && m.date.startsWith(currentMonthStr))
-    .forEach(m => {
-      expensesByCat[m.category] = (expensesByCat[m.category] || 0) + (parseFloat(m.amount) || 0);
-    });
-
-  // Presupuestos en riesgo u overflow
-  Object.keys(budgetsData || {}).forEach(cat => {
-    const limit = parseFloat(budgetsData[cat]) || 0;
-    if (limit <= 0) return;
-    const spent = expensesByCat[cat] || 0;
-    const pct = Math.round((spent / limit) * 100);
-    if (pct >= 100) {
-      alerts.push({
-        type: 'danger',
-        icon: 'alert-triangle',
-        text: `Presupuesto de <strong>${cat}</strong> excedido (${pct}%). Gastado ${formatCurrency(spent)} de ${formatCurrency(limit)}.`
-      });
-    } else if (pct >= 80) {
-      alerts.push({
-        type: 'warning',
-        icon: 'alert-circle',
-        text: `Presupuesto de <strong>${cat}</strong> al ${pct}%. Quedan ${formatCurrency(Math.max(0, limit - spent))}.`
-      });
-    }
-  });
-
-  // Recurrentes pendientes del mes (si aún no hay un gasto con la misma nota/categoría este mes)
-  (recurringData || []).forEach(r => {
-    const name = r.name || 'Pago recurrente';
-    const alreadyPaid = movementsData.some(m =>
-      m.type === 'expense' &&
-      m.date && m.date.startsWith(currentMonthStr) &&
-      (
-        (m.note && r.name && m.note.toLowerCase().includes(String(r.name).toLowerCase())) ||
-        (m.category && r.category && m.category === r.category && Math.abs((parseFloat(m.amount)||0) - (parseFloat(r.amount)||0)) < 0.01)
-      )
-    );
-    if (!alreadyPaid) {
-      alerts.push({
-        type: 'info',
-        icon: 'repeat',
-        text: `Pago recurrente pendiente: <strong>${name}</strong> (${formatCurrency(r.amount)}).`
-      });
-    }
-  });
-
-  if (alerts.length === 0) {
-    container.classList.add('hidden');
-    container.innerHTML = '';
-    return;
-  }
-
-  container.classList.remove('hidden');
-  container.innerHTML = alerts.slice(0, 4).map(a => {
-    let colors = 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300';
-    if (a.type === 'danger') colors = 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300';
-    if (a.type === 'warning') colors = 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300';
-    return `
-      <div class="p-3 rounded-xl border text-[11px] font-medium flex items-start gap-2.5 ${colors}">
-        <i data-lucide="${a.icon}" class="w-4 h-4 shrink-0 mt-0.5"></i>
-        <span class="leading-snug">${a.text}</span>
-      </div>
-    `;
-  }).join('');
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-function renderMemberChart(dataToRender = movementsData) {
-  const ctx = document.getElementById('memberExpenseChart');
-  if (!ctx) return;
-
-  // Ocultar solo la tarjeta del gráfico por miembro en modo personal
-  const chartCard = ctx.closest('.bg-white, .dark\\:bg-slate-800') || ctx.parentElement;
-  if (dashboardMode === 'personal') {
-    if (chartCard) chartCard.style.display = 'none';
-    if (memberChartInstance) {
-      memberChartInstance.destroy();
-      memberChartInstance = null;
-    }
-    return;
-  } else {
-    if (chartCard) chartCard.style.display = 'block';
-  }
-
-  const expensesByMember = {};
-  dataToRender.filter(m => m.type === 'expense').forEach(m => {
-    const name = m.userName || 'Desconocido';
-    expensesByMember[name] = (expensesByMember[name] || 0) + (parseFloat(m.amount) || 0);
-  });
-
-  const labels = Object.keys(expensesByMember);
-  const data = Object.values(expensesByMember);
-
-  if (memberChartInstance) {
-    memberChartInstance.destroy();
-    memberChartInstance = null;
-  }
-
-  if (labels.length === 0) return;
-
-  const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD'];
-
-  memberChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: colors.slice(0, labels.length),
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            boxWidth: 12,
-            font: { size: 11 },
-            color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
-          }
+      if (customDiv) {
+        if (categoryName && categoryName.toLowerCase().includes('otros')) {
+          customDiv.classList.remove('hidden');
+          if (customInput) customInput.focus();
+        } else {
+          customDiv.classList.add('hidden');
+          if (customInput) customInput.value = '';
         }
       }
     }
-  });
-}
 
-// ============================================
-// NUEVO: GRÁFICO DONA POR CATEGORÍA
-// ============================================
-function renderCategoryChart(dataToRender = movementsData) {
-  const ctx = document.getElementById('categoryExpenseChart');
-  if (!ctx) return;
+    function selectCategory(categoryName, iconName) {
+      document.getElementById(currentCategoryTarget).value = categoryName;
+      
+      const textEl = document.getElementById(currentCategoryTarget + 'Text');
+      const iconEl = document.getElementById(currentCategoryTarget + 'Icon');
+      if (textEl) textEl.innerText = categoryName;
+      if (iconEl) iconEl.setAttribute('data-lucide', iconName);
 
-  const expensesByCategory = {};
-  dataToRender.filter(m => m.type === 'expense').forEach(m => {
-    const cat = m.category || 'Otros';
-    expensesByCategory[cat] = (expensesByCategory[cat] || 0) + (parseFloat(m.amount) || 0);
-  });
+      checkCustomCategoryVisibility(currentCategoryTarget, categoryName);
 
-  const labels = Object.keys(expensesByCategory);
-  const data = Object.values(expensesByCategory);
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      closeCategoryPicker();
+    }
 
-  if (categoryChartInstance) {
-    categoryChartInstance.destroy();
-    categoryChartInstance = null;
-  }
+    function setDashboardMode(mode) {
+      dashboardMode = mode;
+      const btnFam = document.getElementById('btnModeFamily');
+      const btnPer = document.getElementById('btnModePersonal');
 
-  if (labels.length === 0) return;
+      if (mode === 'family') {
+        btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
+        btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
+      } else {
+        btnPer.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-[#E76F51] shadow-sm flex items-center justify-center gap-1.5";
+        btnFam.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center gap-1.5";
+      }
+      
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      renderResumen();
+    }
 
-  const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD', '#F72585', '#4CC9F0', '#90BE6D', '#577590'];
+    function renderResumen() {
+      let filteredMovements = movementsData;
+      if (dashboardMode === 'personal' && auth.currentUser) {
+        const myEmail = currentUserData ? currentUserData.email : auth.currentUser.email;
+        const myUid = auth.currentUser.uid;
+        filteredMovements = movementsData.filter(m => m.userEmail === myEmail || m.userId === myUid);
+      }
 
-  categoryChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: labels.map((_, i) => colors[i % colors.length]),
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            boxWidth: 12,
-            font: { size: 10 },
-            color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
-          }
+      let totalInc = 0;
+      let totalExp = 0;
+
+      filteredMovements.forEach(m => {
+        const amt = parseFloat(m.amount) || 0;
+        if (m.type === 'income') totalInc += amt;
+        else if (m.type === 'expense') totalExp += amt;
+      });
+
+      document.getElementById('totalIncomesDisplay').innerText = formatCurrency(totalInc);
+      document.getElementById('totalExpensesDisplay').innerText = formatCurrency(totalExp);
+      
+      const net = totalInc - totalExp;
+      const netEl = document.getElementById('netBalanceDisplay');
+      netEl.innerText = formatCurrency(net);
+
+      const recentList = document.getElementById('recentMovementsList');
+      if (recentList) {
+        if (filteredMovements.length === 0) {
+          recentList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">${dashboardMode === 'personal' ? 'No tienes movimientos personales registrados.' : 'No hay movimientos registrados.'}</p>`;
+        } else {
+          const top = filteredMovements.slice(0, 4);
+          recentList.innerHTML = top.map(m => createMovementHTML(m)).join('');
         }
       }
-    }
-  });
-}
 
-    // MOVIMIENTOS LIST & FILTROS
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      renderMemberChart(filteredMovements);
+      renderCategoryChart(filteredMovements);
+      renderSmartAlerts();
+    }
+
+    function renderSmartAlerts() {
+      const container = document.getElementById('smartAlertsContainer');
+      if (!container) return;
+
+      const alerts = [];
+      const now = new Date();
+      const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+      const expensesByCat = {};
+      movementsData
+        .filter(m => m.type === 'expense' && m.date && m.date.startsWith(currentMonthStr))
+        .forEach(m => {
+          expensesByCat[m.category] = (expensesByCat[m.category] || 0) + (parseFloat(m.amount) || 0);
+        });
+
+      Object.keys(budgetsData || {}).forEach(cat => {
+        const limit = parseFloat(budgetsData[cat]) || 0;
+        if (limit <= 0) return;
+        const spent = expensesByCat[cat] || 0;
+        const pct = Math.round((spent / limit) * 100);
+        if (pct >= 100) {
+          alerts.push({
+            type: 'danger', icon: 'alert-triangle',
+            text: `Presupuesto de <strong>${cat}</strong> excedido (${pct}%). Gastado ${formatCurrency(spent)} de ${formatCurrency(limit)}.`
+          });
+        } else if (pct >= 80) {
+          alerts.push({
+            type: 'warning', icon: 'alert-circle',
+            text: `Presupuesto de <strong>${cat}</strong> al ${pct}%. Quedan ${formatCurrency(Math.max(0, limit - spent))}.`
+          });
+        }
+      });
+
+      (recurringData || []).forEach(r => {
+        const name = r.name || 'Pago recurrente';
+        const alreadyPaid = movementsData.some(m =>
+          m.type === 'expense' &&
+          m.date && m.date.startsWith(currentMonthStr) &&
+          (
+            (m.note && r.name && m.note.toLowerCase().includes(String(r.name).toLowerCase())) ||
+            (m.category && r.category && m.category === r.category && Math.abs((parseFloat(m.amount)||0) - (parseFloat(r.amount)||0)) < 0.01)
+          )
+        );
+        if (!alreadyPaid) {
+          alerts.push({
+            type: 'info', icon: 'repeat',
+            text: `Pago recurrente pendiente: <strong>${name}</strong> (${formatCurrency(r.amount)}).`
+          });
+        }
+      });
+
+      if (alerts.length === 0) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      container.classList.remove('hidden');
+      container.innerHTML = alerts.slice(0, 4).map(a => {
+        let colors = 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300';
+        if (a.type === 'danger') colors = 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300';
+        if (a.type === 'warning') colors = 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300';
+        return `
+          <div class="p-3 rounded-xl border text-[11px] font-medium flex items-start gap-2.5 ${colors}">
+            <i data-lucide="${a.icon}" class="w-4 h-4 shrink-0 mt-0.5"></i>
+            <span class="leading-snug">${a.text}</span>
+          </div>
+        `;
+      }).join('');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function renderMemberChart(dataToRender = movementsData) {
+      const ctx = document.getElementById('memberExpenseChart');
+      if (!ctx) return;
+
+      const chartCard = ctx.closest('.bg-white, .dark\\:bg-slate-800') || ctx.parentElement;
+      if (dashboardMode === 'personal') {
+        if (chartCard) chartCard.style.display = 'none';
+        if (memberChartInstance) {
+          memberChartInstance.destroy();
+          memberChartInstance = null;
+        }
+        return;
+      } else {
+        if (chartCard) chartCard.style.display = 'block';
+      }
+
+      const expensesByMember = {};
+      dataToRender.filter(m => m.type === 'expense').forEach(m => {
+        const name = m.userName || 'Desconocido';
+        expensesByMember[name] = (expensesByMember[name] || 0) + (parseFloat(m.amount) || 0);
+      });
+
+      const labels = Object.keys(expensesByMember);
+      const data = Object.values(expensesByMember);
+
+      if (memberChartInstance) {
+        memberChartInstance.destroy();
+        memberChartInstance = null;
+      }
+
+      if (labels.length === 0) return;
+
+      const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD'];
+
+      memberChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                font: { size: 11 },
+                color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderCategoryChart(dataToRender = movementsData) {
+      const ctx = document.getElementById('categoryExpenseChart');
+      if (!ctx) return;
+
+      const expensesByCategory = {};
+      dataToRender.filter(m => m.type === 'expense').forEach(m => {
+        const cat = m.category || 'Otros';
+        expensesByCategory[cat] = (expensesByCategory[cat] || 0) + (parseFloat(m.amount) || 0);
+      });
+
+      const labels = Object.keys(expensesByCategory);
+      const data = Object.values(expensesByCategory);
+
+      if (categoryChartInstance) {
+        categoryChartInstance.destroy();
+        categoryChartInstance = null;
+      }
+
+      if (labels.length === 0) return;
+
+      const colors = ['#E76F51', '#2A9D8F', '#E9C46A', '#F4A261', '#457B9D', '#9D4EDD', '#F72585', '#4CC9F0', '#90BE6D', '#577590'];
+
+      categoryChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                font: { size: 10 },
+                color: document.documentElement.classList.contains('dark') ? '#CBD5E1' : '#475569'
+              }
+            }
+          }
+        }
+      });
+    }
+
     function createMovementHTML(m) {
-  const isInc = m.type === 'income';
-  // Si la categoría no está en la lista estándar, usa un icono por defecto ('tag' para personalizado o trending-up/down)
-  const iconName = CATEGORY_ICONS[m.category] || (isInc ? 'trending-up' : 'tag');
+      const isInc = m.type === 'income';
+      const iconName = CATEGORY_ICONS[m.category] || (isInc ? 'trending-up' : 'tag');
 
-  return `
-    <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isInc ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600' : 'bg-rose-100 dark:bg-rose-950/60 text-rose-500'}">
-          <i data-lucide="${iconName}" class="w-4 h-4"></i>
+      return `
+        <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isInc ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600' : 'bg-rose-100 dark:bg-rose-950/60 text-rose-500'}">
+              <i data-lucide="${iconName}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs text-slate-900 dark:text-white leading-tight">${m.category}</h4>
+              <p class="text-[11px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} • ${formatDate(m.date)}${m.note ? ` • <span class="italic text-slate-500">${m.note}</span>` : ''}</p>
+            </div>
+          </div>
+          <div class="text-right flex items-center gap-2">
+            <div>
+              <span class="block font-bold text-xs ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}">
+                ${isInc ? '+' : '-'}${formatCurrency(m.amount)}
+              </span>
+            </div>
+            ${m.receipt ? `<button onclick="openReceiptModal('${m.receipt}')" class="p-1.5 text-slate-400 hover:text-[#E76F51]"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}
+            <button onclick="handleDeleteMovement('${m.id}')" class="p-1.5 text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
         </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-900 dark:text-white leading-tight">${m.category}</h4>
-          <p class="text-[11px] text-slate-400 mt-0.5">${m.userName || 'Usuario'} • ${formatDate(m.date)}${m.note ? ` • <span class="italic text-slate-500">${m.note}</span>` : ''}</p>
-        </div>
-      </div>
-      <div class="text-right flex items-center gap-2">
-        <div>
-          <span class="block font-bold text-xs ${isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}">
-            ${isInc ? '+' : '-'}${formatCurrency(m.amount)}
-          </span>
-        </div>
-        ${m.receipt ? `<button onclick="openReceiptModal('${m.receipt}')" class="p-1.5 text-slate-400 hover:text-[#E76F51]"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}
-        <button onclick="handleDeleteMovement('${m.id}')" class="p-1.5 text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-      </div>
-    </div>
-  `;
-}
-
-    function renderMovementsList() {
-      filterMovements();
+      `;
     }
 
-    // NUEVO: mostrar/ocultar inputs de rango personalizado
+    function renderMovementsList() { filterMovements(); }
+
     function toggleCustomDateInputs() {
       const range = document.getElementById('filterDateRange');
       const customDiv = document.getElementById('customDateRangeDiv');
       if (!range || !customDiv) return;
-      if (range.value === 'custom') {
-        customDiv.classList.remove('hidden');
-      } else {
-        customDiv.classList.add('hidden');
-      }
+      if (range.value === 'custom') customDiv.classList.remove('hidden');
+      else customDiv.classList.add('hidden');
     }
 
     function getDateRangeBounds() {
@@ -2164,7 +1939,7 @@ function renderCategoryChart(dataToRender = movementsData) {
       const range = rangeEl ? rangeEl.value : 'all';
       const now = new Date();
       const y = now.getFullYear();
-      const m = now.getMonth(); // 0-11
+      const m = now.getMonth(); 
 
       const pad = (n) => String(n).padStart(2, '0');
       const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -2189,7 +1964,7 @@ function renderCategoryChart(dataToRender = movementsData) {
         const e = document.getElementById('filterDateEnd')?.value || '';
         return { start: s || null, end: e || null };
       }
-      return { start: null, end: null }; // all
+      return { start: null, end: null };
     }
 
     function filterMovements() {
@@ -2219,7 +1994,6 @@ function renderCategoryChart(dataToRender = movementsData) {
         return matchesSearch && matchesType && matchesCat && matchesDate;
       });
 
-      // Cache para exportación CSV/PDF
       filteredMovementsCache = filtered;
 
       const container = document.getElementById('fullMovementsList');
@@ -2233,174 +2007,158 @@ function renderCategoryChart(dataToRender = movementsData) {
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
-    // MODAL MOVIMIENTO
     function openMovementModal(type = 'expense') {
-  document.getElementById('movId').value = '';
-  document.getElementById('movType').value = type;
-  document.getElementById('movementModalTitle').innerText = type === 'income' ? 'Nuevo Ingreso' : 'Nuevo Gasto';
-  document.getElementById('movAmount').value = '';
-  
-  // Asignación de fecha LOCAL exacta de hoy (sin desfase por zona horaria UTC)
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  document.getElementById('movDate').value = `${year}-${month}-${day}`;
+      document.getElementById('movId').value = '';
+      document.getElementById('movType').value = type;
+      document.getElementById('movementModalTitle').innerText = type === 'income' ? 'Nuevo Ingreso' : 'Nuevo Gasto';
+      document.getElementById('movAmount').value = '';
+      
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      document.getElementById('movDate').value = `${year}-${month}-${day}`;
 
-  document.getElementById('movNote').value = '';
-  document.getElementById('movReceiptBase64').value = '';
-  clearReceiptPreview();
-  
-  document.getElementById('movCategory').value = '';
-  document.getElementById('movCategoryText').innerText = 'Seleccionar...';
-  document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      document.getElementById('movNote').value = '';
+      document.getElementById('movReceiptBase64').value = '';
+      clearReceiptPreview();
+      
+      document.getElementById('movCategory').value = '';
+      document.getElementById('movCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('movCategoryIcon').setAttribute('data-lucide', 'layout-grid');
 
-  // Reset del cuadro de categoría personalizada al abrir
-  const customDiv = document.getElementById('movCustomCategoryDiv');
-  const customInput = document.getElementById('movCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
+      const customDiv = document.getElementById('movCustomCategoryDiv');
+      const customInput = document.getElementById('movCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
 
-  lucide.createIcons();
-  document.getElementById('movementModal').classList.remove('hidden');
-}
-
-function closeMovementModal() {
-  document.getElementById('movementModal').classList.add('hidden');
-
-  // Reset del campo personalizado al cerrar
-  const customDiv = document.getElementById('movCustomCategoryDiv');
-  const customInput = document.getElementById('movCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
-}
-
-async function handleSaveMovement(e) {
-  e.preventDefault();
-  const type = document.getElementById('movType').value;
-  const amount = parseFloat(document.getElementById('movAmount').value);
-  let category = document.getElementById('movCategory').value;
-  const customCategoryInput = document.getElementById('movCustomCategory');
-  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
-  const date = document.getElementById('movDate').value; // Mantiene la cadena local "YYYY-MM-DD" intacta
-  const note = document.getElementById('movNote').value.trim();
-  const receipt = document.getElementById('movReceiptBase64').value;
-  const movId = document.getElementById('movId').value;
-
-  if (!amount || amount <= 0) {
-    showToast("Ingresa un monto válido");
-    return;
-  }
-  if (!category) {
-    showToast("Selecciona una categoría");
-    return;
-  }
-
-  // Si la categoría seleccionada es "Otros...", usamos el texto personalizado escrito por el usuario
- if (category.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
-    category = customCategoryVal;
-  }
-
-  const payload = {
-    familyId: currentUserData.familyId,
-    type: type,
-    amount: amount,
-    category: category,
-    date: date, // ← EXACTA del formulario, sin sobrescribir con timestamp del servidor
-    note: note,
-    receipt: receipt || '',
-    userId: auth.currentUser.uid,
-    userName: currentUserData.displayName || currentUserData.email,
-    userEmail: currentUserData.email
-  };
-
-  try {
-    if (movId) {
-      await db.collection('movements').doc(movId).update(payload);
-      showToast("Movimiento actualizado");
-    } else {
-      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-      await db.collection('movements').add(payload);
-      showToast("Movimiento guardado con éxito");
+      lucide.createIcons();
+      document.getElementById('movementModal').classList.remove('hidden');
     }
-    closeMovementModal();
-  } catch (err) {
-    showToast("Error al guardar: " + err.message);
-  }
-}
 
-async function handleDeleteMovement(id) {
-  if (!confirm("¿Eliminar este movimiento?")) return;
-  try {
-    await db.collection('movements').doc(id).delete();
-    showToast("Movimiento eliminado");
-  } catch (err) {
-    showToast("Error al eliminar");
-  }
-}
+    function closeMovementModal() {
+      document.getElementById('movementModal').classList.add('hidden');
 
-    // COMPROBANTES COMPRESIÓN BASE64 CANVAS
-   function handleReceiptCompress(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+      const customDiv = document.getElementById('movCustomCategoryDiv');
+      const customInput = document.getElementById('movCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
 
-  const reader = new FileReader();
-  reader.onload = (evt) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      // Subimos a 1200px para garantizar legibilidad completa del papel
-      const maxDim = 1200;
-      let w = img.width;
-      let h = img.height;
+    async function handleSaveMovement(e) {
+      e.preventDefault();
+      const type = document.getElementById('movType').value;
+      const amount = parseFloat(document.getElementById('movAmount').value);
+      let category = document.getElementById('movCategory').value;
+      const customCategoryInput = document.getElementById('movCustomCategory');
+      const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
+      const date = document.getElementById('movDate').value; 
+      const note = document.getElementById('movNote').value.trim();
+      const receipt = document.getElementById('movReceiptBase64').value;
+      const movId = document.getElementById('movId').value;
 
-      if (w > h) {
-        if (w > maxDim) { h *= maxDim / w; w = maxDim; }
-      } else {
-        if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+      if (!amount || amount <= 0) { showToast("Ingresa un monto válido"); return; }
+      if (!category) { showToast("Selecciona una categoría"); return; }
+
+      if (category.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+        category = customCategoryVal;
       }
 
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
+      const payload = {
+        familyId: currentUserData.familyId,
+        type: type,
+        amount: amount,
+        category: category,
+        date: date, 
+        note: note,
+        receipt: receipt || '',
+        userId: auth.currentUser.uid,
+        userName: currentUserData.displayName || currentUserData.email,
+        userEmail: currentUserData.email
+      };
 
-      // Renderizado de imagen con suavizado en alta definición
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      
-      // Calidad al 90% (0.90) para texto super nítido
-      const base64 = canvas.toDataURL('image/jpeg', 0.90);
-      document.getElementById('movReceiptBase64').value = base64;
-      
-      const previewImg = document.getElementById('receiptPreviewImg');
-      const preview = document.getElementById('receiptPreview');
-      if (previewImg && preview) {
-        previewImg.src = base64;
-        preview.classList.remove('hidden');
+      try {
+        if (movId) {
+          await db.collection('movements').doc(movId).update(payload);
+          showToast("Movimiento actualizado");
+        } else {
+          payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('movements').add(payload);
+          showToast("Movimiento guardado con éxito");
+        }
+        closeMovementModal();
+      } catch (err) {
+        showToast("Error al guardar: " + err.message);
       }
-    };
-    img.src = evt.target.result;
-  };
-  reader.readAsDataURL(file);
-}
+    }
 
-function clearReceiptPreview() {
-  document.getElementById('movReceiptFile').value = '';
-  document.getElementById('movReceiptBase64').value = '';
-  document.getElementById('receiptPreview').classList.add('hidden');
-}
+    async function handleDeleteMovement(id) {
+      if (!confirm("¿Eliminar este movimiento?")) return;
+      try {
+        await db.collection('movements').doc(id).delete();
+        showToast("Movimiento eliminado");
+      } catch (err) {
+        showToast("Error al eliminar");
+      }
+    }
 
-function openReceiptModal(url) {
-  document.getElementById('receiptViewImg').src = url;
-  document.getElementById('receiptViewModal').classList.remove('hidden');
-}
+    function handleReceiptCompress(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-function closeReceiptViewModal() {
-  document.getElementById('receiptViewModal').classList.add('hidden');
-}
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let w = img.width;
+          let h = img.height;
 
-    // METAS DE AHORRO
+          if (w > h) {
+            if (w > maxDim) { h *= maxDim / w; w = maxDim; }
+          } else {
+            if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+          }
+
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          
+          const base64 = canvas.toDataURL('image/jpeg', 0.90);
+          document.getElementById('movReceiptBase64').value = base64;
+          
+          const previewImg = document.getElementById('receiptPreviewImg');
+          const preview = document.getElementById('receiptPreview');
+          if (previewImg && preview) {
+            previewImg.src = base64;
+            preview.classList.remove('hidden');
+          }
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearReceiptPreview() {
+      document.getElementById('movReceiptFile').value = '';
+      document.getElementById('movReceiptBase64').value = '';
+      document.getElementById('receiptPreview').classList.add('hidden');
+    }
+
+    function openReceiptModal(url) {
+      document.getElementById('receiptViewImg').src = url;
+      document.getElementById('receiptViewModal').classList.remove('hidden');
+    }
+
+    function closeReceiptViewModal() {
+      document.getElementById('receiptViewModal').classList.add('hidden');
+    }
+
     function renderGoals() {
       const container = document.getElementById('goalsList');
       if (goalsData.length === 0) {
@@ -2446,9 +2204,7 @@ function closeReceiptViewModal() {
       document.getElementById('goalModal').classList.remove('hidden');
     }
 
-    function closeGoalModal() {
-      document.getElementById('goalModal').classList.add('hidden');
-    }
+    function closeGoalModal() { document.getElementById('goalModal').classList.add('hidden'); }
 
     async function handleSaveGoal(e) {
       e.preventDefault();
@@ -2466,9 +2222,7 @@ function closeReceiptViewModal() {
         });
         showToast("Meta creada");
         closeGoalModal();
-      } catch (err) {
-        showToast("Error al crear meta");
-      }
+      } catch (err) { showToast("Error al crear meta"); }
     }
 
     function openGoalDepositModal(goalId) {
@@ -2477,9 +2231,7 @@ function closeReceiptViewModal() {
       document.getElementById('goalDepositModal').classList.remove('hidden');
     }
 
-    function closeGoalDepositModal() {
-      document.getElementById('goalDepositModal').classList.add('hidden');
-    }
+    function closeGoalDepositModal() { document.getElementById('goalDepositModal').classList.add('hidden'); }
 
     async function handleDepositGoal(e) {
       e.preventDefault();
@@ -2497,11 +2249,9 @@ function closeReceiptViewModal() {
           transaction.update(docRef, { currentAmount: newCurrent });
         });
 
-        // Fecha LOCAL exacta (sin UTC offset)
         const now = new Date();
         const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-        // Registrar como movimiento
         await db.collection('movements').add({
           familyId: currentUserData.familyId,
           type: 'expense',
@@ -2517,9 +2267,7 @@ function closeReceiptViewModal() {
 
         showToast("Abono registrado con éxito");
         closeGoalDepositModal();
-      } catch (err) {
-        showToast("Error al abonar: " + err.message);
-      }
+      } catch (err) { showToast("Error al abonar: " + err.message); }
     }
 
     async function handleDeleteGoal(id) {
@@ -2527,12 +2275,9 @@ function closeReceiptViewModal() {
       try {
         await db.collection('families').doc(currentUserData.familyId).collection('goals').doc(id).delete();
         showToast("Meta eliminada");
-      } catch (err) {
-        showToast("Error al eliminar meta");
-      }
+      } catch (err) { showToast("Error al eliminar meta"); }
     }
 
-    // PRESUPUESTOS (barras inteligentes Verde / Ámbar / Rojo)
     function renderBudgets() {
       const container = document.getElementById('budgetsList');
       const categories = Object.keys(budgetsData);
@@ -2543,7 +2288,6 @@ function closeReceiptViewModal() {
         return;
       }
 
-      // Calcular gastos por categoría del mes actual
       const now = new Date();
       const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
@@ -2559,7 +2303,6 @@ function closeReceiptViewModal() {
         const pct = Math.round(rawPct);
         const barWidth = Math.min(100, Math.max(0, rawPct));
 
-        // Verde <80%, Ámbar 80-99%, Rojo ≥100%
         let barColor = 'bg-emerald-500';
         let badgeHTML = '';
         if (pct >= 100) {
@@ -2597,70 +2340,60 @@ function closeReceiptViewModal() {
     }
 
     function openBudgetModal() {
-  document.getElementById('budgetAmount').value = '';
-  document.getElementById('budgetCategory').value = '';
-  document.getElementById('budgetCategoryText').innerText = 'Seleccionar...';
-  document.getElementById('budgetCategoryIcon').setAttribute('data-lucide', 'layout-grid');
-  
-  // Reset del cuadro de categoría personalizada al abrir
-  const customDiv = document.getElementById('budgetCustomCategoryDiv');
-  const customInput = document.getElementById('budgetCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
+      document.getElementById('budgetAmount').value = '';
+      document.getElementById('budgetCategory').value = '';
+      document.getElementById('budgetCategoryText').innerText = 'Seleccionar...';
+      document.getElementById('budgetCategoryIcon').setAttribute('data-lucide', 'layout-grid');
+      
+      const customDiv = document.getElementById('budgetCustomCategoryDiv');
+      const customInput = document.getElementById('budgetCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
 
-  lucide.createIcons();
-  document.getElementById('budgetModal').classList.remove('hidden');
-}
+      lucide.createIcons();
+      document.getElementById('budgetModal').classList.remove('hidden');
+    }
 
-// MODAL PRESUPUESTOS
-function closeBudgetModal() {
-  document.getElementById('budgetModal').classList.add('hidden');
-  
-  // Reset del campo personalizado al cerrar
-  const customDiv = document.getElementById('budgetCustomCategoryDiv');
-  const customInput = document.getElementById('budgetCustomCategory');
-  if (customDiv) customDiv.classList.add('hidden');
-  if (customInput) customInput.value = '';
-}
+    function closeBudgetModal() {
+      document.getElementById('budgetModal').classList.add('hidden');
+      const customDiv = document.getElementById('budgetCustomCategoryDiv');
+      const customInput = document.getElementById('budgetCustomCategory');
+      if (customDiv) customDiv.classList.add('hidden');
+      if (customInput) customInput.value = '';
+    }
 
-async function handleSaveBudget(e) {
-  e.preventDefault();
-  let cat = document.getElementById('budgetCategory').value;
-  const customCategoryInput = document.getElementById('budgetCustomCategory');
-  const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
-  const amount = parseFloat(document.getElementById('budgetAmount').value);
+    async function handleSaveBudget(e) {
+      e.preventDefault();
+      let cat = document.getElementById('budgetCategory').value;
+      const customCategoryInput = document.getElementById('budgetCustomCategory');
+      const customCategoryVal = customCategoryInput ? customCategoryInput.value.trim() : '';
+      const amount = parseFloat(document.getElementById('budgetAmount').value);
 
-  if (!amount || amount <= 0) return;
-  if (!cat) { showToast('Selecciona una categoría'); return; }
+      if (!amount || amount <= 0) return;
+      if (!cat) { showToast('Selecciona una categoría'); return; }
 
-  // Si eligió "Otros", tomar la categoría personalizada escrita por el usuario
-  if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
-    cat = customCategoryVal;
-  }
+      if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
+        cat = customCategoryVal;
+      }
 
-  try {
-    const updatedBudgets = { ...budgetsData, [cat]: amount };
-    await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
-    showToast("Presupuesto guardado");
-    closeBudgetModal();
-  } catch (err) {
-    showToast("Error al guardar presupuesto");
-  }
-}
+      try {
+        const updatedBudgets = { ...budgetsData, [cat]: amount };
+        await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
+        showToast("Presupuesto guardado");
+        closeBudgetModal();
+      } catch (err) { showToast("Error al guardar presupuesto"); }
+    }
 
-async function handleDeleteBudget(cat) {
-  if (!confirm(`¿Eliminar presupuesto de ${cat}?`)) return;
-  try {
-    const updatedBudgets = { ...budgetsData };
-    delete updatedBudgets[cat];
-    await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
-    showToast("Presupuesto eliminado");
-  } catch (err) {
-    showToast("Error al eliminar");
-  }
-}
+    async function handleDeleteBudget(cat) {
+      if (!confirm(`¿Eliminar presupuesto de ${cat}?`)) return;
+      try {
+        const updatedBudgets = { ...budgetsData };
+        delete updatedBudgets[cat];
+        await db.collection('families').doc(currentUserData.familyId).update({ budgets: updatedBudgets });
+        showToast("Presupuesto eliminado");
+      } catch (err) { showToast("Error al eliminar"); }
+    }
 
-  // GASTOS RECURRENTES
     function renderRecurring() {
       const container = document.getElementById('recurringList');
       const homeSection = document.getElementById('homeRecurringSection');
@@ -2673,7 +2406,6 @@ async function handleDeleteBudget(cat) {
         return;
       }
 
-      // Render completo en pestaña Recurrentes
       container.innerHTML = recurringData.map(r => {
         const iconName = CATEGORY_ICONS[r.category] || 'tag';
         return `
@@ -2697,7 +2429,6 @@ async function handleDeleteBudget(cat) {
         `;
       }).join('');
 
-      // Render compacto en Home (máx 3)
       if (homeSection) {
         homeSection.classList.remove('hidden');
         homeList.innerHTML = recurringData.slice(0, 3).map(r => {
@@ -2732,7 +2463,6 @@ async function handleDeleteBudget(cat) {
       document.getElementById('recCategoryText').innerText = 'Seleccionar...';
       document.getElementById('recCategoryIcon').setAttribute('data-lucide', 'layout-grid');
 
-      // Reset del cuadro de categoría personalizada al abrir
       const customDiv = document.getElementById('recCustomCategoryDiv');
       const customInput = document.getElementById('recCustomCategory');
       if (customDiv) customDiv.classList.add('hidden');
@@ -2745,7 +2475,6 @@ async function handleDeleteBudget(cat) {
     function closeRecurringModal() {
       document.getElementById('recurringModal').classList.add('hidden');
 
-      // Reset del campo personalizado al cerrar
       const customDiv = document.getElementById('recCustomCategoryDiv');
       const customInput = document.getElementById('recCustomCategory');
       if (customDiv) customDiv.classList.add('hidden');
@@ -2763,7 +2492,6 @@ async function handleDeleteBudget(cat) {
       if (!name || !amount || amount <= 0) return;
       if (!cat) { showToast('Selecciona una categoría'); return; }
 
-      // Si eligió "Otros", tomar la categoría personalizada escrita
       if (cat.toLowerCase().includes('otros') && customCategoryVal.length > 0) {
         cat = customCategoryVal;
       }
@@ -2777,16 +2505,13 @@ async function handleDeleteBudget(cat) {
         });
         showToast("Gasto recurrente guardado");
         closeRecurringModal();
-      } catch (err) {
-        showToast("Error al guardar recurrente");
-      }
+      } catch (err) { showToast("Error al guardar recurrente"); }
     }
 
     async function handlePayRecurring(recId) {
       const rec = recurringData.find(r => r.id === recId);
       if (!rec) return;
 
-      // Fecha LOCAL exacta (sin desfase UTC)
       const now = new Date();
       const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -2804,9 +2529,7 @@ async function handleDeleteBudget(cat) {
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         showToast(`Pago registrado: ${rec.name}`);
-      } catch (err) {
-        showToast("Error al registrar pago");
-      }
+      } catch (err) { showToast("Error al registrar pago"); }
     }
 
     async function handleDeleteRecurring(id) {
@@ -2814,28 +2537,20 @@ async function handleDeleteBudget(cat) {
       try {
         await db.collection('families').doc(currentUserData.familyId).collection('recurring').doc(id).delete();
         showToast("Recurrente eliminado");
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
+      } catch (err) { showToast("Error al eliminar"); }
     }
 
-    // GESTIÓN DE ESPACIO / GRUPO
     function renderEspacio(members, pending) {
       const membersContainer = document.getElementById('membersList');
       const pendingSection = document.getElementById('pendingSection');
       const pendingContainer = document.getElementById('pendingContainer');
 
-      // Botón renombrar solo para admin
       const btnRename = document.getElementById('btnRenameFamily');
       if (btnRename) {
-        if (currentUserData.role === 'admin') {
-          btnRename.classList.remove('hidden');
-        } else {
-          btnRename.classList.add('hidden');
-        }
+        if (currentUserData.role === 'admin') btnRename.classList.remove('hidden');
+        else btnRename.classList.add('hidden');
       }
 
-      // Lista de miembros activos
       membersContainer.innerHTML = members.map(m => `
         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/60">
           <div class="flex items-center gap-3">
@@ -2852,18 +2567,15 @@ async function handleDeleteBudget(cat) {
           </div>
           <div class="flex items-center space-x-1">
             ${(currentUserData.role === 'admin' && m.uid !== auth.currentUser.uid) ? `
-              <!-- Botón Cambiar Rol de Admin -->
               <button onclick="handleToggleAdminRole('${m.uid}', '${m.role}')" class="p-1.5 text-xs rounded-lg ${m.role === 'admin' ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30' : 'text-[#E76F51] hover:bg-orange-50 dark:hover:bg-orange-950/30'}" title="${m.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}">
                 <i data-lucide="${m.role === 'admin' ? 'shield-off' : 'shield-plus'}" class="w-4 h-4"></i>
               </button>
-              <!-- Botón Expulsar -->
               <button onclick="handleExpelMember('${m.uid}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30" title="Expulsar"><i data-lucide="user-x" class="w-4 h-4"></i></button>
             ` : ''}
           </div>
         </div>
       `).join('');
 
-      // Solicitudes pendientes (Solo admin)
       if (currentUserData.role === 'admin' && pending.length > 0) {
         pendingSection.classList.remove('hidden');
         pendingContainer.innerHTML = pending.map(m => `
@@ -2885,7 +2597,6 @@ async function handleDeleteBudget(cat) {
       lucide.createIcons();
     }
 
-    // Otorga o quita el rol de Administrador
     async function handleToggleAdminRole(targetUid, currentRole) {
       const newRole = currentRole === 'admin' ? 'member' : 'admin';
       const actionText = newRole === 'admin' ? 'dar el rol de Administrador a' : 'quitar el rol de Administrador a';
@@ -2893,29 +2604,20 @@ async function handleDeleteBudget(cat) {
       if (!confirm(`¿Estás seguro de que deseas ${actionText} este miembro?`)) return;
 
       try {
-        await db.collection('users').doc(targetUid).update({
-          role: newRole
-        });
+        await db.collection('users').doc(targetUid).update({ role: newRole });
         
         if (currentFamilyData && currentFamilyData.id) {
           const familyRef = db.collection('families').doc(currentFamilyData.id);
           if (newRole === 'admin') {
-            await familyRef.update({
-              admins: firebase.firestore.FieldValue.arrayUnion(targetUid)
-            });
+            await familyRef.update({ admins: firebase.firestore.FieldValue.arrayUnion(targetUid) });
           } else {
-            await familyRef.update({
-              admins: firebase.firestore.FieldValue.arrayRemove(targetUid)
-            });
+            await familyRef.update({ admins: firebase.firestore.FieldValue.arrayRemove(targetUid) });
           }
         }
         showToast(`Rol actualizado a ${newRole}`);
-      } catch (error) {
-        showToast('Error al actualizar el rol del miembro.');
-      }
+      } catch (error) { showToast('Error al actualizar el rol del miembro.'); }
     }
 
-    // Modal Renombrar Familia
     function openEditFamilyModal() {
         const modal = document.getElementById('editFamilyModal');
         const input = document.getElementById('inputNewFamilyName');
@@ -2930,32 +2632,23 @@ async function handleDeleteBudget(cat) {
         if (modal) modal.classList.add('hidden');
     }
 
+    // JS CORREGIDO: Evita pisar el badge al renombrar la familia
     async function handleUpdateFamilyName(e) {
         e.preventDefault();
         const newName = document.getElementById('inputNewFamilyName').value.trim();
         if (!newName) return;
 
         try {
-            await db.collection('families').doc(currentFamilyData.id).update({
-                familyName: newName
-            });
+            await db.collection('families').doc(currentFamilyData.id).update({ familyName: newName });
             currentFamilyData.familyName = newName;
 
-            // Preservar badge de conexión al actualizar el nombre
             const headerFam = document.getElementById('headerFamilyName');
-            if (headerFam) {
-              const badge = document.getElementById('connectionBadge');
-              headerFam.innerHTML = '';
-              headerFam.appendChild(document.createTextNode(newName + ' '));
-              if (badge) headerFam.appendChild(badge);
-            }
+            if (headerFam) headerFam.innerText = newName;
 
             document.getElementById('spaceTitle').innerText = newName;
             closeEditFamilyModal();
             showToast("Nombre del grupo actualizado");
-        } catch (error) {
-            showToast("Error al actualizar el nombre.");
-        }
+        } catch (error) { showToast("Error al actualizar el nombre."); }
     }
 
     function shareViaWhatsApp() {
@@ -3014,10 +2707,9 @@ async function handleDeleteBudget(cat) {
     }
 
     // ============================================
-    // EXPORTACIÓN CSV (respeta filtros activos)
+    // EXPORTACIÓN CSV - CORREGIDO PARA EXCEL LATAM/ES
     // ============================================
     function exportToCSV() {
-      // Usar cache filtrada si existe; si no, todos
       const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
         ? filteredMovementsCache
         : movementsData;
@@ -3027,16 +2719,27 @@ async function handleDeleteBudget(cat) {
         return;
       }
 
-      let csv = "Fecha,Tipo,Categoría,Monto,Nota,Registrado Por\n";
+      const SEP = ';'; // Punto y coma para separar columnas en Excel Español
+      
+      // Membrete tipo plantilla
+      let csv = `REPORTE DE MOVIMIENTOS - AHORRO FAMILIAR\n`;
+      csv += `Familia:;${(currentFamilyData && currentFamilyData.familyName) ? currentFamilyData.familyName : 'Mi Espacio'}\n`;
+      csv += `Generado el:;${new Date().toLocaleDateString('es-ES')}\n\n`;
+
+      csv += `Fecha${SEP}Tipo${SEP}Categoría${SEP}Monto${SEP}Nota${SEP}Registrado Por\n`;
+      
       data.forEach(m => {
         const note = String(m.note || '').replace(/"/g, '""');
         const cat = String(m.category || '').replace(/"/g, '""');
         const user = String(m.userName || '').replace(/"/g, '""');
         const tipo = m.type === 'income' ? 'Ingreso' : 'Gasto';
-        csv += `"${m.date || ''}","${tipo}","${cat}","${m.amount || 0}","${note}","${user}"\n`;
+        // Formateamos el monto con coma decimal para Excel
+        const montoFormatted = (parseFloat(m.amount) || 0).toFixed(2).replace('.', ',');
+        
+        csv += `"${m.date || ''}"${SEP}"${tipo}"${SEP}"${cat}"${SEP}${montoFormatted}${SEP}"${note}"${SEP}"${user}"\n`;
       });
 
-      // BOM UTF-8 para Excel
+      // BOM UTF-8 para que Excel lea los tildes correctamente
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       const now = new Date();
@@ -3046,11 +2749,11 @@ async function handleDeleteBudget(cat) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast("CSV exportado correctamente");
+      showToast("Excel exportado correctamente");
     }
 
     // ============================================
-    // EXPORTACIÓN / IMPRESIÓN PDF PROFESIONAL
+    // EXPORTACIÓN PDF CON LOGO EMBEBIDO
     // ============================================
     function exportToPDF() {
       const data = (filteredMovementsCache && Array.isArray(filteredMovementsCache) && document.getElementById('filterDateRange'))
@@ -3076,7 +2779,15 @@ async function handleDeleteBudget(cat) {
       const now = new Date();
       const stamp = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
 
-      // Intentar jsPDF + AutoTable
+      // Logo SVG Vectorial en Base64 (No requiere internet)
+      const LOGO_SVG = 'data:image/svg+xml;base64,' + btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          <path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/>
+          <path d="m18 15-2-2"/><path d="m15 18-2-2"/>
+        </svg>
+      `.trim());
+
       try {
         const jspdfNS = window.jspdf || window.jsPDF;
         const JsPDFCtor = jspdfNS && (jspdfNS.jsPDF || jspdfNS);
@@ -3088,13 +2799,23 @@ async function handleDeleteBudget(cat) {
         // Encabezado marca
         doc.setFillColor(231, 111, 81); // #E76F51
         doc.rect(0, 0, pageW, 28, 'F');
+
+        // Dibujar Logo
+        try {
+          doc.setFillColor(255, 255, 255);
+          doc.setGState(new doc.GState({ opacity: 0.2 }));
+          doc.roundedRect(12, 6, 16, 16, 3, 3, 'F');
+          doc.setGState(new doc.GState({ opacity: 1 }));
+          doc.addImage(LOGO_SVG, 'SVG', 14, 8, 12, 12);
+        } catch (e) {}
+
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('Ahorro Familiar', 14, 14);
+        doc.text('Ahorro Familiar', 32, 14); // Desplazado por el logo
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('Reporte de Movimientos', 14, 22);
+        doc.text('Reporte de Movimientos', 32, 22);
 
         doc.setFontSize(9);
         doc.text(stamp, pageW - 14, 14, { align: 'right' });
@@ -3144,23 +2865,11 @@ async function handleDeleteBudget(cat) {
               fontStyle: 'bold'
             },
             alternateRowStyles: { fillColor: [248, 250, 252] },
-            columnStyles: {
-              3: { halign: 'right' }
-            },
+            columnStyles: { 3: { halign: 'right' } },
             margin: { left: 14, right: 14 }
-          });
-        } else {
-          // Fallback simple sin autotable
-          let y = 62;
-          doc.setFontSize(8);
-          data.slice(0, 40).forEach(m => {
-            doc.text(`${formatDate(m.date)} | ${m.type} | ${m.category} | ${formatCurrency(m.amount)}`, 14, y);
-            y += 5;
-            if (y > 280) { doc.addPage(); y = 20; }
           });
         }
 
-        // Pie
         const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 12 : 280;
         doc.setFontSize(8);
         doc.setTextColor(148, 163, 184);
@@ -3173,8 +2882,7 @@ async function handleDeleteBudget(cat) {
         console.warn('PDF fallback impresión:', err);
       }
 
-      // Fallback: ventana de impresión HTML con membrete
-      // IMPORTANTE: no incluir etiquetas <script> literales aquí (rompen el parser del HTML principal)
+      // Fallback HTML (Con Logo Incluido)
       const rows = data.map(m => `
         <tr>
           <td>${formatDate(m.date) || ''}</td>
@@ -3205,7 +2913,12 @@ async function handleDeleteBudget(cat) {
   .foot{margin-top:24px;text-align:center;color:#94a3b8;font-size:11px}
 </style></head><body>
   <div class="head">
-    <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos · ${familyName}</p></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <img src="${LOGO_SVG}" style="width:24px;height:24px;">
+      </div>
+      <div><h1>Ahorro Familiar</h1><p>Reporte de Movimientos · ${familyName}</p></div>
+    </div>
     <div style="text-align:right;font-size:12px">${stamp}<br>${userName}</div>
   </div>
   <div class="summary">
